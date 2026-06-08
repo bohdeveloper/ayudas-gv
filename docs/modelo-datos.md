@@ -2,9 +2,7 @@
 
 ## Diagrama entidad-relación
 
-![Diagrama ER](assets/er-diagrama.png)
-
-> El color agrupa contextos: catálogos/seguridad (morado), personas (verde), núcleo del expediente (rojo), detalle por tipo de ayuda (naranja), tramitación (azul), auditoría (gris).
+> Contextos: catálogos/seguridad (morado), personas (verde), núcleo del expediente (rojo), detalle por tipo de ayuda (naranja), tramitación (azul), auditoría (gris).
 > La línea discontinua indica FK opcional o referencia transversal.
 
 ---

@@ -50,7 +50,6 @@ cd frontend && npm install && npm run dev
 - [x] Estructura de carpetas creada (backend + frontend + docs)
 - [x] README.md, ROADMAP.md, .gitignore
 - [x] docs/arquitectura.md, docs/modelo-datos.md, docs/fase0-planificacion.md
-- [x] docs/assets/ — carpeta para imágenes (ER + cronograma) — **pendiente exportar del Word**
 - [x] docker-compose.yml (3 servicios: postgres + backend + frontend)
 - [x] backend/pom.xml con todas las dependencias Spring Boot 3
 - [x] backend/AyudasGvApplication.java

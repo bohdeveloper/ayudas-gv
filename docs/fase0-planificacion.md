@@ -7,8 +7,6 @@
 
 ## Cronograma e hitos
 
-![Cronograma Fase 0](assets/cronograma-fase0.png)
-
 | Semana | Foco | Hito | Resultado demostrable |
 |--------|------|------|----------------------|
 | S1 | Entorno, esqueleto y BD | M1 | Entorno + BD listos |

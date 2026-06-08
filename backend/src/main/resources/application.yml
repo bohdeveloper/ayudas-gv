@@ -1,0 +1,48 @@
+spring:
+  application:
+    name: ayudas-gv-backend
+
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/ayudas_gv}
+    username: ${DB_USER:ayudasgv}
+    password: ${DB_PASSWORD:ayudasgv}
+    driver-class-name: org.postgresql.Driver
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+  messages:
+    basename: i18n/messages
+    encoding: UTF-8
+    use-code-as-default-message: false
+
+server:
+  port: ${SERVER_PORT:8080}
+  servlet:
+    context-path: /api
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
+  info:
+    title: Ayudas GV API
+    description: Sistema de Gestión y Tramitación de Expedientes de Ayudas — Gobierno Vasco
+    version: 1.0.0
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:cambia-esto-en-produccion-clave-larga-y-segura-256bits}
+    expiration-ms: ${JWT_EXPIRATION:86400000}
+
+logging:
+  level:
+    com.ayudasgv: INFO
+    org.springframework.security: WARN
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} [%X{correlationId}] %-5level %logger{36} - %msg%n"

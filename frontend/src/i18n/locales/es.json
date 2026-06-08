@@ -1,0 +1,73 @@
+{
+  "common": {
+    "loading": "Cargando...",
+    "error": "Ha ocurrido un error",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "search": "Buscar",
+    "clear": "Limpiar filtros",
+    "back": "Volver",
+    "language": "Idioma",
+    "logout": "Cerrar sesión",
+    "yes": "Sí",
+    "no": "No",
+    "page": "Página",
+    "of": "de",
+    "results": "resultados"
+  },
+  "auth": {
+    "login": "Iniciar sesión",
+    "username": "Usuario",
+    "password": "Contraseña",
+    "loginError": "Credenciales incorrectas",
+    "sessionExpired": "Sesión expirada. Inicie sesión de nuevo",
+    "accessDenied": "No tiene permisos para acceder a esta sección"
+  },
+  "nav": {
+    "expedientes": "Expedientes",
+    "usuarios": "Usuarios",
+    "catalogos": "Catálogos",
+    "home": "Inicio"
+  },
+  "expedientes": {
+    "title": "Gestión de Expedientes",
+    "search": "Buscar expedientes",
+    "numero": "Nº expediente",
+    "tipoAyuda": "Tipo de ayuda",
+    "estado": "Estado",
+    "documento": "Documento solicitante",
+    "fechaDesde": "Fecha desde",
+    "fechaHasta": "Fecha hasta",
+    "instructor": "Instructor",
+    "fechaRegistro": "Fecha de registro",
+    "noResults": "No se encontraron expedientes con los filtros indicados",
+    "sections": {
+      "generales": "Datos generales",
+      "interesados": "Interesados",
+      "contacto": "Contacto y aviso",
+      "ayuda": "Datos de la ayuda",
+      "tramitacion": "Tramitación"
+    },
+    "roles": {
+      "SOLICITANTE": "Solicitante",
+      "REPRESENTANTE": "Representante",
+      "CAUSANTE": "Causante"
+    },
+    "canales": {
+      "EMAIL": "Correo electrónico",
+      "SMS": "SMS",
+      "POSTAL": "Correo postal"
+    }
+  },
+  "roles": {
+    "CONSULTOR": "Consultor",
+    "INSTRUCTOR": "Instructor",
+    "RESPONSABLE": "Responsable",
+    "ADMIN": "Administrador"
+  },
+  "tiposAyuda": {
+    "ASIG_DISCAP": "Asignación por discapacidad",
+    "PAGO_NAC": "Pago único nacimiento/adopción",
+    "PARTO_MULT": "Parto o adopción múltiples"
+  }
+}

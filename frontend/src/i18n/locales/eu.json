@@ -1,0 +1,73 @@
+{
+  "common": {
+    "loading": "Kargatzen...",
+    "error": "Errore bat gertatu da",
+    "save": "Gorde",
+    "cancel": "Utzi",
+    "search": "Bilatu",
+    "clear": "Iragazkiak garbitu",
+    "back": "Itzuli",
+    "language": "Hizkuntza",
+    "logout": "Saioa itxi",
+    "yes": "Bai",
+    "no": "Ez",
+    "page": "Orrialdea",
+    "of": "honen",
+    "results": "emaitza"
+  },
+  "auth": {
+    "login": "Saioa hasi",
+    "username": "Erabiltzailea",
+    "password": "Pasahitza",
+    "loginError": "Kredentzialak ez dira zuzenak",
+    "sessionExpired": "Saioa iraungitu da. Berriz hasi saioa",
+    "accessDenied": "Ez duzu atal honetara sartzeko baimenik"
+  },
+  "nav": {
+    "expedientes": "Espedienteak",
+    "usuarios": "Erabiltzaileak",
+    "catalogos": "Katalogoak",
+    "home": "Hasiera"
+  },
+  "expedientes": {
+    "title": "Espedienteen Kudeaketa",
+    "search": "Espedienteak bilatu",
+    "numero": "Esp. zenbakia",
+    "tipoAyuda": "Laguntza mota",
+    "estado": "Egoera",
+    "documento": "Eskatzailearen dokumentua",
+    "fechaDesde": "Datatik",
+    "fechaHasta": "Datara",
+    "instructor": "Instruktorea",
+    "fechaRegistro": "Erregistro-data",
+    "noResults": "Ez da adierazitako iragazkiekin espedienteik aurkitu",
+    "sections": {
+      "generales": "Datu orokorrak",
+      "interesados": "Interesdunak",
+      "contacto": "Harremana eta abisua",
+      "ayuda": "Laguntzaren datuak",
+      "tramitacion": "Izapidetzea"
+    },
+    "roles": {
+      "SOLICITANTE": "Eskatzailea",
+      "REPRESENTANTE": "Ordezkaria",
+      "CAUSANTE": "Kausaltzailea"
+    },
+    "canales": {
+      "EMAIL": "Posta elektronikoa",
+      "SMS": "SMS",
+      "POSTAL": "Posta arrunta"
+    }
+  },
+  "roles": {
+    "CONSULTOR": "Kontsultagilea",
+    "INSTRUCTOR": "Instruktorea",
+    "RESPONSABLE": "Arduraduna",
+    "ADMIN": "Administratzailea"
+  },
+  "tiposAyuda": {
+    "ASIG_DISCAP": "Desgaitasunaren esleipena",
+    "PAGO_NAC": "Ordainketa bakarra jaiotza/adopzioa",
+    "PARTO_MULT": "Erditze edo adopzio anitzak"
+  }
+}

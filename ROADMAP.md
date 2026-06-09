@@ -2,17 +2,36 @@
 
 ---
 
+## Seguimiento de ramas
+
+| Rama | Semana | Estado | Merge a main |
+|------|--------|--------|--------------|
+| `main` | Setup (S1) | ✅ Mergeada | — |
+| `feat/semana2-auth` | S2 — Auth backend | ⏳ Pendiente | — |
+| `feat/semana3-login-frontend` | S3 — Login UI | ⏳ Pendiente | — |
+| `feat/semana4-busqueda` | S4 — Búsqueda | ⏳ Pendiente | — |
+| `feat/semana5-detalle-secciones` | S5 — Detalle | ⏳ Pendiente | — |
+| `feat/semana6-transversales` | S6 — Transversales | ⏳ Pendiente | — |
+
+---
+
 ## Fase 0 — MVP (6 semanas) 🔄
 
 **Objetivo:** Una persona autenticada puede buscar y consultar expedientes organizados por secciones.
 
-### Semana 1 — Entorno, esqueleto y base de datos
-- [ ] JDK 17, Node 20, Docker instalados
-- [ ] Docker Compose con PostgreSQL levantado
-- [ ] Backend Spring Boot arranca y conecta a BD
-- [ ] Frontend React + Vite arranca
-- [ ] Flyway: tablas de seguridad + catálogos con datos semilla bilingües
-- [ ] Swagger UI accesible en `/api/swagger-ui.html`
+### Semana 1 — Entorno, esqueleto y base de datos ✅
+> Rama: `main` (setup inicial directo en main)
+
+- [x] JDK 21, Node 20, Docker instalados y configurados
+- [x] Scaffold completo: backend (Spring Boot 3.5.14) + frontend (React 18 + Vite + TS)
+- [x] Docker Compose con 3 servicios configurados (postgres, backend, frontend)
+- [x] pom.xml y package.json con todas las dependencias
+- [x] Flyway V1–V4: tablas + datos semilla bilingües (es/eu) + datos de ejemplo
+- [x] Configuración i18n backend (messages_es/eu) y frontend (es.json/eu.json)
+- [x] Tipos TypeScript del dominio completos (types/index.ts)
+- [x] Dockerfiles multi-stage backend y frontend
+- [ ] ⚠️ Verificar `docker-compose up --build` levanta los 3 servicios sin errores
+- [ ] ⚠️ Verificar Swagger UI accesible en `/api/swagger-ui.html`
 
 **Hito M1:** Entorno + BD listos — backend y frontend arrancan, migraciones aplicadas, Swagger visible
 

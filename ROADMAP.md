@@ -6,7 +6,7 @@
 
 | Rama | Semana | Estado | Merge a main |
 |------|--------|--------|--------------|
-| `main` | Setup (S1) | ✅ Mergeada | — |
+| `main` | Setup (S1) | ✅ Mergeada — Hito M1 el 2026-06-09 | — |
 | `feat/semana2-auth` | S2 — Auth backend | ⏳ Pendiente | — |
 | `feat/semana3-login-frontend` | S3 — Login UI | ⏳ Pendiente | — |
 | `feat/semana4-busqueda` | S4 — Búsqueda | ⏳ Pendiente | — |
@@ -21,8 +21,8 @@
 
 ---
 
-### Semana 1 — Entorno, esqueleto y base de datos ✅
-> Rama: `main` (setup inicial directo en main)
+### Semana 1 — Entorno, esqueleto y base de datos ✅ COMPLETADA
+> Rama: `main` (setup inicial directo en main) | Hito M1 alcanzado: 2026-06-09
 
 **Tareas:**
 - [x] JDK 21, Node 20, Docker instalados y configurados

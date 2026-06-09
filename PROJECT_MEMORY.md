@@ -41,7 +41,7 @@ cd frontend && npm install && npm run dev
 
 ## Estado actual
 
-**Fecha última actualización:** 2026-06-09
+**Fecha última actualización:** 2026-06-09 (fin de jornada)
 **Fase activa:** Fase 0 — MVP
 **Semana activa:** Semana 2 (módulo auth backend)
 
@@ -74,7 +74,6 @@ cd frontend && npm install && npm run dev
 
 - [ ] Crear rama `feat/semana2-auth`
 - [ ] Semana 2: módulo `auth` backend completo (AuthController, AuthService, JwtProvider, UsuarioRepository, SecurityFilterChain, JwtAuthenticationFilter)
-- [ ] Verificar que `docker-compose up --build` levanta todo sin errores (Hito M1 pendiente)
 - [ ] **Imágenes:** Exportar del Word y guardar en `docs/assets/er-diagrama.png` y `docs/assets/cronograma-fase0.png`
 
 ---
@@ -213,6 +212,17 @@ ayudas-gv/
 **Próxima sesión:**
 - Crear rama `feat/semana2-auth`
 - Implementar módulo auth backend completo (Semana 2)
+- Continuar con demo del Hito M1 si hace falta (todo validado y corriendo)
+
+### Actualización fin de jornada — 2026-06-09
+**Añadido en la segunda parte de la sesión:**
+- `docs/tecnologias.md` creado (ecosistema Docker, Flyway, Nginx, Swagger explicados en profundidad)
+- `README.md` actualizado completo con stack real y accesos
+- `ROADMAP.md` expandido con estructura Tareas/Aprende/Hecho cuando/Hitos diarios
+- Hito M1 completado y validado en vivo (3 contenedores, Flyway OK, Swagger OK)
+- Puerto PostgreSQL externo cambiado a 5433 (PostgreSQL 18 local ocupa 5432)
+- DBeaver conectado y tablas visibles
+- Documentos Word movidos a `docs/instrucciones-iniciales/`
 
 ---
 <!-- INSTRUCCIONES: Al cerrar sesión, añade una nueva entrada al Log con fecha, hecho, bloqueantes y próxima sesión -->

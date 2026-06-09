@@ -90,11 +90,11 @@ Docker Compose crea automáticamente una **red privada** (`ayudas_gv_default`) a
 ┌─────────────────────────────────────────────────────────┐
 │                   Tu máquina (host)                     │
 │                                                         │
-│   Navegador          mvn spring-boot:run    psql        │
-│   :5173 (dev)        (solo dev local)       :5432       │
-│   :3000 (docker)                                        │
+│   Navegador          mvn spring-boot:run    DBeaver/psql │
+│   :5173 (dev)        (solo dev local)       :5433*      │
+│   :3000 (docker)                            *5432=PG18  │
 └──────┬─────────────────────────┬──────────────┬─────────┘
-       │ :3000→:80               │ :8080→:8080  │ :5432→:5432
+       │ :3000→:80               │ :8080→:8080  │ :5433→:5432
        ▼                         ▼              ▼
 ┌─────────────────────────────────────────────────────────┐
 │              Red Docker: ayudas_gv_default              │
@@ -140,7 +140,7 @@ Docker Compose crea automáticamente una **red privada** (`ayudas_gv_default`) a
 2. React hace fetch → http://localhost:5173/api/v1/expedientes
    └─ vite.config.ts: proxy /api/* → http://localhost:8080
    └─ Spring Boot (lanzado con mvn spring-boot:run) procesa
-   └─ Consulta a localhost:5432 (PostgreSQL en Docker)
+   └─ Consulta a localhost:5433 (PostgreSQL en Docker — puerto externo)
    └─ Devuelve JSON
 ```
 
@@ -362,8 +362,9 @@ En la **Semana 2** añadiremos el esquema Bearer para que Swagger UI permita env
 
 | Situación | Perfil activo | Fuente de DB_URL |
 |-----------|--------------|-----------------|
-| Docker Compose | ninguno (default) | Variable de entorno inyectada por docker-compose.yml → `postgres:5432` |
-| Desarrollo local | `dev` | `application-dev.yml` hardcodeado → `localhost:5432` |
+| Docker Compose | ninguno (default) | Variable de entorno inyectada por docker-compose.yml → `postgres:5432` (red interna) |
+| Desarrollo local | `dev` | `application-dev.yml` hardcodeado → `localhost:5432` (PG local) |
+| DBeaver / psql externo | — | Conectar a `localhost:5433` (puerto externo del contenedor; 5432 lo ocupa PG18 local) |
 
 ```bash
 # Arranque local con perfil dev

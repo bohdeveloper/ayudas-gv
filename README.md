@@ -31,7 +31,7 @@ docker compose up --build
 | Frontend (React) | http://localhost:3000 |
 | Backend (API) | http://localhost:8080/api |
 | Swagger UI | http://localhost:8080/api/swagger-ui.html |
-| PostgreSQL | localhost:5432 |
+| PostgreSQL | localhost:5433 (puerto externo; 5432 reservado para PostgreSQL local) |
 
 Para parar: `docker compose down`
 Para parar y borrar datos de BD: `docker compose down -v`

@@ -43,10 +43,10 @@
 
 **Hitos diarios:**
 - Día 1 — herramientas instaladas (JDK 21, Node, Git, IDE) y repositorio Git creado con estructura inicial ✅
-- Día 2 — PostgreSQL en Docker Compose levantado; backend Spring Boot arranca y conecta a BD ⚠️ pendiente verificar
+- Día 2 — PostgreSQL en Docker Compose levantado; backend Spring Boot arranca y conecta a BD ✅
 - Día 3 — Flyway configurado y primera migración aplicada con tablas de seguridad (usuario, rol, usuario_rol) ✅
 - Día 4 — migración de catálogos (tipo_ayuda, estado_expediente, tipo_tramite) con datos semilla bilingües ✅
-- Día 5 — frontend React (Vite) arranca y muestra pantalla inicial; Swagger UI accesible ⚠️ pendiente verificar
+- Día 5 — frontend React (Vite) arranca (HTTP 200); Swagger UI accesible (HTTP 200) ✅
 
 **🏁 Hito M1 — Resultado demostrable:** Backend y frontend arrancan; migraciones aplicadas; Swagger visible
 

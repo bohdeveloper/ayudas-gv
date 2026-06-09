@@ -1,0 +1,14 @@
+{
+  "properties": [
+    {
+      "name": "app.jwt.secret",
+      "type": "java.lang.String",
+      "description": "Clave secreta HMAC-SHA256 para firmar los tokens JWT (mínimo 256 bits)."
+    },
+    {
+      "name": "app.jwt.expiration-ms",
+      "type": "java.lang.Long",
+      "description": "Tiempo de expiración del token JWT en milisegundos. Por defecto 86400000 (24 h)."
+    }
+  ]
+}

@@ -33,7 +33,7 @@
 - [ ] ⚠️ Verificar `docker-compose up --build` levanta los 3 servicios sin errores
 - [ ] ⚠️ Verificar Swagger UI accesible en `/api/swagger-ui.html`
 
-**Hito M1:** Entorno + BD listos — backend y frontend arrancan, migraciones aplicadas, Swagger visible
+**🏁 Hito M1 — Resultado demostrable:** Backend y frontend arrancan; migraciones aplicadas; Swagger visible
 
 ### Semana 2 — Autenticación (backend)
 - [ ] Spring Security configurado
@@ -43,7 +43,7 @@
 - [ ] Endpoint protegido de prueba (200 con token, 401 sin él)
 - [ ] Swagger con esquema Bearer configurado
 
-**Hito M2:** Login con JWT — credenciales válidas devuelven token; endpoint protegido responde correctamente
+**🏁 Hito M2 — Resultado demostrable:** Login real que devuelve un JWT y protege un endpoint
 
 ### Semana 3 — Login en frontend + idiomas
 - [ ] Pantalla de login en React
@@ -52,7 +52,7 @@
 - [ ] `react-i18next` configurado con ficheros `es.json` / `eu.json`
 - [ ] Selector de idioma con persistencia en `localStorage`
 
-**Hito M3:** Login UI + idiomas — inicio de sesión desde UI, rutas privadas protegidas, cambio de idioma en caliente
+**🏁 Hito M3 — Resultado demostrable:** Iniciar sesión desde la UI y cambiar entre castellano y euskera
 
 ### Semana 4 — Modelo de expedientes + búsqueda
 - [ ] Migraciones: `persona`, `expediente`, `expediente_interesado`, `datos_contacto`, `solicitud_ayuda`, tablas de detalle
@@ -61,7 +61,7 @@
 - [ ] Descripción de catálogo devuelta en el idioma de la petición
 - [ ] Formulario de filtros + tabla de resultados paginada en frontend
 
-**Hito M4:** Búsqueda funcional — expedientes filtrables, paginados y en el idioma activo
+**🏁 Hito M4 — Resultado demostrable:** Buscar expedientes con filtros y ver resultados paginados
 
 ### Semana 5 — Consulta del expediente por secciones
 - [ ] `GET /api/v1/expedientes/{id}/generales`
@@ -71,7 +71,7 @@
 - [ ] Vista de detalle con pestañas/paneles que cargan cada sección de forma independiente
 - [ ] Etiquetas de la UI internacionalizadas
 
-**Hito M5:** Consulta por secciones — expediente navegable por pestañas, todo traducido
+**🏁 Hito M5 — Resultado demostrable:** Abrir un expediente y navegar sus secciones
 
 ### Semana 6 — Transversales, pulido y demo
 - [ ] Auditoría transversal (AOP) → tabla `auditoria` (login + consultas)
@@ -84,7 +84,7 @@
 - [ ] README de arranque verificado
 - [ ] Demo del MVP de principio a fin
 
-**Hito M6:** MVP cerrado — auditoría activa, suite de pruebas verde, documentación completa
+**🏁 Hito M6 — Resultado demostrable:** MVP cerrado: auditoría, pruebas, documentación y demo
 
 ---
 

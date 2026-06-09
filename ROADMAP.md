@@ -19,72 +19,175 @@
 
 **Objetivo:** Una persona autenticada puede buscar y consultar expedientes organizados por secciones.
 
+---
+
 ### Semana 1 — Entorno, esqueleto y base de datos ✅
 > Rama: `main` (setup inicial directo en main)
 
+**Tareas:**
 - [x] JDK 21, Node 20, Docker instalados y configurados
 - [x] Scaffold completo: backend (Spring Boot 3.5.14) + frontend (React 18 + Vite + TS)
 - [x] Docker Compose con 3 servicios configurados (postgres, backend, frontend)
 - [x] pom.xml y package.json con todas las dependencias
-- [x] Flyway V1–V4: tablas + datos semilla bilingües (es/eu) + datos de ejemplo
+- [x] Flyway V1: tablas de seguridad (usuario, rol, usuario_rol) con datos semilla bilingües
+- [x] Flyway V1: catálogos (tipo_ayuda, estado_expediente, tipo_tramite) con datos semilla bilingües
 - [x] Configuración i18n backend (messages_es/eu) y frontend (es.json/eu.json)
 - [x] Tipos TypeScript del dominio completos (types/index.ts)
 - [x] Dockerfiles multi-stage backend y frontend
 - [ ] ⚠️ Verificar `docker-compose up --build` levanta los 3 servicios sin errores
 - [ ] ⚠️ Verificar Swagger UI accesible en `/api/swagger-ui.html`
 
+**Aprende:** Estructura del proyecto y build (Maven, npm/Vite), migraciones con Flyway.
+
+**Hecho cuando:** Ambos proyectos arrancan, las migraciones crean las tablas con sus datos y Swagger UI carga.
+
+**Hitos diarios:**
+- Día 1 — herramientas instaladas (JDK 21, Node, Git, IDE) y repositorio Git creado con estructura inicial ✅
+- Día 2 — PostgreSQL en Docker Compose levantado; backend Spring Boot arranca y conecta a BD ⚠️ pendiente verificar
+- Día 3 — Flyway configurado y primera migración aplicada con tablas de seguridad (usuario, rol, usuario_rol) ✅
+- Día 4 — migración de catálogos (tipo_ayuda, estado_expediente, tipo_tramite) con datos semilla bilingües ✅
+- Día 5 — frontend React (Vite) arranca y muestra pantalla inicial; Swagger UI accesible ⚠️ pendiente verificar
+
 **🏁 Hito M1 — Resultado demostrable:** Backend y frontend arrancan; migraciones aplicadas; Swagger visible
 
+---
+
 ### Semana 2 — Autenticación (backend)
-- [ ] Spring Security configurado
-- [ ] Repositorio de usuario con SQL (JdbcTemplate)
-- [ ] `POST /api/v1/auth/login` → emite JWT firmado
-- [ ] Filtro de validación del token en cada petición protegida
-- [ ] Endpoint protegido de prueba (200 con token, 401 sin él)
-- [ ] Swagger con esquema Bearer configurado
+> Rama: `feat/semana2-auth`
+
+**Tareas:**
+- [ ] Spring Security configurado (cadena de filtros, rutas públicas y protegidas)
+- [ ] Repositorio de usuario con SQL — `JdbcTemplate`, consulta por username + roles
+- [ ] `POST /api/v1/auth/login` → valida credenciales con BCrypt y emite JWT firmado
+- [ ] Filtro de validación del token en cada petición protegida (`OncePerRequestFilter`)
+- [ ] Endpoint protegido de prueba (200 con token válido, 401 sin él)
+- [ ] Login y endpoint protegido documentados en Swagger con esquema Bearer
+
+**Aprende:** Spring Security (cadena de filtros), JWT, hashing de contraseñas con BCrypt.
+
+**Hecho cuando:** Desde Swagger se obtiene un token con credenciales válidas y, con ese token, se accede al endpoint protegido. Sin token, responde 401.
+
+**Hitos diarios:**
+- Día 1 — repositorio de usuario con SQL (consulta por username) probado contra la BD
+- Día 2 — Spring Security configurado y verificación de contraseña con BCrypt (válidas/inválidas)
+- Día 3 — endpoint de login emite un JWT firmado cuando las credenciales son correctas
+- Día 4 — filtro de validación del token y endpoint protegido de prueba (200 con token, 401 sin él)
+- Día 5 — login y endpoint documentados en Swagger con esquema Bearer; prueba de extremo a extremo
 
 **🏁 Hito M2 — Resultado demostrable:** Login real que devuelve un JWT y protege un endpoint
 
+---
+
 ### Semana 3 — Login en frontend + idiomas
-- [ ] Pantalla de login en React
-- [ ] Interceptor HTTP (axios) que envía el token en cada petición
-- [ ] Rutas protegidas + logout + manejo de expiración de sesión
-- [ ] `react-i18next` configurado con ficheros `es.json` / `eu.json`
-- [ ] Selector de idioma con persistencia en `localStorage`
+> Rama: `feat/semana3-login-frontend`
+
+**Tareas:**
+- [ ] Estructura del frontend (rutas y layout) y cliente HTTP (axios) con interceptor que envía el token
+- [ ] Pantalla de login en React que llama al backend, guarda el token y muestra error de credenciales
+- [ ] Rutas protegidas, logout y redirección a login al expirar la sesión
+- [ ] i18n con `react-i18next`: ficheros `es.json`/`eu.json` y textos de login y menú externalizados
+- [ ] Selector de idioma con persistencia en `localStorage` y conmutación en caliente
+
+**Aprende:** React Router, gestión de sesión en el cliente, i18next.
+
+**Hecho cuando:** Se inicia sesión desde la UI, las rutas privadas exigen autenticación y la interfaz cambia de idioma sin recargar.
+
+**Hitos diarios:**
+- Día 1 — estructura del frontend (rutas y layout) y cliente HTTP con interceptor que envía el token
+- Día 2 — pantalla de login conectada al backend, guarda el token y muestra error de credenciales
+- Día 3 — rutas protegidas, logout y redirección a login al expirar la sesión
+- Día 4 — i18n con react-i18next: ficheros es/eu y textos de login y menú externalizados
+- Día 5 — selector de idioma con persistencia y conmutación en caliente
 
 **🏁 Hito M3 — Resultado demostrable:** Iniciar sesión desde la UI y cambiar entre castellano y euskera
 
-### Semana 4 — Modelo de expedientes + búsqueda
-- [ ] Migraciones: `persona`, `expediente`, `expediente_interesado`, `datos_contacto`, `solicitud_ayuda`, tablas de detalle
-- [ ] Datos de ejemplo insertados (5+ expedientes variados)
-- [ ] `GET /api/v1/expedientes` con filtros (número, tipo, estado, documento, fechas), paginación y ordenación
-- [ ] Descripción de catálogo devuelta en el idioma de la petición
-- [ ] Formulario de filtros + tabla de resultados paginada en frontend
+---
+
+### Semana 4 — Modelo de expedientes y búsqueda
+> Rama: `feat/semana4-busqueda`
+
+**Tareas:**
+- [ ] Migraciones V2: `persona`, `expediente`, `expediente_interesado`, `datos_contacto`, `solicitud_ayuda` y tablas de detalle — con datos de ejemplo *(SQL ya preparado, pendiente verificar con docker-compose)*
+- [ ] `GET /api/v1/expedientes` con filtros (número, tipo, estado, documento, fechas), paginación y ordenación mediante SQL parametrizado
+- [ ] Descripción de catálogo devuelta según el idioma de la petición (`Accept-Language`)
+- [ ] Frontend: formulario de filtros y tabla de resultados paginada conectada al backend
+
+**Aprende:** JOINs y paginación en SQL, consultas dinámicas seguras (parametrizadas), tablas y paginación en React.
+
+**Hecho cuando:** Se buscan expedientes por varios filtros y se ven los resultados paginados en el idioma activo.
+
+**Hitos diarios:**
+- Día 1 — migración de `persona`, `expediente` y `expediente_interesado` con datos de ejemplo
+- Día 2 — migración de `datos_contacto`, `solicitud_ayuda` y tablas de detalle con más datos de ejemplo
+- Día 3 — endpoint de búsqueda con filtros básicos (número, tipo, estado) en SQL parametrizado
+- Día 4 — paginación, ordenación y descripción de catálogo según idioma en el resultado (backend)
+- Día 5 — frontend: formulario de filtros y tabla de resultados paginada conectada al backend
 
 **🏁 Hito M4 — Resultado demostrable:** Buscar expedientes con filtros y ver resultados paginados
 
+---
+
 ### Semana 5 — Consulta del expediente por secciones
-- [ ] `GET /api/v1/expedientes/{id}/generales`
-- [ ] `GET /api/v1/expedientes/{id}/interesados`
-- [ ] `GET /api/v1/expedientes/{id}/contacto`
-- [ ] `GET /api/v1/expedientes/{id}/ayuda` (diferenciado por tipo de ayuda)
-- [ ] Vista de detalle con pestañas/paneles que cargan cada sección de forma independiente
-- [ ] Etiquetas de la UI internacionalizadas
+> Rama: `feat/semana5-detalle-secciones`
+
+**Tareas:**
+- [ ] `GET /api/v1/expedientes/{id}/generales` — DTO de datos generales
+- [ ] `GET /api/v1/expedientes/{id}/interesados` — DTO de interesados
+- [ ] `GET /api/v1/expedientes/{id}/contacto` — DTO de contacto y aviso
+- [ ] `GET /api/v1/expedientes/{id}/ayuda` — DTO diferenciado por tipo de ayuda (ASIG_DISCAP / PAGO_NAC / PARTO_MULT)
+- [ ] Frontend: vista de detalle con pestañas que cargan cada sección de forma independiente
+- [ ] Etiquetas de la UI internacionalizadas; enlace búsqueda → detalle
+
+**Aprende:** Diseño de DTOs por sección, composición de vistas en React.
+
+**Hecho cuando:** Desde un resultado de búsqueda se abre el expediente y se navega por sus secciones, todas traducidas.
+
+**Hitos diarios:**
+- Día 1 — endpoint y DTO de la sección datos generales del expediente
+- Día 2 — endpoints/DTOs de interesados y de contacto y aviso
+- Día 3 — endpoint/DTO de datos de la ayuda (según tipo de ayuda)
+- Día 4 — frontend: vista de detalle con pestañas que cargan cada sección de forma independiente
+- Día 5 — etiquetas del detalle internacionalizadas y enlace búsqueda → detalle
 
 **🏁 Hito M5 — Resultado demostrable:** Abrir un expediente y navegar sus secciones
 
+---
+
 ### Semana 6 — Transversales, pulido y demo
-- [ ] Auditoría transversal (AOP) → tabla `auditoria` (login + consultas)
+> Rama: `feat/semana6-transversales`
+
+**Tareas:**
+- [ ] Auditoría transversal (AOP) que registra login y consultas en la tabla `auditoria`
 - [ ] Logging estructurado con `correlation-id` propagado por petición
 - [ ] `@ControllerAdvice` — respuestas de error homogéneas
-- [ ] Pruebas unitarias de capa de servicios (JUnit 5 + Mockito) ≥ 70% cobertura
-- [ ] Prueba de controlador (`@WebMvcTest` / MockMvc)
+- [ ] Swagger completo y documentado
+- [ ] Pruebas unitarias de capa de servicios (JUnit 5 + Mockito) sobre la lógica clave
+- [ ] Prueba de repositorio/controlador (`@WebMvcTest` / MockMvc)
 - [ ] Prueba de componente frontend (React Testing Library)
-- [ ] Swagger completo y probado
-- [ ] README de arranque verificado
-- [ ] Demo del MVP de principio a fin
+- [ ] Repaso de autorización por rol
+- [ ] README de arranque verificado y demo del MVP de principio a fin
+
+**Aprende:** AOP/interceptores, pruebas con JUnit, Mockito y React Testing Library.
+
+**Hecho cuando:** Las acciones relevantes quedan auditadas, la suite de pruebas pasa y el MVP se puede demostrar de principio a fin.
+
+**Hitos diarios:**
+- Día 1 — auditoría transversal (AOP) registrando login y consultas en tabla `auditoria`
+- Día 2 — logging estructurado con correlation-id y manejo de errores homogéneo (`@ControllerAdvice`)
+- Día 3 — pruebas unitarias de la capa de servicios (JUnit + Mockito) sobre la lógica clave
+- Día 4 — prueba de repositorio/controlador, prueba de componente frontend y repaso de autorización por rol
+- Día 5 — README de arranque, repaso final y demo del MVP completa
 
 **🏁 Hito M6 — Resultado demostrable:** MVP cerrado: auditoría, pruebas, documentación y demo
+
+---
+
+## ⚠️ Nota de ritmo y riesgos
+
+- **Semana 4 es la más densa** (modelo de datos + búsqueda completa). Si hay retraso, lo natural es mover la tabla de resultados del frontend a la semana 5 y deslizar el resto. No recortar la semana 6 — auditoría y pruebas son parte del entregable, no un extra.
+- **Spring Security + JWT (semana 2)** suele llevar más tiempo del esperado la primera vez. Reservar margen.
+- **No dejar la internacionalización para el final**: integrarla desde la semana 3 evita tener que "retraducir" pantallas ya hechas.
+- **Escribir pruebas a medida que se avanza**, no todas al final, aunque el grueso se consolide en la semana 6.
 
 ---
 

@@ -1,4 +1,14 @@
 {
+  "groups": [
+    {
+      "name": "app",
+      "description": "Propiedades de la aplicación."
+    },
+    {
+      "name": "app.jwt",
+      "description": "Configuración del token JWT."
+    }
+  ],
   "properties": [
     {
       "name": "app.jwt.secret",

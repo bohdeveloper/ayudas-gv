@@ -10,8 +10,8 @@
 - **Nombre:** Sistema de Gestión y Tramitación de Expedientes de Ayudas
 - **Cliente:** Gobierno Vasco — Dirección de Prestaciones Familiares
 - **Tipo:** Proyecto de formación DAW — entregable evaluado
-- **Repo GitHub:** https://github.com/[USUARIO]/ayudas-gv ← actualizar con URL real tras primer push
-- **Stack:** React 18 + Vite + TypeScript + react-i18next + Zustand | Spring Boot 3.x + Java 17 + JDBC + PostgreSQL + Flyway | Docker Compose
+- **Repo GitHub:** https://github.com/bohdeveloper/ayudas-gv
+- **Stack:** React 18 + Vite + TypeScript + react-i18next + Zustand | Spring Boot 3.5.14 + Java 21 + JDBC + PostgreSQL + Flyway | Docker Compose
 
 ---
 
@@ -41,39 +41,40 @@ cd frontend && npm install && npm run dev
 
 ## Estado actual
 
-**Fecha última actualización:** 2026-06-08
+**Fecha última actualización:** 2026-06-09
 **Fase activa:** Fase 0 — MVP
-**Semana activa:** Semana 1 (entorno, esqueleto y BD)
+**Semana activa:** Semana 2 (módulo auth backend)
 
 ### Completado hasta ahora
 
 - [x] Estructura de carpetas creada (backend + frontend + docs)
 - [x] README.md, ROADMAP.md, .gitignore
 - [x] docs/arquitectura.md, docs/modelo-datos.md, docs/fase0-planificacion.md
+- [x] docs/reportes/ con reporte de lunes y martes
 - [x] docker-compose.yml (3 servicios: postgres + backend + frontend)
-- [x] backend/pom.xml con todas las dependencias Spring Boot 3
-- [x] backend/AyudasGvApplication.java
-- [x] backend/application.yml + application-dev.yml
+- [x] backend/pom.xml — Spring Boot 3.5.14, Java 21, todas las dependencias
+- [x] backend/AyudasGvApplication.java + config/OpenApiConfig.java
+- [x] backend/application.yml + application-dev.yml (claves logging escapadas)
+- [x] META-INF/additional-spring-configuration-metadata.json (propiedades app.jwt.*)
 - [x] V1__security_catalogs.sql (tablas + datos semilla bilingües es/eu)
 - [x] V2__expedientes.sql (tablas + datos de ejemplo)
 - [x] V3__auditoria_indices.sql (auditoría + índices)
 - [x] V4__tramitacion.sql (Fase 1 — preparado)
 - [x] messages_es.properties + messages_eu.properties
 - [x] backend/Dockerfile (multi-stage Maven → JRE)
-- [x] frontend/package.json, tsconfig.json, vite.config.ts
+- [x] frontend/package.json, tsconfig.json (ignoreDeprecations 6.0), vite.config.ts
 - [x] frontend/index.html, main.tsx, App.tsx
 - [x] frontend/src/router/AppRouter.tsx (skeleton)
 - [x] frontend/src/i18n/index.ts + locales/es.json + locales/eu.json
 - [x] frontend/src/types/index.ts (todos los tipos TypeScript)
 - [x] frontend/Dockerfile + nginx.conf
-- [x] Repo GitHub creado y código subido
+- [x] Repo GitHub: https://github.com/bohdeveloper/ayudas-gv
 
 ### Pendiente próxima sesión
 
-- [ ] Verificar que `docker-compose up --build` levanta todo sin errores
-- [ ] Semana 1: Spring Boot conecta a BD y Flyway aplica migraciones
-- [ ] Semana 1: React arranca y muestra pantalla inicial
-- [ ] Semana 1: Swagger UI accesible → **Hito M1**
+- [ ] Crear rama `feat/semana2-auth`
+- [ ] Semana 2: módulo `auth` backend completo (AuthController, AuthService, JwtProvider, UsuarioRepository, SecurityFilterChain, JwtAuthenticationFilter)
+- [ ] Verificar que `docker-compose up --build` levanta todo sin errores (Hito M1 pendiente)
 - [ ] **Imágenes:** Exportar del Word y guardar en `docs/assets/er-diagrama.png` y `docs/assets/cronograma-fase0.png`
 
 ---
@@ -93,7 +94,7 @@ ayudas-gv/
 │   ├── fase0-planificacion.md
 │   └── assets/                    ← er-diagrama.png + cronograma-fase0.png
 ├── backend/
-│   ├── pom.xml                    ← Spring Boot 3.2.5, JDBC, JWT, Flyway, Swagger
+│   ├── pom.xml                    ← Spring Boot 3.5.14, Java 21, JDBC, JWT, Flyway, Swagger
 │   ├── Dockerfile
 │   └── src/main/
 │       ├── java/com/ayudasgv/
@@ -190,6 +191,28 @@ ayudas-gv/
 - Verificar arranque con docker-compose
 - Implementar conexión real BD + Flyway (Semana 1)
 - Si falla algo, revisar primero `application.yml` y `docker-compose.yml`
+
+### Sesión 2 — 2026-06-09
+**Hecho:**
+- Corregidos todos los errores de configuración del proyecto (sin código de negocio)
+- Spring Boot actualizado 3.2.5 → 3.5.14, Java 17 → 21
+- Resuelto error crítico `flyway-database-postgresql` sin versión (artefacto de Flyway 10.x, gestionado por el BOM desde Spring Boot 3.3+)
+- Creado `OpenApiConfig.java` con `@OpenAPIDefinition` (sustituye `springdoc.info` inválido en YAML)
+- Añadido `additional-spring-configuration-metadata.json` para propiedades `app.jwt.*`
+- Corregidas claves con puntos en YAML de logging (escapadas con `[]`) en `application.yml` y `application-dev.yml`
+- Corregido `tsconfig.json`: añadido `ignoreDeprecations: "6.0"` para `baseUrl` deprecado en TS 6+
+- Definidas premisas de trabajo (ramas, reporte diario, demo viernes, estructura bloques)
+- Sistema de reportes diarios establecido en `docs/reportes/`
+- URL real del repo actualizada en PROJECT_MEMORY
+
+**Bloqueantes/notas:**
+- Maven pendiente de recargar en VSCode (acción manual tras cambios en pom.xml)
+- Confirmar instalación de Java 21 JDK en el equipo
+- Hito M1 (docker-compose up levanta todo) aún no verificado
+
+**Próxima sesión:**
+- Crear rama `feat/semana2-auth`
+- Implementar módulo auth backend completo (Semana 2)
 
 ---
 <!-- INSTRUCCIONES: Al cerrar sesión, añade una nueva entrada al Log con fecha, hecho, bloqueantes y próxima sesión -->

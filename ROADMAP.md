@@ -34,8 +34,8 @@
 - [x] Configuración i18n backend (messages_es/eu) y frontend (es.json/eu.json)
 - [x] Tipos TypeScript del dominio completos (types/index.ts)
 - [x] Dockerfiles multi-stage backend y frontend
-- [ ] ⚠️ Verificar `docker-compose up --build` levanta los 3 servicios sin errores
-- [ ] ⚠️ Verificar Swagger UI accesible en `/api/swagger-ui.html`
+- [x] `docker-compose up --build` levanta los 3 servicios sin errores
+- [x] Swagger UI accesible en `/api/swagger-ui.html` (200 siguiendo redirect)
 
 **Aprende:** Estructura del proyecto y build (Maven, npm/Vite), migraciones con Flyway.
 

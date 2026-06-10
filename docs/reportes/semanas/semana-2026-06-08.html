@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reporte semanal — Semana 08 de junio de 2026 – 12 de junio de 2026</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --surface: #1e293b;
+    --border: #334155;
+    --accent: #38bdf8;
+    --accent2: #818cf8;
+    --text: #e2e8f0;
+    --muted: #94a3b8;
+    --success: #4ade80;
+    --warn: #fbbf24;
+    --radius: 12px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    padding: 2rem 1rem;
+  }
+  .container { max-width: 900px; margin: 0 auto; }
+
+  /* Header */
+  header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 2.5rem; flex-wrap: wrap; gap: 1rem;
+  }
+  .header-left h1 { font-size: 1.6rem; color: var(--accent); font-weight: 700; }
+  .header-left p  { color: var(--muted); font-size: 0.9rem; margin-top: 0.25rem; }
+  .btn-save {
+    background: var(--accent); color: #0f172a;
+    border: none; border-radius: 8px; padding: 0.55rem 1.2rem;
+    font-weight: 700; font-size: 0.9rem; cursor: pointer;
+    transition: opacity .2s;
+  }
+  .btn-save:hover { opacity: 0.85; }
+
+  /* Day cards */
+  .day-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 1.75rem;
+    overflow: hidden;
+  }
+  .day-header {
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--border); padding: 0.75rem 1.25rem;
+  }
+  .day-name  { font-weight: 700; font-size: 1.05rem; color: var(--accent2); }
+  .day-date  { font-size: 0.82rem; color: var(--muted); }
+  .day-content { padding: 1.25rem 1.5rem; }
+
+  /* Markdown rendering */
+  .day-content h2 {
+    font-size: 0.95rem; text-transform: uppercase; letter-spacing: .05em;
+    color: var(--success); margin: 1.1rem 0 0.4rem;
+    border-bottom: 1px solid var(--border); padding-bottom: 0.3rem;
+  }
+  .day-content h3 { color: var(--warn); font-size: 0.9rem; margin: 0.9rem 0 0.3rem; }
+  .day-content ul { padding-left: 1.5rem; margin: 0.3rem 0 0.6rem; }
+  .day-content li { margin: 0.2rem 0; }
+  .day-content li.sub { list-style: circle; color: var(--muted); font-size: 0.9rem; }
+  .day-content code {
+    background: #0f2240; color: #7dd3fc;
+    padding: 0.1em 0.4em; border-radius: 4px; font-size: 0.88em;
+    font-family: 'Cascadia Code', 'Fira Code', monospace;
+  }
+  .day-content p { margin: 0.3rem 0; color: var(--text); }
+  .day-content p.hito {
+    color: var(--accent); font-style: italic;
+    border-left: 3px solid var(--accent); padding-left: 0.75rem;
+    margin-top: 0.8rem;
+  }
+
+  /* Evidence section */
+  .evidence-section { padding: 1rem 1.5rem 1.25rem; border-top: 1px solid var(--border); }
+  .evidence-label { font-size: 0.85rem; color: var(--muted); font-weight: 600; margin-bottom: 0.6rem; }
+  .drop-zone {
+    border: 2px dashed var(--border);
+    border-radius: 8px; padding: 1.2rem;
+    text-align: center; cursor: pointer;
+    transition: border-color .2s, background .2s;
+  }
+  .drop-zone.drag-over { border-color: var(--accent); background: rgba(56,189,248,.06); }
+  .drop-hint { color: var(--muted); font-size: 0.85rem; pointer-events: none; }
+  .images-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 0.75rem; margin-top: 0.75rem;
+  }
+  .img-wrapper {
+    position: relative; border-radius: 8px; overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .img-wrapper img { width: 100%; display: block; }
+  .img-caption {
+    font-size: 0.78rem; color: var(--muted);
+    padding: 0.3rem 0.5rem; background: rgba(0,0,0,.4);
+  }
+  .img-wrapper .btn-remove {
+    position: absolute; top: 6px; right: 6px;
+    background: rgba(0,0,0,.65); color: #fff;
+    border: none; border-radius: 50%; width: 24px; height: 24px;
+    cursor: pointer; font-size: 14px; line-height: 1;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .img-wrapper .btn-remove:hover { background: #ef4444; }
+
+  /* Toast */
+  #toast {
+    position: fixed; bottom: 1.5rem; right: 1.5rem;
+    background: var(--success); color: #0f172a;
+    padding: 0.6rem 1.1rem; border-radius: 8px;
+    font-weight: 700; font-size: 0.9rem;
+    opacity: 0; transition: opacity .3s; pointer-events: none;
+  }
+  #toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="header-left">
+      <h1>Reporte semanal</h1>
+      <p>Semana 08 de junio de 2026 – 12 de junio de 2026</p>
+    </div>
+    <button class="btn-save" onclick="guardarHtml()">💾 Guardar HTML</button>
+  </header>
+
+  
+    <section class="day-card" id="day-0">
+      <div class="day-header">
+        <span class="day-name">Lunes</span>
+        <span class="day-date">2026-06-08</span>
+      </div>
+      <div class="day-content"><h2>✅ Completado</h2><ul><li>Scaffold completo del proyecto creado y subido a GitHub</li><li class="sub">Estructura de carpetas backend (Spring Boot) y frontend (React + TypeScript + Vite)</li><li class="sub"><code>pom.xml</code> con todas las dependencias: Security, JDBC, Flyway, JWT, Swagger, AOP, Lombok</li><li class="sub"><code>package.json</code> con React 18, React Router 6, Zustand, react-i18next, axios, Vitest</li><li class="sub">4 migraciones SQL Flyway (V1–V4): tablas completas + datos de prueba (3 usuarios, 5 expedientes)</li><li class="sub">Configuración i18n: <code>es.json</code> y <code>eu.json</code> con 73 claves cada uno (backend y frontend)</li><li class="sub">Tipos TypeScript del dominio completos (<code>types/index.ts</code>, 138 líneas)</li><li class="sub"><code>docker-compose.yml</code> con 3 servicios: PostgreSQL 15, backend, frontend (Nginx)</li><li class="sub">Dockerfiles multi-stage para backend y frontend</li><li class="sub">Documentación técnica: <code>arquitectura.md</code>, <code>modelo-datos.md</code>, <code>roadmap.md</code>, <code>README.md</code></li><li class="sub"><code>application.yml</code> y <code>application-dev.yml</code> configurados</li><li class="sub">Router de React y bootstrap de i18next</li></ul><h2>🔜 Pendiente</h2><ul><li>Todo el código de negocio: módulo auth, expedientes, tramitación, componentes React</li></ul><h2>🚧 Bloqueos</h2><p>Ninguno.</p><p class="hito"><em>Hito del día: Proyecto scaffoldeado, en GitHub y con la base de datos completamente modelada.</em></p></div>
+      <div class="evidence-section">
+        <p class="evidence-label">📸 Evidencias</p>
+        <div class="drop-zone" data-day="0" onclick="triggerPicker(0)">
+          <div class="drop-hint">Arrastra pantallazos aquí<br>o haz clic para seleccionar</div>
+        </div>
+        <input type="file" id="picker-0" accept="image/*" multiple style="display:none"
+               onchange="handleFiles(this.files, 0)">
+        <div class="images-grid" id="grid-0"></div>
+      </div>
+    </section>
+
+    <section class="day-card" id="day-1">
+      <div class="day-header">
+        <span class="day-name">Martes</span>
+        <span class="day-date">2026-06-09</span>
+      </div>
+      <div class="day-content"><h2>✅ Completado</h2><h3>Corrección de errores de configuración</h3><ul><li><code>pom.xml</code>: Spring Boot 3.2.5 → 3.5.14, Java 17 → 21 (resuelve <code>flyway-database-postgresql</code> sin versión y EOL de 3.2/3.4)</li><li><code>application.yml</code>: eliminado <code>springdoc.info</code> (propiedad inválida), claves de logging escapadas con <code>[]</code></li><li><code>application-dev.yml</code>: claves de logging escapadas con <code>[]</code></li><li><code>OpenApiConfig.java</code> creado con <code>@OpenAPIDefinition</code></li><li><code>META-INF/additional-spring-configuration-metadata.json</code> para propiedades <code>app.jwt.*</code></li><li><code>tsconfig.json</code>: TypeScript actualizado a 6.0.3, añadido <code>ignoreDeprecations: "6.0"</code></li><li>Dockerfiles backend y frontend actualizados a Java 21</li></ul><h3>Infraestructura y documentación</h3><ul><li>Premisas de trabajo definidas y guardadas en memoria</li><li>Sistema de reportes diarios establecido en <code>docs/reportes/</code></li><li><code>docs/tecnologias.md</code> creado — explicación profunda del ecosistema, Docker, Flyway, Nginx, Swagger</li><li><code>README.md</code> actualizado con stack real, comandos Docker, estructura y tabla de accesos</li><li><code>ROADMAP.md</code> expandido con Tareas/Aprende/Hecho cuando/Hitos diarios para cada semana + nota de riesgos</li><li>Hitos M1–M6 actualizados con resultados demostrables del cronograma oficial</li><li>Documentos Word movidos a <code>docs/instrucciones-iniciales/</code></li></ul><h3>Hito M1 completado y validado ✅</h3><ul><li><code>docker-compose up --build</code> levanta los 3 contenedores correctamente</li><li>Backend Dockerfile corregido (Java 21), <code>package-lock.json</code> generado para <code>npm ci</code></li><li><code>SecurityConfig.java</code> añadido: Swagger público, resto protegido</li><li>Perfil <code>dev</code> eliminado de Docker (conflicto con <code>localhost</code> en red interna)</li><li>Flyway aplica 4 migraciones correctamente (validado en <code>flyway_schema_history</code>)</li><li>Frontend → HTTP 200 · Swagger UI → HTTP 200 · API docs → HTTP 200</li><li>Puerto PostgreSQL externo cambiado a <strong>5433</strong> (conflicto con PostgreSQL 18 local en 5432)</li><li>DBeaver conectado y tablas visibles</li></ul><h2>🔜 Pendiente (próxima sesión)</h2><ul><li>Crear rama <code>feat/semana2-auth</code></li><li>Semana 2: módulo auth backend (<code>AuthController</code>, <code>AuthService</code>, <code>JwtProvider</code>, <code>UsuarioRepository</code>, <code>SecurityFilterChain</code>, <code>JwtAuthenticationFilter</code>)</li></ul><h2>🚧 Bloqueos</h2><ul><li>PostgreSQL 18 instalado localmente ocupa el puerto 5432 → solventado con puerto 5433 externo en Docker</li></ul><p class="hito"><em>Hito del día: <strong>M1 cerrado</strong> — ecosistema Docker completo y validado en vivo. Listo para iniciar Semana 2.</em></p></div>
+      <div class="evidence-section">
+        <p class="evidence-label">📸 Evidencias</p>
+        <div class="drop-zone" data-day="1" onclick="triggerPicker(1)">
+          <div class="drop-hint">Arrastra pantallazos aquí<br>o haz clic para seleccionar</div>
+        </div>
+        <input type="file" id="picker-1" accept="image/*" multiple style="display:none"
+               onchange="handleFiles(this.files, 1)">
+        <div class="images-grid" id="grid-1"></div>
+      </div>
+    </section>
+</div>
+
+<div id="toast">✅ HTML guardado</div>
+
+<script>
+  // ── Drag & Drop ────────────────────────────────────────────────────────────
+  document.querySelectorAll('.drop-zone').forEach(zone => {
+    zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+    zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+    zone.addEventListener('drop', e => {
+      e.preventDefault();
+      zone.classList.remove('drag-over');
+      const dayIdx = zone.dataset.day;
+      handleFiles(e.dataTransfer.files, dayIdx);
+    });
+  });
+
+  function triggerPicker(dayIdx) {
+    document.getElementById('picker-' + dayIdx).click();
+  }
+
+  function handleFiles(files, dayIdx) {
+    const grid = document.getElementById('grid-' + dayIdx);
+    Array.from(files).forEach(file => {
+      if (!file.type.startsWith('image/')) return;
+      const reader = new FileReader();
+      reader.onload = e => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'img-wrapper';
+        wrapper.innerHTML =
+          '<img src="' + e.target.result + '" alt="' + escHtml(file.name) + '">' +
+          '<div class="img-caption">' + escHtml(file.name) + '</div>' +
+          '<button class="btn-remove" title="Eliminar" onclick="this.closest(\'.img-wrapper\').remove()">×</button>';
+        grid.appendChild(wrapper);
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // ── Guardar HTML ───────────────────────────────────────────────────────────
+  function guardarHtml() {
+    // Ocultamos los file-pickers antes de serializar
+    document.querySelectorAll('input[type=file]').forEach(el => el.value = '');
+
+    const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+    const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+    const a    = document.createElement('a');
+    a.href     = URL.createObjectURL(blob);
+    a.download = location.pathname.split('/').pop() || 'reporte-semanal.html';
+    a.click();
+    URL.revokeObjectURL(a.href);
+
+    const toast = document.getElementById('toast');
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2500);
+  }
+</script>
+</body>
+</html>

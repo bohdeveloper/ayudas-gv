@@ -16,6 +16,7 @@
 6. [Frontend: React + Vite](#6-frontend-react--vite)
 7. [API docs: Swagger UI](#7-api-docs-swagger-ui)
 8. [Configuración por entorno](#8-configuración-por-entorno)
+9. [Testing: JUnit 5 + Mockito (backend) · Vitest + Testing Library (frontend)](#9-testing-junit-5--mockito-backend--vitest--testing-library-frontend)
 
 ---
 
@@ -31,6 +32,8 @@
 | **Monolito modular** | Microservicios desde el día 1 | El enunciado lo recomienda explícitamente; facilita el aprendizaje |
 | **PostgreSQL 15** | MySQL/MariaDB | Mejor soporte de tipos avanzados, extensiones y JSON |
 | **Flyway** (migraciones) | Liquibase | Más simple, basado en SQL puro sin XML/YAML |
+| **Vitest** (tests frontend) | Jest | Integración nativa con Vite — misma config, sin transformers, ESM puro, ~10× más rápido |
+| **@testing-library/react** | Enzyme / React Test Renderer | Prueba comportamiento visible al usuario, no detalles de implementación internos |
 
 ---
 
@@ -376,6 +379,112 @@ mvn spring-boot:run -Dspring.profiles.active=dev
 
 ---
 
+---
+
+## 9. Testing: JUnit 5 + Mockito (backend) · Vitest + Testing Library (frontend)
+
+### Pirámide de pruebas del proyecto
+
+```
+         ▲  E2E / integración completa (futuro — Playwright/Cypress)
+        ▲▲▲  Componentes React (Testing Library) + Controladores (@WebMvcTest)
+      ▲▲▲▲▲  Unitarias: servicios backend (JUnit + Mockito) + hooks/utils frontend (Vitest)
+```
+
+### Backend: JUnit 5 + Mockito
+
+| Herramienta | Rol |
+|-------------|-----|
+| **JUnit 5** | Framework de pruebas — anotaciones `@Test`, `@BeforeEach`, aserciones con `assertThat` |
+| **Mockito** | Crea *mocks* (dobles de prueba) de dependencias para aislar la unidad bajo test |
+| **`@WebMvcTest`** | Levanta solo la capa web (sin BD) para probar controladores con MockMvc |
+| **`@DataJdbcTest`** | Levanta solo la capa de datos contra H2 en memoria para probar repositorios |
+
+```java
+// Ejemplo: prueba de servicio con Mockito
+@ExtendWith(MockitoExtension.class)
+class ExpedienteServiceTest {
+
+    @Mock  ExpedienteRepository repo;           // doble de prueba
+    @InjectMocks  ExpedienteService service;    // clase bajo test
+
+    @Test
+    void buscar_conFiltroEstado_devuelveSoloCoincidencias() {
+        when(repo.buscar(any())).thenReturn(List.of(expedienteEjemplo()));
+        var resultado = service.buscar(new BusquedaDto("ACTIVO", null, null));
+        assertThat(resultado).hasSize(1);
+    }
+}
+```
+
+### Frontend: Vitest + @testing-library/react
+
+#### Por qué Vitest en lugar de Jest
+
+| Criterio | Vitest | Jest |
+|----------|--------|------|
+| Integración con Vite | Nativa — usa la misma config y transformers | Requiere `babel-jest` + config separada |
+| Soporte ESM | Nativo | Parcial, necesita config extra |
+| Velocidad | ~10× más rápido (HMR-aware, ejecuta solo lo cambiado) | Más lento en proyectos Vite |
+| API | Compatible con Jest (`describe`, `it`, `expect`) | — |
+| Config | Un solo `vite.config.ts` | Fichero `jest.config.ts` separado |
+
+#### Configuración (ya en el proyecto)
+
+```typescript
+// vite.config.ts — bloque test
+test: {
+  globals: true,           // describe/it/expect disponibles sin import
+  environment: 'jsdom',    // simula el DOM del navegador en Node
+  setupFiles: './src/test/setup.ts',  // extiende matchers con jest-dom
+}
+```
+
+```typescript
+// src/test/setup.ts
+import '@testing-library/jest-dom';  // toBeInTheDocument(), toHaveTextContent(), etc.
+```
+
+#### Por qué @testing-library/react
+
+Testing Library impone una filosofía: **probar lo que el usuario ve y hace, no los detalles de implementación**.
+
+```tsx
+// ❌ Evitar: acoplado a detalles internos
+expect(wrapper.state('isLoading')).toBe(false);
+
+// ✅ Correcto: prueba el comportamiento visible
+render(<LoginForm />);
+await userEvent.type(screen.getByLabelText('Usuario'), 'admin');
+await userEvent.click(screen.getByRole('button', { name: /entrar/i }));
+expect(screen.getByText('Bienvenido')).toBeInTheDocument();
+```
+
+#### Qué se probará en S6
+
+| Tipo | Qué | Herramienta |
+|------|-----|-------------|
+| Unitaria (hook) | `useAuth` — login, logout, token expirado | Vitest + `renderHook` |
+| Unitaria (util) | Formateo de fechas, etiquetas i18n | Vitest puro |
+| Componente | `LoginForm` — renderizado, validación, llamada a API mockeada | Testing Library + `vi.mock` |
+| Componente | `ExpedienteTable` — renderiza filas, paginación, cambio de idioma | Testing Library |
+| Componente | `ExpedienteDetalle` — pestañas, carga de secciones | Testing Library |
+
+#### Ejecutar los tests
+
+```bash
+# Modo watch (desarrollo) — re-ejecuta al guardar
+cd frontend && npm test
+
+# Una sola pasada (CI)
+cd frontend && npm test -- --run
+
+# Con cobertura
+cd frontend && npm test -- --run --coverage
+```
+
+---
+
 *Este documento se actualizará al finalizar cada semana con las nuevas tecnologías y patrones incorporados.*
 
 | Semana | Añadido |
@@ -385,4 +494,4 @@ mvn spring-boot:run -Dspring.profiles.active=dev
 | S3 | React Router, Zustand, axios interceptors, react-i18next *(próximamente)* |
 | S4 | JdbcTemplate avanzado, paginación SQL, búsqueda dinámica *(próximamente)* |
 | S5 | Diseño de DTOs por sección, composición de vistas React *(próximamente)* |
-| S6 | Spring AOP, MDC/correlation-id, JUnit 5, Mockito, React Testing Library *(próximamente)* |
+| S6 | Spring AOP, MDC/correlation-id, JUnit 5 + Mockito (backend), Vitest + Testing Library (frontend) *(próximamente)* |

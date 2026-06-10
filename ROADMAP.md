@@ -163,11 +163,12 @@
 - [ ] Swagger completo y documentado
 - [ ] Pruebas unitarias de capa de servicios (JUnit 5 + Mockito) sobre la lógica clave
 - [ ] Prueba de repositorio/controlador (`@WebMvcTest` / MockMvc)
-- [ ] Prueba de componente frontend (React Testing Library)
+- [ ] Pruebas de componentes frontend con Vitest + `@testing-library/react`: `LoginForm`, `ExpedienteTable`, `ExpedienteDetalle`
+- [ ] Pruebas de hooks con `renderHook`: `useAuth` (login, logout, token expirado)
 - [ ] Repaso de autorización por rol
 - [ ] README de arranque verificado y demo del MVP de principio a fin
 
-**Aprende:** AOP/interceptores, pruebas con JUnit, Mockito y React Testing Library.
+**Aprende:** AOP/interceptores, pruebas backend (JUnit 5 + Mockito + `@WebMvcTest`), pruebas frontend (Vitest + `@testing-library/react` + `vi.mock`).
 
 **Hecho cuando:** Las acciones relevantes quedan auditadas, la suite de pruebas pasa y el MVP se puede demostrar de principio a fin.
 
@@ -175,7 +176,7 @@
 - Día 1 — auditoría transversal (AOP) registrando login y consultas en tabla `auditoria`
 - Día 2 — logging estructurado con correlation-id y manejo de errores homogéneo (`@ControllerAdvice`)
 - Día 3 — pruebas unitarias de la capa de servicios (JUnit + Mockito) sobre la lógica clave
-- Día 4 — prueba de repositorio/controlador, prueba de componente frontend y repaso de autorización por rol
+- Día 4 — prueba de repositorio/controlador (`@WebMvcTest`), pruebas de componentes y hooks frontend con Vitest + Testing Library, repaso de autorización por rol
 - Día 5 — README de arranque, repaso final y demo del MVP completa
 
 **🏁 Hito M6 — Resultado demostrable:** MVP cerrado: auditoría, pruebas, documentación y demo

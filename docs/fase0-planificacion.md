@@ -119,7 +119,7 @@
 
 ## Semana 6 — Transversales, pulido y demo
 
-**Aprende:** AOP/interceptores, pruebas (JUnit 5, Mockito, React Testing Library).
+**Aprende:** AOP/interceptores, pruebas backend (JUnit 5, Mockito, `@WebMvcTest`), pruebas frontend (Vitest, `@testing-library/react`, `vi.mock`).
 
 **Hecho cuando:** Las acciones relevantes quedan auditadas, la suite de pruebas pasa y el MVP se puede demostrar de principio a fin.
 

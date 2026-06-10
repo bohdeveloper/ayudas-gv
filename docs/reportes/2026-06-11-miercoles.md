@@ -33,3 +33,11 @@ Ninguno.
 
 ---
 *Hito del día: Estructura del proyecto y flujo de build comprendidos de punta a punta.*
+
+<!-- evidencias
+Árbol de carpetas del proyecto en el IDE con backend/ y frontend/ expandidos
+pom.xml abierto en el IDE mostrando el bloque de dependencias
+docker-compose.yml abierto mostrando los 3 servicios (postgres, backend, frontend)
+Docker Desktop con los 3 contenedores en estado Running
+-->
+

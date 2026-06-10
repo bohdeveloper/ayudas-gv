@@ -237,6 +237,7 @@ function buildHtml(weekLabel, days) {
   .drop-zone{border:2px dashed var(--border);border-radius:8px;padding:1rem;
              text-align:center;cursor:pointer;transition:border-color .2s,background .2s}
   .drop-zone.drag-over{border-color:var(--accent);background:rgba(56,189,248,.07)}
+  .drop-zone.active{border-color:var(--accent2);box-shadow:0 0 0 3px rgba(129,140,248,.2)}
   .drop-zone.has-image{display:none}
   .drop-hint{color:var(--muted);font-size:.82rem;pointer-events:none}
 
@@ -307,13 +308,54 @@ document.addEventListener('drop', e => {
   if (e.dataTransfer.files[0]) loadImage(e.dataTransfer.files[0], di, si);
 });
 
-// ── Click en drop zone → abrir picker ──────────────────────────────────────
+// ── Slot activo (recibe el Ctrl+V) ─────────────────────────────────────────
+let activeSlot = null;
+
+function setActiveZone(zone) {
+  document.querySelectorAll('.drop-zone.active').forEach(z => z.classList.remove('active'));
+  if (zone) { zone.classList.add('active'); activeSlot = zone.dataset.slot; }
+}
+
+// ── Click en drop zone → marcar activo + abrir picker ──────────────────────
 document.addEventListener('click', e => {
   const zone = e.target.closest('.drop-zone');
   if (zone) {
+    setActiveZone(zone);
     const [di, si] = zone.dataset.slot.split('-');
     document.getElementById('picker-' + di + '-' + si).click();
   }
+});
+
+// ── Ctrl+V / pegar desde portapapeles ──────────────────────────────────────
+document.addEventListener('paste', e => {
+  // No interferir si el foco está en un input de texto
+  if (e.target.matches('input[type=text], textarea')) return;
+
+  const items = e.clipboardData && e.clipboardData.items;
+  if (!items) return;
+  let imageItem = null;
+  for (const item of items) {
+    if (item.type.startsWith('image/')) { imageItem = item; break; }
+  }
+  if (!imageItem) return;
+  e.preventDefault();
+
+  // Slot destino: el activo, o el primer slot vacío
+  let target = activeSlot;
+  if (!target) {
+    const firstEmpty = document.querySelector('.drop-zone:not(.has-image)');
+    if (firstEmpty) target = firstEmpty.dataset.slot;
+  }
+  if (!target) return;
+
+  const [di, si] = target.split('-');
+  const file = imageItem.getAsFile();
+  if (file) loadImage(file, di, si);
+
+  // Avanzar al siguiente slot vacío automáticamente
+  const allZones = Array.from(document.querySelectorAll('.drop-zone:not(.has-image)'));
+  const next = allZones.find(z => z.dataset.slot !== target);
+  setActiveZone(next || null);
 });
 
 function handlePicker(input, di, si) {
@@ -362,7 +404,7 @@ function buildSlotHTML(di, si, label) {
       '<button class="btn-rm-slot" title="Eliminar slot" onclick="removeSlot(' + di + ',' + si + ')">×</button>' +
     '</div>' +
     '<div class="drop-zone" data-slot="' + di + '-' + si + '">' +
-      '<div class="drop-hint">Arrastra el pantallazo aquí o haz clic para seleccionar</div>' +
+      '<div class="drop-hint">Arrastra, haz clic o pega con Ctrl+V</div>' +
     '</div>' +
     '<input type="file" id="picker-' + di + '-' + si + '" accept="image/*" style="display:none"' +
            ' onchange="handlePicker(this,' + di + ',' + si + ')">' +
@@ -418,7 +460,7 @@ function buildSlot(di, si, label) {
         <button class="btn-rm-slot" title="Eliminar slot" onclick="removeSlot(${di},${si})">×</button>
       </div>
       <div class="drop-zone" data-slot="${di}-${si}">
-        <div class="drop-hint">Arrastra el pantallazo aquí o haz clic para seleccionar</div>
+        <div class="drop-hint">Arrastra, haz clic o pega con Ctrl+V</div>
       </div>
       <input type="file" id="picker-${di}-${si}" accept="image/*" style="display:none"
              onchange="handlePicker(this,${di},${si})">

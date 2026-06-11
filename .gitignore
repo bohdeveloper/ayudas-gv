@@ -55,3 +55,6 @@ htmlcov/
 # Documentos Word originales (no necesarios en el repo)
 *.docx
 *.doc
+
+# Graphify - grafo generado automáticamente
+graphify-out/

@@ -1,6 +1,7 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/ayudas_gv
+    # Puerto 5433: el contenedor Docker expone PostgreSQL en 5433 porque el 5432 lo ocupa el PostgreSQL local
+    url: jdbc:postgresql://localhost:5433/ayudas_gv
     username: ayudasgv
     password: ayudasgv
 

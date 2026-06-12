@@ -1,0 +1,611 @@
+﻿<!DOCTYPE html>
+<html lang="es"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Reporte semanal — Semana 15 de junio de 2026 – 19 de junio de 2026</title>
+<style>
+  :root {
+    --bg:#0f172a; --surface:#1e293b; --border:#334155;
+    --accent:#38bdf8; --accent2:#818cf8;
+    --text:#e2e8f0; --muted:#94a3b8;
+    --ok:#4ade80; --warn:#fbbf24; --danger:#f87171;
+    --r:12px;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;
+       font-size:15px;line-height:1.65;padding:2rem 1rem}
+  .container{max-width:920px;margin:0 auto}
+
+  /* ── Header ── */
+  header{display:flex;align-items:center;justify-content:space-between;
+         margin-bottom:2.5rem;flex-wrap:wrap;gap:1rem}
+  .header-left h1{font-size:1.65rem;color:var(--accent);font-weight:700}
+  .header-left p{color:var(--muted);font-size:.9rem;margin-top:.2rem}
+  .btn-save{background:var(--accent);color:#0f172a;border:none;border-radius:8px;
+            padding:.55rem 1.3rem;font-weight:700;font-size:.9rem;cursor:pointer;transition:opacity .2s}
+  .btn-save:hover{opacity:.85}
+
+  /* ── Day card ── */
+  .day-card{background:var(--surface);border:1px solid var(--border);
+            border-radius:var(--r);margin-bottom:2rem;overflow:hidden}
+  .day-header{display:flex;align-items:center;justify-content:space-between;
+              background:var(--border);padding:.75rem 1.25rem}
+  .day-name{font-weight:700;font-size:1.05rem;color:var(--accent2)}
+  .day-date{font-size:.82rem;color:var(--muted)}
+  .day-content{padding:1.25rem 1.5rem}
+
+  /* ── Markdown ── */
+  .day-content h2{font-size:.9rem;text-transform:uppercase;letter-spacing:.06em;
+                  color:var(--ok);margin:1.1rem 0 .4rem;border-bottom:1px solid var(--border);padding-bottom:.3rem}
+  .day-content h3{color:var(--warn);font-size:.9rem;margin:.9rem 0 .3rem}
+  .day-content ul{padding-left:1.5rem;margin:.3rem 0 .6rem}
+  .day-content li{margin:.2rem 0}
+  .day-content li.sub{list-style:circle;color:var(--muted);font-size:.88rem}
+  .day-content code{background:#0f2240;color:#7dd3fc;padding:.1em .4em;border-radius:4px;
+                    font-size:.85em;font-family:'Cascadia Code','Fira Code',monospace}
+  .day-content p{margin:.3rem 0}
+  .day-content p.hito{color:var(--accent);font-style:italic;
+                       border-left:3px solid var(--accent);padding-left:.75rem;margin-top:.8rem}
+
+  /* ── Evidence section ── */
+  .ev-section{border-top:1px solid var(--border);padding:1rem 1.5rem 1.25rem}
+  .ev-title{font-size:.82rem;font-weight:700;color:var(--muted);text-transform:uppercase;
+            letter-spacing:.06em;margin-bottom:.9rem}
+
+  /* ── Slot ── */
+  .ev-slot{border:1px solid var(--border);border-radius:10px;
+           padding:1rem;margin-bottom:.85rem;background:rgba(255,255,255,.02)}
+  .slot-header{display:flex;align-items:center;gap:.5rem;margin-bottom:.65rem}
+  .slot-label{flex:1;background:rgba(255,255,255,.05);border:1px solid var(--border);
+              border-radius:6px;padding:.4rem .7rem;color:var(--text);font-size:.88rem;font-weight:600}
+  .slot-label:focus{outline:none;border-color:var(--accent)}
+  .btn-rm-slot{background:none;border:1px solid var(--border);border-radius:6px;
+               color:var(--muted);width:28px;height:28px;cursor:pointer;font-size:15px;
+               display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .btn-rm-slot:hover{background:var(--danger);color:#fff;border-color:var(--danger)}
+
+  /* ── Drop zone ── */
+  .drop-zone{border:2px dashed var(--border);border-radius:8px;padding:1rem;
+             text-align:center;cursor:pointer;transition:border-color .2s,background .2s}
+  .drop-zone.drag-over{border-color:var(--accent);background:rgba(56,189,248,.07)}
+  .drop-zone.active{border-color:var(--accent2);box-shadow:0 0 0 3px rgba(129,140,248,.2)}
+  .drop-zone.has-image{display:none}
+  .drop-hint{color:var(--muted);font-size:.82rem;pointer-events:none}
+
+  /* ── Image preview ── */
+  .slot-image{display:none;position:relative;border-radius:8px;overflow:hidden;
+              border:1px solid var(--border)}
+  .slot-image.visible{display:block}
+  .slot-image img{width:100%;display:block;border-radius:8px 8px 0 0}
+  .img-desc{width:100%;background:rgba(0,0,0,.35);border:none;border-top:1px solid var(--border);
+            color:var(--muted);font-size:.82rem;padding:.4rem .7rem;font-family:inherit;resize:none}
+  .img-desc:focus{outline:none;color:var(--text)}
+  .btn-rm-img{position:absolute;top:6px;right:6px;background:rgba(0,0,0,.65);color:#fff;
+              border:none;border-radius:50%;width:26px;height:26px;cursor:pointer;font-size:14px;
+              display:flex;align-items:center;justify-content:center}
+  .btn-rm-img:hover{background:var(--danger)}
+
+  /* ── Add slot button ── */
+  .btn-add-slot{background:none;border:1px dashed var(--border);border-radius:8px;
+                color:var(--muted);padding:.45rem 1rem;font-size:.83rem;cursor:pointer;
+                transition:border-color .2s,color .2s;margin-top:.15rem}
+  .btn-add-slot:hover{border-color:var(--accent2);color:var(--accent2)}
+
+  /* ── Toast ── */
+  #toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--ok);color:#0f172a;
+         padding:.6rem 1.2rem;border-radius:8px;font-weight:700;font-size:.9rem;
+         opacity:0;transition:opacity .3s;pointer-events:none}
+  #toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="header-left">
+      <h1>Reporte semanal</h1>
+      <p>Semana 15 de junio de 2026 – 19 de junio de 2026 &nbsp;·&nbsp; Semana 2 — Autenticación backend (JWT)</p>
+    </div>
+    <button class="btn-save" onclick="guardarHtml()">💾 Guardar HTML</button>
+  </header>
+
+  <!-- ═══ DÍA 0 — LUNES ═══ -->
+  <section class="day-card" id="day-0">
+    <div class="day-header">
+      <span class="day-name">Lunes</span>
+      <span class="day-date">2026-06-15</span>
+    </div>
+    <div class="day-content">
+      <h2>✅ Completado</h2>
+      <h3>Creación de rama y exploración de Spring Security</h3>
+      <ul>
+        <li>Creada rama <code>feat/semana2-auth</code> a partir de <code>main</code></li>
+        <li>Estudiado el concepto de cadena de filtros de Spring Security: cada petición HTTP pasa por una serie de <code>Filter</code> antes de llegar al controlador</li>
+        <li>Revisada <code>SecurityConfig.java</code> de semana 1: <code>@Bean SecurityFilterChain</code> con <code>requestMatchers</code> y <code>.anyRequest().authenticated()</code></li>
+      </ul>
+      <h3>Implementación de <code>UsuarioRepository</code></h3>
+      <ul>
+        <li>Creado <code>auth/model/Usuario.java</code> como <code>record</code> Java inmutable (id, username, passwordHash, nombre, apellidos, email, idiomaPreferido, activo, roles)</li>
+        <li>Implementado <code>UsuarioRepository</code> con <code>NamedParameterJdbcTemplate</code> — parámetros nombrados <code>:username</code> en lugar de <code>?</code></li>
+        <li>SQL JOIN en una sola consulta: <code>usuario → usuario_rol → rol</code> — carga usuario + todos sus roles sin N+1</li>
+        <li class="sub">El JOIN devuelve una fila por rol; si el usuario tiene 2 roles, llegan 2 filas con los mismos datos de usuario</li>
+        <li>Patrón de agrupación con <code>Map&lt;Long, UsuarioBuilder&gt;</code> para deduplicar las filas y acumular roles</li>
+        <li><code>record UsuarioBuilder</code> privado — detalle de implementación interno al repositorio</li>
+        <li><code>Optional&lt;Usuario&gt;</code> como retorno: vacío si el usuario no existe o <code>activo = false</code></li>
+        <li>Probado con DBeaver: el SQL devuelve las filas correctas para <code>admin</code></li>
+      </ul>
+      <h2>🔜 Pendiente</h2>
+      <ul>
+        <li>Configurar <code>SecurityFilterChain</code> stateless con rutas públicas y privadas</li>
+        <li>Registrar <code>BCryptPasswordEncoder</code> como bean</li>
+      </ul>
+      <h2>🚧 Bloqueos</h2>
+      <p>Ninguno.</p>
+      <p class="hito"><em>Hito del día: <code>UsuarioRepository</code> implementado — carga usuario + roles con un JOIN en SQL directo.</em></p>
+    </div>
+    <div class="ev-section">
+      <div class="ev-title">📸 Evidencias</div>
+      <div class="slots-list" id="slots-0">
+        <div class="ev-slot" id="slot-0-0">
+          <div class="slot-header">
+            <input class="slot-label" type="text" value="UsuarioRepository.java — SQL JOIN y patrón Map de agrupación de roles">
+            <button class="btn-rm-slot" onclick="removeSlot(0,0)" title="Eliminar">✕</button>
+          </div>
+          <div class="drop-zone" id="dz-0-0" onclick="document.getElementById('fi-0-0').click()">
+            <p class="drop-hint">Arrastra una imagen aquí o haz clic para seleccionar</p>
+          </div>
+          <input type="file" accept="image/*" style="display:none" id="fi-0-0">
+          <div class="slot-image" id="si-0-0">
+            <img id="img-0-0" src="" alt="">
+            <button class="btn-rm-img" onclick="removeImage(0,0)" title="Eliminar imagen">✕</button>
+            <textarea class="img-desc" rows="2" placeholder="Descripción de la imagen…"></textarea>
+          </div>
+        </div>
+        <div class="ev-slot" id="slot-0-1">
+          <div class="slot-header">
+            <input class="slot-label" type="text" value="DBeaver — SQL ejecutado manualmente mostrando filas del usuario admin con sus roles">
+            <button class="btn-rm-slot" onclick="removeSlot(0,1)" title="Eliminar">✕</button>
+          </div>
+          <div class="drop-zone" id="dz-0-1" onclick="document.getElementById('fi-0-1').click()">
+            <p class="drop-hint">Arrastra una imagen aquí o haz clic para seleccionar</p>
+          </div>
+          <input type="file" accept="image/*" style="display:none" id="fi-0-1">
+          <div class="slot-image" id="si-0-1">
+            <img id="img-0-1" src="" alt="">
+            <button class="btn-rm-img" onclick="removeImage(0,1)" title="Eliminar imagen">✕</button>
+            <textarea class="img-desc" rows="2" placeholder="Descripción de la imagen…"></textarea>
+          </div>
+        </div>
+      </div>
+      <button class="btn-add-slot" onclick="addSlot(0)">＋ Añadir pantallazo</button>
+    </div>
+  </section>
+
+  <!-- ═══ DÍA 1 — MARTES ═══ -->
+  <section class="day-card" id="day-1">
+    <div class="day-header">
+      <span class="day-name">Martes</span>
+      <span class="day-date">2026-06-16</span>
+    </div>
+    <div class="day-content">
+      <h2>✅ Completado</h2>
+      <h3>Spring Security: cadena de filtros stateless</h3>
+      <ul>
+        <li><code>SecurityConfig.java</code> reescrito con <code>SecurityFilterChain</code> para JWT</li>
+        <li class="sub"><code>csrf(AbstractHttpConfigurer::disable)</code> — sin cookies de sesión, CSRF no aplica</li>
+        <li class="sub"><code>sessionManagement(STATELESS)</code> — Spring no crea ni usa <code>HttpSession</code>; el estado vive en el JWT</li>
+        <li class="sub"><code>authorizeHttpRequests</code>: rutas públicas con <code>permitAll()</code>, el resto con <code>authenticated()</code></li>
+        <li class="sub"><code>exceptionHandling.authenticationEntryPoint</code>: devuelve 401 (no 403) en peticiones sin autenticar</li>
+        <li>Estudiada la diferencia entre 401 (no autenticado) y 403 (sin permisos): Spring Security 6 devuelve 403 por defecto para peticiones anónimas; el <code>authenticationEntryPoint</code> corrige esto</li>
+      </ul>
+      <h3>BCrypt y verificación de contraseñas</h3>
+      <ul>
+        <li><code>@Bean PasswordEncoder</code> registrado como <code>BCryptPasswordEncoder(10)</code> — strength 10 = <code>2^10</code> iteraciones</li>
+        <li>BCrypt incluye el salt en el propio hash: el mismo texto plano genera hashes distintos cada vez</li>
+        <li><code>passwordEncoder.matches(plainText, hash)</code> extrae el salt del hash y verifica — nunca expone la contraseña</li>
+        <li><code>AuthService</code> parcialmente implementado: usa <code>matches()</code> para validar credenciales</li>
+      </ul>
+      <h2>🔜 Pendiente</h2>
+      <ul>
+        <li>Implementar <code>JwtProvider</code> (generación y validación del token)</li>
+        <li>Completar <code>AuthService.login()</code> y <code>AuthController</code></li>
+      </ul>
+      <h2>🚧 Bloqueos</h2>
+      <p>Ninguno.</p>
+      <p class="hito"><em>Hito del día: Spring Security stateless configurado y BCrypt comprendido — base de la autenticación sin sesiones.</em></p>
+    </div>
+    <div class="ev-section">
+      <div class="ev-title">📸 Evidencias</div>
+      <div class="slots-list" id="slots-1">
+        <div class="ev-slot" id="slot-1-0">
+          <div class="slot-header">
+            <input class="slot-label" type="text" value="SecurityConfig.java — cadena de filtros con STATELESS y exceptionHandling">
+            <button class="btn-rm-slot" onclick="removeSlot(1,0)" title="Eliminar">✕</button>
+          </div>
+          <div class="drop-zone" id="dz-1-0" onclick="document.getElementById('fi-1-0').click()">
+            <p class="drop-hint">Arrastra una imagen aquí o haz clic para seleccionar</p>
+          </div>
+          <input type="file" accept="image/*" style="display:none" id="fi-1-0">
+          <div class="slot-image" id="si-1-0">
+            <img id="img-1-0" src="" alt="">
+            <button class="btn-rm-img" onclick="removeImage(1,0)" title="Eliminar imagen">✕</button>
+            <textarea class="img-desc" rows="2" placeholder="Descripción de la imagen…"></textarea>
+          </div>
+        </div>
+        <div class="ev-slot" id="slot-1-1">
+          <div class="slot-header">
+            <input class="slot-label" type="text" value="Terminal — prueba de BCryptPasswordEncoder: encode() y matches()">
+            <button class="btn-rm-slot" onclick="removeSlot(1,1)" title="Eliminar">✕</button>
+          </div>
+          <div class="drop-zone" id="dz-1-1" onclick="document.getElementById('fi-1-1').click()">
+            <p class="drop-hint">Arrastra una imagen aquí o haz clic para seleccionar</p>
+          </div>
+          <input type="file" accept="image/*" style="display:none" id="fi-1-1">
+          <div class="slot-image" id="si-1-1">
+            <img id="img-1-1" src="" alt="">
+            <button class="btn-rm-img" onclick="removeImage(1,1)" title="Eliminar imagen">✕</button>
+            <textarea class="img-desc" rows="2" placeholder="Descripción de la imagen…"></textarea>
+          </div>
+        </div>
+      </div>
+      <button class="btn-add-slot" onclick="addSlot(1)">＋ Añadir pantallazo</button>
+    </div>
+  </section>
+
+  <!-- ═══ DÍA 2 — MIÉRCOLES ═══ -->
+  <section class="day-card" id="day-2">
+    <div class="day-header">
+      <span class="day-name">Miércoles</span>
+      <span class="day-date">2026-06-17</span>
+    </div>
+    <div class="day-content">
+      <h2>✅ Completado</h2>
+      <h3>Implementación de <code>JwtProvider</code></h3>
+      <ul>
+        <li><code>JwtProvider.java</code> con librería <code>jjwt</code> 0.12.5 (<code>io.jsonwebtoken</code>)</li>
+        <li>Algoritmo HS384 (HMAC-SHA384): firma simétrica, la misma clave secreta firma y verifica</li>
+        <li class="sub">HS384 vs HS256: mayor seguridad sin necesidad de clave asimétrica; RS256 si hubiera verificación externa</li>
+        <li>Clave criptográfica desde <code>app.jwt.secret</code> con <code>Keys.hmacShaKeyFor()</code> — valida mínimo 256 bits</li>
+        <li>Claims del token: <code>subject</code> (username), <code>roles</code> (lista), <code>idioma</code>, <code>iat</code> (emisión), <code>exp</code> (caducidad)</li>
+        <li><code>isTokenValid()</code>: captura <code>JwtException</code> e <code>IllegalArgumentException</code> → devuelve <code>false</code> (no propaga)</li>
+        <li><code>parseClaims()</code>: llama a <code>verifyWith(secretKey)</code> antes de leer el payload — la firma siempre se verifica</li>
+      </ul>
+      <h3>Endpoint de login (<code>POST /api/v1/auth/login</code>)</h3>
+      <ul>
+        <li>DTOs: <code>LoginRequest</code> record con <code>@NotBlank</code>, <code>LoginResponse</code> record (token, username, nombreCompleto, roles, idioma)</li>
+        <li><code>AuthService.login()</code>: busca usuario → verifica BCrypt → genera JWT → devuelve <code>LoginResponse</code></li>
+        <li>Principio de seguridad: mismo error <code>"Credenciales incorrectas"</code> si el usuario no existe o si la contraseña es incorrecta — evita <em>user enumeration</em></li>
+        <li><code>AuthController</code>: <code>@PostMapping("/login")</code>, <code>@Valid @RequestBody</code>, anotaciones <code>@Operation</code> + <code>@ApiResponse</code></li>
+        <li>Probado desde Swagger UI: <code>POST /api/v1/auth/login</code> con credenciales válidas → 200 con JWT</li>
+      </ul>
+      <h2>🔜 Pendiente</h2>
+      <ul>
+        <li>Implementar <code>JwtAuthenticationFilter</code></li>
+        <li>Crear endpoint protegido de prueba</li>
+      </ul>
+      <h2>🚧 Bloqueos</h2>
+      <p>Ninguno.</p>
+      <p class="hito"><em>Hito del día: Login funcional — <code>POST /api/v1/auth/login</code> devuelve un JWT firmado con credenciales válidas.</em></p>
+    </div>
+    <div class="ev-section">
+      <div class="ev-title">📸 Evidencias</div>
+      <div class="slots-list" id="slots-2">
+        <div class="ev-slot" id="slot-2-0">
+          <div class="slot-header">
+            <input class="slot-label" type="text" value="Swagger UI — POST /api/v1/auth/login con respuesta 200 y el token JWT">
+            <button class="btn-rm-slot" onclick="removeSlot(2,0)" title="Eliminar">✕</button>
+          </div>
+          <div class="drop-zone" id="dz-2-0" onclick="document.getElementById('fi-2-0').click()">
+            <p class="drop-hint">Arrastra una imagen aquí o haz clic para seleccionar</p>
+          </div>
+          <input type="file" accept="image/*" style="display:none" id="fi-2-0">
+          <div class="slot-image" id="si-2-0">
+            <img id="img-2-0" src="" alt="">
+            <button class="btn-rm-img" onclick="removeImage(2,0)" title="Eliminar imagen">✕</button>
+            <textarea class="img-desc" rows="2" placeholder="Descripción de la imagen…"></textarea>
+          </div>
+        </div>
+        <div class="ev-slot" id="slot-2-1">
+          <div class="slot-header">
+            <input class="slot-label" type="text" value="JwtProvider.java — método generateToken() con los claims del token">
+            <button class="btn-rm-slot" onclick="removeSlot(2,1)" title="Eliminar">✕</button>
+          </div>
+          <div class="drop-zone" id="dz-2-1" onclick="document.getElementById('fi-2-1').click()">
+            <p class="drop-hint">Arrastra una imagen aquí o haz clic para seleccionar</p>
+          </div>
+          <input type="file" accept="image/*" style="display:none" id="fi-2-1">
+          <div class="slot-image" id="si-2-1">
+            <img id="img-2-1" src="" alt="">
+            <button class="btn-rm-img" onclick="removeImage(2,1)" title="Eliminar imagen">✕</button>
+            <textarea class="img-desc" rows="2" placeholder="Descripción de la imagen…"></textarea>
+          </div>
+        </div>
+      </div>
+      <button class="btn-add-slot" onclick="addSlot(2)">＋ Añadir pantallazo</button>
+    </div>
+  </section>
+
+  <!-- ═══ DÍA 3 — JUEVES ═══ -->
+  <section class="day-card" id="day-3">
+    <div class="day-header">
+      <span class="day-name">Jueves</span>
+      <span class="day-date">2026-06-18</span>
+    </div>
+    <div class="day-content">
+      <h2>✅ Completado</h2>
+      <h3>Implementación de <code>JwtAuthenticationFilter</code></h3>
+      <ul>
+        <li><code>JwtAuthenticationFilter.java</code> extiende <code>OncePerRequestFilter</code> — una sola ejecución por petición</li>
+        <li>Flujo del filtro:</li>
+        <li class="sub">Lee <code>Authorization: Bearer &lt;token&gt;</code> de la cabecera HTTP</li>
+        <li class="sub">Sin token o prefijo incorrecto → continúa sin autenticar (Spring Security denegará el acceso si la ruta es protegida)</li>
+        <li class="sub">Llama a <code>jwtProvider.isTokenValid(token)</code> — verifica firma y expiración</li>
+        <li class="sub">Si válido: extrae username y roles, construye <code>UsernamePasswordAuthenticationToken</code> (3 argumentos = autenticación completa)</li>
+        <li class="sub">Guarda el <code>Authentication</code> en <code>SecurityContextHolder</code> — ThreadLocal, seguro en multihilo</li>
+        <li>Roles → <code>SimpleGrantedAuthority("ROLE_" + rol)</code> (convenio de Spring Security para <code>hasRole()</code>)</li>
+        <li>Registrado con <code>addFilterBefore(..., UsernamePasswordAuthenticationFilter.class)</code></li>
+      </ul>
+      <h3>Endpoint protegido de prueba</h3>
+      <ul>
+        <li><code>PruebaController.java</code>: <code>GET /api/v1/prueba/protegido</code> devuelve 200 con el username del usuario autenticado</li>
+        <li>Ruta no incluida en las rutas públicas → protegida por <code>anyRequest().authenticated()</code></li>
+      </ul>
+      <h2>🏁 Hito M2 alcanzado</h2>
+      <ul>
+        <li>Sin token: <code>GET /api/v1/prueba/protegido</code> → <strong>401 Unauthorized</strong> ✅</li>
+        <li>Con token válido: <code>GET /api/v1/prueba/protegido</code> → <strong>200 OK</strong> ✅</li>
+      </ul>
+      <h2>🔜 Pendiente</h2>
+      <ul>
+        <li>Documentar en Swagger con esquema Bearer</li>
+        <li>Demo de extremo a extremo desde Swagger UI</li>
+      </ul>
+      <h2>🚧 Bloqueos</h2>
+      <p>Ninguno.</p>
+      <p class="hito"><em>Hito del día: <strong>M2 alcanzado</strong> — 401 sin token, 200 con token válido. El filtro JWT protege los endpoints.</em></p>
+    </div>
+    <div class="ev-section">
+      <div class="ev-title">📸 Evidencias</div>
+      <div class="slots-list" id="slots-3">
+        <div class="ev-slot" id="slot-3-0">
+          <div class="slot-header">
+            <input class="slot-label" type="text" value="Swagger UI — GET /api/v1/prueba/protegido devuelve 401 sin Authorization">
+            <button class="btn-rm-slot" onclick="removeSlot(3,0)" title="Eliminar">✕</button>
+          </div>
+          <div class="drop-zone" id="dz-3-0" onclick="document.getElementById('fi-3-0').click()">
+            <p class="drop-hint">Arrastra una imagen aquí o haz clic para seleccionar</p>
+          </div>
+          <input type="file" accept="image/*" style="display:none" id="fi-3-0">
+          <div class="slot-image" id="si-3-0">
+            <img id="img-3-0" src="" alt="">
+            <button class="btn-rm-img" onclick="removeImage(3,0)" title="Eliminar imagen">✕</button>
+            <textarea class="img-desc" rows="2" placeholder="Descripción de la imagen…"></textarea>
+          </div>
+        </div>
+        <div class="ev-slot" id="slot-3-1">
+          <div class="slot-header">
+            <input class="slot-label" type="text" value="Swagger UI — GET /api/v1/prueba/protegido devuelve 200 con Bearer token">
+            <button class="btn-rm-slot" onclick="removeSlot(3,1)" title="Eliminar">✕</button>
+          </div>
+          <div class="drop-zone" id="dz-3-1" onclick="document.getElementById('fi-3-1').click()">
+            <p class="drop-hint">Arrastra una imagen aquí o haz clic para seleccionar</p>
+          </div>
+          <input type="file" accept="image/*" style="display:none" id="fi-3-1">
+          <div class="slot-image" id="si-3-1">
+            <img id="img-3-1" src="" alt="">
+            <button class="btn-rm-img" onclick="removeImage(3,1)" title="Eliminar imagen">✕</button>
+            <textarea class="img-desc" rows="2" placeholder="Descripción de la imagen…"></textarea>
+          </div>
+        </div>
+        <div class="ev-slot" id="slot-3-2">
+          <div class="slot-header">
+            <input class="slot-label" type="text" value="JwtAuthenticationFilter.java — flujo de validación del token">
+            <button class="btn-rm-slot" onclick="removeSlot(3,2)" title="Eliminar">✕</button>
+          </div>
+          <div class="drop-zone" id="dz-3-2" onclick="document.getElementById('fi-3-2').click()">
+            <p class="drop-hint">Arrastra una imagen aquí o haz clic para seleccionar</p>
+          </div>
+          <input type="file" accept="image/*" style="display:none" id="fi-3-2">
+          <div class="slot-image" id="si-3-2">
+            <img id="img-3-2" src="" alt="">
+            <button class="btn-rm-img" onclick="removeImage(3,2)" title="Eliminar imagen">✕</button>
+            <textarea class="img-desc" rows="2" placeholder="Descripción de la imagen…"></textarea>
+          </div>
+        </div>
+      </div>
+      <button class="btn-add-slot" onclick="addSlot(3)">＋ Añadir pantallazo</button>
+    </div>
+  </section>
+
+  <!-- ═══ DÍA 4 — VIERNES ═══ -->
+  <section class="day-card" id="day-4">
+    <div class="day-header">
+      <span class="day-name">Viernes</span>
+      <span class="day-date">2026-06-19</span>
+    </div>
+    <div class="day-content">
+      <h2>✅ Completado</h2>
+      <h3>Documentación Swagger con esquema Bearer</h3>
+      <ul>
+        <li><code>OpenApiConfig.java</code>: añadido <code>@SecurityScheme</code> con tipo HTTP, esquema <code>bearer</code>, <code>bearerFormat = "JWT"</code></li>
+        <li><code>SecurityRequirement</code> añadido en <code>AuthController</code> y <code>PruebaController</code></li>
+        <li>Swagger UI muestra el botón <code>Authorize 🔒</code> para introducir el token Bearer globalmente</li>
+        <li>Flujo completo verificado:
+          <ol style="margin:.3rem 0 .3rem 1.5rem">
+            <li><code>POST /api/v1/auth/login</code> → copiar token de la respuesta</li>
+            <li>Clic en <code>Authorize 🔒</code> → pegar el token → <code>Authorize</code></li>
+            <li><code>GET /api/v1/prueba/protegido</code> → 200 OK ✅</li>
+          </ol>
+        </li>
+      </ul>
+      <h3><code>V1__security_catalogs.sql</code> actualizado</h3>
+      <ul>
+        <li>Columna <code>activo BOOLEAN NOT NULL DEFAULT true</code> añadida a la tabla <code>usuario</code></li>
+        <li>Contraseñas de los datos semilla hasheadas con BCrypt (eliminados textos planos)</li>
+        <li>Flyway aplica la migración correctamente con <code>docker-compose up</code></li>
+      </ul>
+      <h3>Demo semanal y cierre de Semana 2</h3>
+      <ul>
+        <li>Reporte HTML de la semana generado en <code>docs/reportes/semanas/semana-2026-06-15.html</code></li>
+        <li>ROADMAP actualizado: <code>feat/semana2-auth</code> marcada como ✅ Completada — Hito M2 el 2026-06-12</li>
+      </ul>
+      <h2>🔜 Pendiente (Semana 3)</h2>
+      <ul>
+        <li>Crear rama <code>feat/semana3-login-frontend</code></li>
+        <li>Pantalla de login en React conectada al backend</li>
+        <li>Rutas protegidas con React Router e interceptor axios con Bearer token</li>
+        <li>i18n con react-i18next: ficheros <code>es.json</code>/<code>eu.json</code> para los textos de la UI</li>
+        <li>Selector de idioma con persistencia en <code>localStorage</code></li>
+      </ul>
+      <h2>🚧 Bloqueos</h2>
+      <p>Ninguno.</p>
+      <p class="hito"><em>Hito del día: <strong>Semana 2 cerrada</strong> — módulo de autenticación completo, documentado y demostrado. Listo para Semana 3 (login en frontend).</em></p>
+    </div>
+    <div class="ev-section">
+      <div class="ev-title">📸 Evidencias</div>
+      <div class="slots-list" id="slots-4">
+        <div class="ev-slot" id="slot-4-0">
+          <div class="slot-header">
+            <input class="slot-label" type="text" value="Swagger UI — diálogo Authorize con Bearer token relleno">
+            <button class="btn-rm-slot" onclick="removeSlot(4,0)" title="Eliminar">✕</button>
+          </div>
+          <div class="drop-zone" id="dz-4-0" onclick="document.getElementById('fi-4-0').click()">
+            <p class="drop-hint">Arrastra una imagen aquí o haz clic para seleccionar</p>
+          </div>
+          <input type="file" accept="image/*" style="display:none" id="fi-4-0">
+          <div class="slot-image" id="si-4-0">
+            <img id="img-4-0" src="" alt="">
+            <button class="btn-rm-img" onclick="removeImage(4,0)" title="Eliminar imagen">✕</button>
+            <textarea class="img-desc" rows="2" placeholder="Descripción de la imagen…"></textarea>
+          </div>
+        </div>
+        <div class="ev-slot" id="slot-4-1">
+          <div class="slot-header">
+            <input class="slot-label" type="text" value="Swagger UI — flujo completo: POST /login → Authorize → GET /protegido → 200 OK">
+            <button class="btn-rm-slot" onclick="removeSlot(4,1)" title="Eliminar">✕</button>
+          </div>
+          <div class="drop-zone" id="dz-4-1" onclick="document.getElementById('fi-4-1').click()">
+            <p class="drop-hint">Arrastra una imagen aquí o haz clic para seleccionar</p>
+          </div>
+          <input type="file" accept="image/*" style="display:none" id="fi-4-1">
+          <div class="slot-image" id="si-4-1">
+            <img id="img-4-1" src="" alt="">
+            <button class="btn-rm-img" onclick="removeImage(4,1)" title="Eliminar imagen">✕</button>
+            <textarea class="img-desc" rows="2" placeholder="Descripción de la imagen…"></textarea>
+          </div>
+        </div>
+        <div class="ev-slot" id="slot-4-2">
+          <div class="slot-header">
+            <input class="slot-label" type="text" value="ROADMAP.md — semana 2 marcada como completada, Hito M2 alcanzado">
+            <button class="btn-rm-slot" onclick="removeSlot(4,2)" title="Eliminar">✕</button>
+          </div>
+          <div class="drop-zone" id="dz-4-2" onclick="document.getElementById('fi-4-2').click()">
+            <p class="drop-hint">Arrastra una imagen aquí o haz clic para seleccionar</p>
+          </div>
+          <input type="file" accept="image/*" style="display:none" id="fi-4-2">
+          <div class="slot-image" id="si-4-2">
+            <img id="img-4-2" src="" alt="">
+            <button class="btn-rm-img" onclick="removeImage(4,2)" title="Eliminar imagen">✕</button>
+            <textarea class="img-desc" rows="2" placeholder="Descripción de la imagen…"></textarea>
+          </div>
+        </div>
+      </div>
+      <button class="btn-add-slot" onclick="addSlot(4)">＋ Añadir pantallazo</button>
+    </div>
+  </section>
+
+</div>
+<div id="toast">✅ HTML guardado</div>
+
+<script>
+/* ── Slot management ── */
+function makeSlotHtml(d, s) {
+  return `<div class="ev-slot" id="slot-${d}-${s}">
+    <div class="slot-header">
+      <input class="slot-label" type="text" placeholder="Descripción del pantallazo…">
+      <button class="btn-rm-slot" onclick="removeSlot(${d},${s})" title="Eliminar">✕</button>
+    </div>
+    <div class="drop-zone" id="dz-${d}-${s}" onclick="document.getElementById('fi-${d}-${s}').click()">
+      <p class="drop-hint">Arrastra una imagen aquí o haz clic para seleccionar</p>
+    </div>
+    <input type="file" accept="image/*" style="display:none" id="fi-${d}-${s}">
+    <div class="slot-image" id="si-${d}-${s}">
+      <img id="img-${d}-${s}" src="" alt="">
+      <button class="btn-rm-img" onclick="removeImage(${d},${s})" title="Eliminar imagen">✕</button>
+      <textarea class="img-desc" rows="2" placeholder="Descripción de la imagen…"></textarea>
+    </div>
+  </div>`;
+}
+
+function addSlot(d) {
+  const list = document.getElementById(`slots-${d}`);
+  const s = list.children.length;
+  list.insertAdjacentHTML('beforeend', makeSlotHtml(d, s));
+  initSlot(d, s);
+}
+
+function removeSlot(d, s) {
+  document.getElementById(`slot-${d}-${s}`)?.remove();
+}
+
+/* ── Image upload ── */
+function initSlot(d, s) {
+  const dz = document.getElementById(`dz-${d}-${s}`);
+  const fi = document.getElementById(`fi-${d}-${s}`);
+  if (!dz || !fi) return;
+  dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('drag-over'); });
+  dz.addEventListener('dragleave', () => dz.classList.remove('drag-over'));
+  dz.addEventListener('drop', e => {
+    e.preventDefault();
+    dz.classList.remove('drag-over');
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) loadImg(file, d, s);
+  });
+  fi.addEventListener('change', e => {
+    if (e.target.files[0]) loadImg(e.target.files[0], d, s);
+  });
+}
+
+function loadImg(file, d, s) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById(`img-${d}-${s}`).src = e.target.result;
+    document.getElementById(`si-${d}-${s}`).classList.add('visible');
+    const dz = document.getElementById(`dz-${d}-${s}`);
+    dz.classList.add('has-image', 'active');
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeImage(d, s) {
+  const img = document.getElementById(`img-${d}-${s}`);
+  const si  = document.getElementById(`si-${d}-${s}`);
+  const dz  = document.getElementById(`dz-${d}-${s}`);
+  if (img) img.src = '';
+  if (si)  si.classList.remove('visible');
+  if (dz)  dz.classList.remove('has-image', 'active');
+}
+
+/* ── Save HTML ── */
+function guardarHtml() {
+  const blob = new Blob(['<!DOCTYPE html>' + document.documentElement.outerHTML],
+                        { type: 'text/html;charset=utf-8' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'semana-2026-06-15.html';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(a.href);
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+/* ── Init existing slots on load ── */
+document.querySelectorAll('.ev-slot').forEach(slot => {
+  const parts = slot.id.split('-');
+  if (parts.length === 3) initSlot(parseInt(parts[1]), parseInt(parts[2]));
+});
+</script>
+</body>
+</html>

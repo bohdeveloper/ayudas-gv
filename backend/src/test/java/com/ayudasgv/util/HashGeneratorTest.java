@@ -12,7 +12,7 @@ class HashGeneratorTest {
     @Test
     void verificarYGenerarHash() {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(10);
-        String storedHash = "$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBaIW0B9hd2LTa";
+        String storedHash = "$2a$10$5QScUkS.9ejdgv1VHB12g.Mx47R09oTvZY7Ke51WPp6wc48ie8K6i";
         String password = "admin123";
 
         boolean matches = encoder.matches(password, storedHash);

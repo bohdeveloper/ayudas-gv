@@ -104,7 +104,6 @@ public class JwtProvider {
      * @param token JWT en formato compacto
      * @return lista de códigos de rol (puede estar vacía pero no null)
      */
-    @SuppressWarnings("unchecked")
     public List<String> getRolesFromToken(String token) {
         Object roles = parseClaims(token).get(CLAIM_ROLES);
         if (roles instanceof List<?> list) {

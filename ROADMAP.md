@@ -7,7 +7,7 @@
 | Rama | Semana | Estado | Merge a main |
 |------|--------|--------|--------------|
 | `main` | Setup (S1) | ✅ Mergeada — Hito M1 el 2026-06-09 | — |
-| `feat/semana2-auth` | S2 — Auth backend | ⏳ Pendiente | — |
+| `feat/semana2-auth` | S2 — Auth backend | ✅ Completada — Hito M2 el 2026-06-12 | — |
 | `feat/semana3-login-frontend` | S3 — Login UI | ⏳ Pendiente | — |
 | `feat/semana4-busqueda` | S4 — Búsqueda | ⏳ Pendiente | — |
 | `feat/semana5-detalle-secciones` | S5 — Detalle | ⏳ Pendiente | — |
@@ -52,16 +52,16 @@
 
 ---
 
-### Semana 2 — Autenticación (backend)
-> Rama: `feat/semana2-auth`
+### Semana 2 — Autenticación (backend) ✅ COMPLETADA
+> Rama: `feat/semana2-auth` | Hito M2 alcanzado: 2026-06-12
 
 **Tareas:**
-- [ ] Spring Security configurado (cadena de filtros, rutas públicas y protegidas)
-- [ ] Repositorio de usuario con SQL — `JdbcTemplate`, consulta por username + roles
-- [ ] `POST /api/v1/auth/login` → valida credenciales con BCrypt y emite JWT firmado
-- [ ] Filtro de validación del token en cada petición protegida (`OncePerRequestFilter`)
-- [ ] Endpoint protegido de prueba (200 con token válido, 401 sin él)
-- [ ] Login y endpoint protegido documentados en Swagger con esquema Bearer
+- [x] Spring Security configurado (cadena de filtros, rutas públicas y protegidas)
+- [x] Repositorio de usuario con SQL — `NamedParameterJdbcTemplate`, consulta por username + roles con JOIN
+- [x] `POST /api/v1/auth/login` → valida credenciales con BCrypt y emite JWT firmado (HS384)
+- [x] Filtro de validación del token en cada petición protegida (`OncePerRequestFilter`)
+- [x] Endpoint protegido de prueba (200 con token válido, 401 sin él)
+- [x] Login y endpoint protegido documentados en Swagger con esquema Bearer
 
 **Aprende:** Spring Security (cadena de filtros), JWT, hashing de contraseñas con BCrypt.
 

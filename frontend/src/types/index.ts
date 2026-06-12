@@ -1,4 +1,14 @@
-// Tipos TypeScript compartidos para la aplicación
+/**
+ * Tipos TypeScript compartidos para toda la aplicación frontend.
+ *
+ * Centralizar los tipos aquí garantiza que el frontend y el backend hablen
+ * el mismo "lenguaje de datos": si un DTO del backend cambia, solo hay que
+ * actualizar este fichero y TypeScript marcará todos los usos incorrectos.
+ *
+ * Convención: los tipos union de string (ej. TipoAyuda) reflejan exactamente
+ * los códigos que devuelve el backend; los interfaces con campos opcionales (?)
+ * indican datos que pueden no existir en BD (nullable en SQL).
+ */
 
 export type Idioma = 'es' | 'eu'
 

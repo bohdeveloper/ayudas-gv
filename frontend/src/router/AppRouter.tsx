@@ -1,3 +1,19 @@
+/**
+ * Enrutador principal de la aplicación React.
+ *
+ * Usa React Router v6 (BrowserRouter ya configurado en main.tsx) para mapear
+ * URLs del navegador a componentes de página. Aquí se define la estructura de
+ * navegación completa de la SPA (Single Page Application).
+ *
+ * Estado actual (esqueleto Semana 1):
+ *   - Solo existe la redirección raíz y un catch-all de "en construcción".
+ *   - Las páginas reales se añadirán en Semanas 3–5.
+ *
+ * Semana 3 añadirá:
+ *   - Ruta pública /login (pantalla de inicio de sesión).
+ *   - Componente ProtectedRoute que redirige a /login si no hay token JWT.
+ *   - Rutas privadas /expedientes y /expedientes/:id.
+ */
 import { Routes, Route, Navigate } from 'react-router-dom'
 
 // Páginas — se implementan en Semanas 3–5 de la Fase 0

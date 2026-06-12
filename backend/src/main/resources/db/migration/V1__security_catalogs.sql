@@ -112,11 +112,11 @@ INSERT INTO rol (id, codigo, descripcion_es, descripcion_eu) VALUES
 -- Contraseña de todos los usuarios de prueba: admin123
 -- Hash BCrypt de "admin123" generado con strength 10
 INSERT INTO usuario (username, password_hash, nombre, apellidos, email, idioma_preferido, activo, fecha_alta) VALUES
-    ('admin',       '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBaIW0B9hd2LTa',
+    ('admin',       '$2a$10$5QScUkS.9ejdgv1VHB12g.Mx47R09oTvZY7Ke51WPp6wc48ie8K6i',
                     'Administrador', 'Sistema',    'admin@ayudasgv.eus',       'es', TRUE, NOW()),
-    ('instructor1', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBaIW0B9hd2LTa',
+    ('instructor1', '$2a$10$5QScUkS.9ejdgv1VHB12g.Mx47R09oTvZY7Ke51WPp6wc48ie8K6i',
                     'Ane',           'Etxeberria', 'aetxeberria@ayudasgv.eus', 'eu', TRUE, NOW()),
-    ('consultor1',  '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBaIW0B9hd2LTa',
+    ('consultor1',  '$2a$10$5QScUkS.9ejdgv1VHB12g.Mx47R09oTvZY7Ke51WPp6wc48ie8K6i',
                     'Mikel',         'Zabala',     'mzabala@ayudasgv.eus',     'es', TRUE, NOW());
 
 INSERT INTO usuario_rol (usuario_id, rol_id)

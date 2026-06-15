@@ -8,7 +8,7 @@
 |------|--------|--------|--------------|
 | `main` | Setup (S1) | ✅ Mergeada — Hito M1 el 2026-06-09 | — |
 | `feat/semana2-auth` | S2 — Auth backend | ✅ Completada — Hito M2 el 2026-06-12 | — |
-| `feat/semana3-login-frontend` | S3 — Login UI | ⏳ Pendiente | — |
+| `feat/semana3-login-frontend` | S3 — Login UI | ✅ Completada — Hito M3 el 2026-06-26 | — |
 | `feat/semana4-busqueda` | S4 — Búsqueda | ⏳ Pendiente | — |
 | `feat/semana5-detalle-secciones` | S5 — Detalle | ⏳ Pendiente | — |
 | `feat/semana6-transversales` | S6 — Transversales | ⏳ Pendiente | — |

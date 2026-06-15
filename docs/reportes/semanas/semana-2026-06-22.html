@@ -1,0 +1,632 @@
+<!DOCTYPE html><html lang="es"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Reporte semanal — Semana 22 de junio de 2026 – 26 de junio de 2026</title>
+<style>
+  :root {
+    --bg:#0f172a; --surface:#1e293b; --border:#334155;
+    --accent:#38bdf8; --accent2:#818cf8;
+    --text:#e2e8f0; --muted:#94a3b8;
+    --ok:#4ade80; --warn:#fbbf24; --danger:#f87171;
+    --r:12px;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;
+       font-size:15px;line-height:1.65;padding:2rem 1rem}
+  .container{max-width:920px;margin:0 auto}
+
+  /* ── Header ── */
+  header{display:flex;align-items:center;justify-content:space-between;
+         margin-bottom:2.5rem;flex-wrap:wrap;gap:1rem}
+  .header-left h1{font-size:1.65rem;color:var(--accent);font-weight:700}
+  .header-left p{color:var(--muted);font-size:.9rem;margin-top:.2rem}
+  .btn-save{background:var(--accent);color:#0f172a;border:none;border-radius:8px;
+            padding:.55rem 1.3rem;font-weight:700;font-size:.9rem;cursor:pointer;transition:opacity .2s}
+  .btn-save:hover{opacity:.85}
+
+  /* ── Day card ── */
+  .day-card{background:var(--surface);border:1px solid var(--border);
+            border-radius:var(--r);margin-bottom:2rem;overflow:hidden}
+  .day-header{display:flex;align-items:center;justify-content:space-between;
+              background:var(--border);padding:.75rem 1.25rem}
+  .day-name{font-weight:700;font-size:1.05rem;color:var(--accent2)}
+  .day-date{font-size:.82rem;color:var(--muted)}
+  .day-content{padding:1.25rem 1.5rem}
+
+  /* ── Markdown ── */
+  .day-content h2{font-size:.9rem;text-transform:uppercase;letter-spacing:.06em;
+                  color:var(--ok);margin:1.1rem 0 .4rem;border-bottom:1px solid var(--border);padding-bottom:.3rem}
+  .day-content h3{color:var(--warn);font-size:.9rem;margin:.9rem 0 .3rem}
+  .day-content ul{padding-left:1.5rem;margin:.3rem 0 .6rem}
+  .day-content li{margin:.2rem 0}
+  .day-content li.sub{list-style:circle;color:var(--muted);font-size:.88rem}
+  .day-content code{background:#0f2240;color:#7dd3fc;padding:.1em .4em;border-radius:4px;
+                    font-size:.85em;font-family:'Cascadia Code','Fira Code',monospace}
+  .day-content p{margin:.3rem 0}
+  .day-content p.hito{color:var(--accent);font-style:italic;
+                       border-left:3px solid var(--accent);padding-left:.75rem;margin-top:.8rem}
+  .day-content table{border-collapse:collapse;width:100%;margin:.6rem 0;font-size:.85rem}
+  .day-content th{background:var(--border);color:var(--muted);padding:.3rem .6rem;text-align:left}
+  .day-content td{padding:.3rem .6rem;border-bottom:1px solid var(--border)}
+
+  /* ── Evidence section ── */
+  .ev-section{border-top:1px solid var(--border);padding:1rem 1.5rem 1.25rem}
+  .ev-title{font-size:.82rem;font-weight:700;color:var(--muted);text-transform:uppercase;
+            letter-spacing:.06em;margin-bottom:.9rem}
+
+  /* ── Slot ── */
+  .ev-slot{border:1px solid var(--border);border-radius:10px;
+           padding:1rem;margin-bottom:.85rem;background:rgba(255,255,255,.02)}
+  .slot-header{display:flex;align-items:center;gap:.5rem;margin-bottom:.65rem}
+  .slot-label{flex:1;background:rgba(255,255,255,.05);border:1px solid var(--border);
+              border-radius:6px;padding:.4rem .7rem;color:var(--text);font-size:.88rem;font-weight:600}
+  .slot-label:focus{outline:none;border-color:var(--accent)}
+  .btn-rm-slot{background:none;border:1px solid var(--border);border-radius:6px;
+               color:var(--muted);width:28px;height:28px;cursor:pointer;font-size:15px;
+               display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .btn-rm-slot:hover{background:var(--danger);color:#fff;border-color:var(--danger)}
+
+  /* ── Drop zone ── */
+  .drop-zone{border:2px dashed var(--border);border-radius:8px;padding:1rem;
+             text-align:center;cursor:pointer;transition:border-color .2s,background .2s}
+  .drop-zone.drag-over{border-color:var(--accent);background:rgba(56,189,248,.07)}
+  .drop-zone.active{border-color:var(--accent2);box-shadow:0 0 0 3px rgba(129,140,248,.2)}
+  .drop-zone.has-image{display:none}
+  .drop-hint{color:var(--muted);font-size:.82rem;pointer-events:none}
+
+  /* ── Image preview ── */
+  .slot-image{display:none;position:relative;border-radius:8px;overflow:hidden;
+              border:1px solid var(--border)}
+  .slot-image.visible{display:block}
+  .slot-image img{width:100%;display:block;border-radius:8px 8px 0 0}
+  .img-desc{width:100%;background:rgba(0,0,0,.35);border:none;border-top:1px solid var(--border);
+            color:var(--muted);font-size:.82rem;padding:.4rem .7rem;font-family:inherit;resize:none}
+  .img-desc:focus{outline:none;color:var(--text)}
+  .btn-rm-img{position:absolute;top:6px;right:6px;background:rgba(0,0,0,.65);color:#fff;
+              border:none;border-radius:50%;width:26px;height:26px;cursor:pointer;font-size:14px;
+              display:flex;align-items:center;justify-content:center}
+  .btn-rm-img:hover{background:var(--danger)}
+
+  /* ── Add slot button ── */
+  .btn-add-slot{background:none;border:1px dashed var(--border);border-radius:8px;
+                color:var(--muted);padding:.45rem 1rem;font-size:.83rem;cursor:pointer;
+                transition:border-color .2s,color .2s;margin-top:.15rem}
+  .btn-add-slot:hover{border-color:var(--accent2);color:var(--accent2)}
+
+  /* ── Toast ── */
+  #toast{position:fixed;bottom:1.5rem;right:1.5rem;background:var(--ok);color:#0f172a;
+         padding:.6rem 1.2rem;border-radius:8px;font-weight:700;font-size:.9rem;
+         opacity:0;transition:opacity .3s;pointer-events:none}
+  #toast.show{opacity:1}
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="header-left">
+      <h1>Reporte semanal</h1>
+      <p>Semana 22 de junio de 2026 – 26 de junio de 2026 &nbsp;·&nbsp; Semana 3 — Login frontend + rutas protegidas + i18n</p>
+    </div>
+    <button class="btn-save" onclick="guardarHtml()">💾 Guardar HTML</button>
+  </header>
+
+  <!-- ═══ DÍA 0 — LUNES ═══ -->
+  <section class="day-card" id="day-0">
+    <div class="day-header">
+      <span class="day-name">Lunes</span>
+      <span class="day-date">2026-06-22</span>
+    </div>
+    <div class="day-content">
+      <h2>✅ Completado</h2>
+      <h3>Creación de rama y consulta del grafo de conocimiento</h3>
+      <ul>
+        <li>Creada rama <code>feat/semana3-login-frontend</code> a partir de <code>feat/semana2-auth</code></li>
+        <li>Consultado el grafo graphify: frontend con <code>AppRouter.tsx</code> placeholder; <code>es.json</code>/<code>eu.json</code> con todas las claves de auth ya preparadas; dependencias <code>axios</code>, <code>zustand</code>, <code>react-i18next</code> disponibles</li>
+      </ul>
+      <h3>Cliente HTTP — <code>axiosClient.ts</code></h3>
+      <ul>
+        <li>Instancia axios centralizada con <code>baseURL: '/api/v1'</code> (proxy Vite: <code>/api → http://localhost:8080</code>)</li>
+        <li>Interceptor de <strong>petición</strong>: lee <code>useAuthStore.getState().token</code> y añade <code>Authorization: Bearer &lt;token&gt;</code> a cada request — acceso directo al store fuera de React, sin hook</li>
+        <li>Interceptor de <strong>respuesta</strong>: ante 401 llama a <code>logout()</code> del store — React re-renderiza y <code>ProtectedRoute</code> redirige automáticamente</li>
+      </ul>
+      <h3>API de autenticación — <code>authApi.ts</code></h3>
+      <ul>
+        <li><code>login(credentials: LoginRequest): Promise&lt;LoginResponse&gt;</code> — <code>POST /api/v1/auth/login</code></li>
+        <li>Tipado estricto con tipos de <code>types/index.ts</code> ya existentes</li>
+      </ul>
+      <h3>Store Zustand — <code>authStore.ts</code></h3>
+      <ul>
+        <li><code>create&lt;AuthState&gt;()(persist(...))</code> — middleware <code>persist</code> guarda sesión en <code>localStorage</code> bajo <code>auth-session</code></li>
+        <li>Campos: <code>token</code>, <code>username</code>, <code>nombre</code>, <code>roles</code>, <code>idiomaPreferido</code>, <code>isAuthenticated</code></li>
+        <li><code>setSession(data)</code> rellena todos los campos; <code>logout()</code> los limpia</li>
+        <li><code>partialize</code>: solo se persisten los campos de datos, no las funciones</li>
+      </ul>
+      <h3>Layout principal — <code>MainLayout.tsx</code></h3>
+      <ul>
+        <li>Barra de navegación: marca, <code>NavLink</code> a <code>/expedientes</code>, nombre de usuario, <code>LanguageSelector</code>, botón logout</li>
+        <li><code>handleLogout()</code>: <code>logout()</code> + <code>navigate('/login', { replace: true })</code></li>
+        <li><code>&lt;Outlet /&gt;</code> renderiza las páginas hijas de las rutas anidadas</li>
+      </ul>
+      <h2>🔜 Pendiente</h2>
+      <ul>
+        <li>Pantalla de login conectada al backend</li>
+        <li>Rutas protegidas y <code>ProtectedRoute</code></li>
+      </ul>
+      <h2>🚧 Bloqueos</h2>
+      <p>Ninguno.</p>
+      <p class="hito"><em>Hito del día: cliente HTTP con interceptores Bearer/401 + store Zustand con persistencia + layout principal.</em></p>
+    </div>
+    <div class="ev-section">
+      <div class="ev-title">📸 Evidencias</div>
+      <div class="slots-list" id="slots-0">
+        <div class="ev-slot" id="slot-0-0">
+          <div class="slot-header">
+            <input class="slot-label" type="text" value="axiosClient.ts — interceptores de petición (Bearer) y respuesta (401 → logout)">
+            <button class="btn-rm-slot" onclick="removeSlot(0,0)" title="Eliminar">✕</button>
+          </div>
+          <div class="drop-zone" data-slot="0-0"><div class="drop-hint">Arrastra, haz clic o pega con Ctrl+V</div></div>
+          <input type="file" id="picker-0-0" accept="image/*" style="display:none" onchange="handlePicker(this,0,0)">
+          <div class="slot-image" id="slotimg-0-0"><img src="" alt="evidencia"><button class="btn-rm-img" onclick="removeImage(0,0)" title="Eliminar imagen">✕</button><textarea class="img-desc" rows="2" placeholder="Breve descripción..."></textarea></div>
+        </div>
+        <div class="ev-slot" id="slot-0-1">
+          <div class="slot-header">
+            <input class="slot-label" type="text" value="authStore.ts — middleware persist y campos de sesión">
+            <button class="btn-rm-slot" onclick="removeSlot(0,1)" title="Eliminar">✕</button>
+          </div>
+          <div class="drop-zone" data-slot="0-1"><div class="drop-hint">Arrastra, haz clic o pega con Ctrl+V</div></div>
+          <input type="file" id="picker-0-1" accept="image/*" style="display:none" onchange="handlePicker(this,0,1)">
+          <div class="slot-image" id="slotimg-0-1"><img src="" alt="evidencia"><button class="btn-rm-img" onclick="removeImage(0,1)" title="Eliminar imagen">✕</button><textarea class="img-desc" rows="2" placeholder="Breve descripción..."></textarea></div>
+        </div>
+      </div>
+      <button class="btn-add-slot" onclick="addSlot(0)">+ Añadir evidencia</button>
+    </div>
+  </section>
+
+  <!-- ═══ DÍA 1 — MARTES ═══ -->
+  <section class="day-card" id="day-1">
+    <div class="day-header">
+      <span class="day-name">Martes</span>
+      <span class="day-date">2026-06-23</span>
+    </div>
+    <div class="day-content">
+      <h2>✅ Completado</h2>
+      <h3>Pantalla de Login — <code>LoginPage.tsx</code></h3>
+      <ul>
+        <li>Formulario con <code>username</code> y <code>password</code>, estado de carga y mensaje de error</li>
+        <li>Flujo de submit: <code>login()</code> → <code>setSession(data)</code> → <code>navigate(from, { replace: true })</code></li>
+        <li>Redirección post-login: lee <code>location.state.from</code> para volver a la ruta que intentó acceder; por defecto <code>/expedientes</code></li>
+        <li>Botón deshabilitado durante la petición; muestra <code>t('common.loading')</code> mientras carga</li>
+        <li><code>LanguageSelector</code> en la esquina superior derecha de la tarjeta — permite cambiar idioma antes de autenticarse</li>
+        <li>Error de credenciales muestra <code>t('auth.loginError')</code> con fondo rojo sutil</li>
+        <li>Diseño oscuro coherente: fondo <code>#0f172a</code>, tarjeta <code>#1e293b</code>, acento <code>#38bdf8</code></li>
+      </ul>
+      <h3>Verificación del contrato con el backend</h3>
+      <ul>
+        <li><code>AuthController.java</code> (del grafo): <code>POST /api/v1/auth/login</code> → <code>LoginResponse</code> con <code>token</code>, <code>username</code>, <code>nombre</code>, <code>roles</code>, <code>idiomaPreferido</code></li>
+        <li>Los campos de <code>LoginResponse</code> en <code>types/index.ts</code> coinciden exactamente — sin cambios necesarios</li>
+      </ul>
+      <h2>🔜 Pendiente</h2>
+      <ul>
+        <li><code>ProtectedRoute</code> y rutas protegidas definitivas</li>
+      </ul>
+      <h2>🚧 Bloqueos</h2>
+      <p>Ninguno.</p>
+      <p class="hito"><em>Hito del día: pantalla de login funcional conectada al backend — guarda token, nombre y roles en el store.</em></p>
+    </div>
+    <div class="ev-section">
+      <div class="ev-title">📸 Evidencias</div>
+      <div class="slots-list" id="slots-1">
+        <div class="ev-slot" id="slot-1-0">
+          <div class="slot-header">
+            <input class="slot-label" type="text" value="LoginPage en el navegador — formulario de credenciales en castellano">
+            <button class="btn-rm-slot" onclick="removeSlot(1,0)" title="Eliminar">✕</button>
+          </div>
+          <div class="drop-zone" data-slot="1-0"><div class="drop-hint">Arrastra, haz clic o pega con Ctrl+V</div></div>
+          <input type="file" id="picker-1-0" accept="image/*" style="display:none" onchange="handlePicker(this,1,0)">
+          <div class="slot-image" id="slotimg-1-0"><img src="" alt="evidencia"><button class="btn-rm-img" onclick="removeImage(1,0)" title="Eliminar imagen">✕</button><textarea class="img-desc" rows="2" placeholder="Breve descripción..."></textarea></div>
+        </div>
+        <div class="ev-slot" id="slot-1-1">
+          <div class="slot-header">
+            <input class="slot-label" type="text" value="LoginPage — formulario en euskera tras cambiar idioma">
+            <button class="btn-rm-slot" onclick="removeSlot(1,1)" title="Eliminar">✕</button>
+          </div>
+          <div class="drop-zone" data-slot="1-1"><div class="drop-hint">Arrastra, haz clic o pega con Ctrl+V</div></div>
+          <input type="file" id="picker-1-1" accept="image/*" style="display:none" onchange="handlePicker(this,1,1)">
+          <div class="slot-image" id="slotimg-1-1"><img src="" alt="evidencia"><button class="btn-rm-img" onclick="removeImage(1,1)" title="Eliminar imagen">✕</button><textarea class="img-desc" rows="2" placeholder="Breve descripción..."></textarea></div>
+        </div>
+        <div class="ev-slot" id="slot-1-2">
+          <div class="slot-header">
+            <input class="slot-label" type="text" value="Mensaje de error 'Credenciales incorrectas' visible al introducir datos erróneos">
+            <button class="btn-rm-slot" onclick="removeSlot(1,2)" title="Eliminar">✕</button>
+          </div>
+          <div class="drop-zone" data-slot="1-2"><div class="drop-hint">Arrastra, haz clic o pega con Ctrl+V</div></div>
+          <input type="file" id="picker-1-2" accept="image/*" style="display:none" onchange="handlePicker(this,1,2)">
+          <div class="slot-image" id="slotimg-1-2"><img src="" alt="evidencia"><button class="btn-rm-img" onclick="removeImage(1,2)" title="Eliminar imagen">✕</button><textarea class="img-desc" rows="2" placeholder="Breve descripción..."></textarea></div>
+        </div>
+      </div>
+      <button class="btn-add-slot" onclick="addSlot(1)">+ Añadir evidencia</button>
+    </div>
+  </section>
+
+  <!-- ═══ DÍA 2 — MIÉRCOLES ═══ -->
+  <section class="day-card" id="day-2">
+    <div class="day-header">
+      <span class="day-name">Miércoles</span>
+      <span class="day-date">2026-06-24</span>
+    </div>
+    <div class="day-content">
+      <h2>✅ Completado</h2>
+      <h3>Rutas protegidas — <code>ProtectedRoute.tsx</code></h3>
+      <ul>
+        <li>Lee <code>isAuthenticated</code> del store Zustand reactivamente</li>
+        <li>Si no autenticado: <code>&lt;Navigate to="/login" state={{ from: location.pathname }} replace /&gt;</code> — guarda la ruta intentada</li>
+        <li>Si autenticado: renderiza <code>{children}</code></li>
+      </ul>
+      <h3>AppRouter actualizado con rutas definitivas</h3>
+      <ul>
+        <li>Ruta pública <code>/login</code>: redirige a <code>/expedientes</code> si ya hay sesión activa</li>
+        <li>Ruta de layout (sin <code>path</code>): <code>&lt;ProtectedRoute&gt;&lt;MainLayout /&gt;&lt;/ProtectedRoute&gt;</code> — protección + layout en una sola declaración</li>
+        <li>Ruta privada <code>/expedientes</code>: <code>&lt;ExpedientesPage /&gt;</code> placeholder (Semana 4)</li>
+        <li><code>catch-all</code>: redirige a <code>/expedientes</code></li>
+      </ul>
+      <h3>Redirección automática en 401</h3>
+      <ul>
+        <li>El interceptor 401 de <code>axiosClient</code> llama a <code>logout()</code> → store se limpia → <code>ProtectedRoute</code> redirige a <code>/login</code> en el siguiente render</li>
+        <li>Cubre token expirado sin lógica adicional</li>
+      </ul>
+      <h3>Placeholder <code>ExpedientesPage.tsx</code></h3>
+      <ul>
+        <li>Muestra nombre y roles del usuario logado (confirma que el store funciona en ruta privada)</li>
+      </ul>
+      <h2>🔜 Pendiente</h2>
+      <ul>
+        <li>Verificar i18n en todos los componentes nuevos</li>
+        <li>Selector de idioma con conmutación en caliente</li>
+      </ul>
+      <h2>🚧 Bloqueos</h2>
+      <p>Ninguno.</p>
+      <p class="hito"><em>Hito del día: rutas protegidas activas — sin token, cualquier ruta privada redirige a /login; con 401 del backend, la sesión se limpia automáticamente.</em></p>
+    </div>
+    <div class="ev-section">
+      <div class="ev-title">📸 Evidencias</div>
+      <div class="slots-list" id="slots-2">
+        <div class="ev-slot" id="slot-2-0">
+          <div class="slot-header">
+            <input class="slot-label" type="text" value="Navegador — redirección automática a /login al acceder a /expedientes sin sesión">
+            <button class="btn-rm-slot" onclick="removeSlot(2,0)" title="Eliminar">✕</button>
+          </div>
+          <div class="drop-zone" data-slot="2-0"><div class="drop-hint">Arrastra, haz clic o pega con Ctrl+V</div></div>
+          <input type="file" id="picker-2-0" accept="image/*" style="display:none" onchange="handlePicker(this,2,0)">
+          <div class="slot-image" id="slotimg-2-0"><img src="" alt="evidencia"><button class="btn-rm-img" onclick="removeImage(2,0)" title="Eliminar imagen">✕</button><textarea class="img-desc" rows="2" placeholder="Breve descripción..."></textarea></div>
+        </div>
+        <div class="ev-slot" id="slot-2-1">
+          <div class="slot-header">
+            <input class="slot-label" type="text" value="/expedientes con nombre del usuario tras login exitoso">
+            <button class="btn-rm-slot" onclick="removeSlot(2,1)" title="Eliminar">✕</button>
+          </div>
+          <div class="drop-zone" data-slot="2-1"><div class="drop-hint">Arrastra, haz clic o pega con Ctrl+V</div></div>
+          <input type="file" id="picker-2-1" accept="image/*" style="display:none" onchange="handlePicker(this,2,1)">
+          <div class="slot-image" id="slotimg-2-1"><img src="" alt="evidencia"><button class="btn-rm-img" onclick="removeImage(2,1)" title="Eliminar imagen">✕</button><textarea class="img-desc" rows="2" placeholder="Breve descripción..."></textarea></div>
+        </div>
+        <div class="ev-slot" id="slot-2-2">
+          <div class="slot-header">
+            <input class="slot-label" type="text" value="Network DevTools — header Authorization: Bearer en peticiones protegidas">
+            <button class="btn-rm-slot" onclick="removeSlot(2,2)" title="Eliminar">✕</button>
+          </div>
+          <div class="drop-zone" data-slot="2-2"><div class="drop-hint">Arrastra, haz clic o pega con Ctrl+V</div></div>
+          <input type="file" id="picker-2-2" accept="image/*" style="display:none" onchange="handlePicker(this,2,2)">
+          <div class="slot-image" id="slotimg-2-2"><img src="" alt="evidencia"><button class="btn-rm-img" onclick="removeImage(2,2)" title="Eliminar imagen">✕</button><textarea class="img-desc" rows="2" placeholder="Breve descripción..."></textarea></div>
+        </div>
+      </div>
+      <button class="btn-add-slot" onclick="addSlot(2)">+ Añadir evidencia</button>
+    </div>
+  </section>
+
+  <!-- ═══ DÍA 3 — JUEVES ═══ -->
+  <section class="day-card" id="day-3">
+    <div class="day-header">
+      <span class="day-name">Jueves</span>
+      <span class="day-date">2026-06-25</span>
+    </div>
+    <div class="day-content">
+      <h2>✅ Completado</h2>
+      <h3>i18n — <code>useTranslation()</code> en todos los componentes</h3>
+      <ul>
+        <li><code>LoginPage</code>: <code>t('auth.login')</code>, <code>t('auth.username')</code>, <code>t('auth.password')</code>, <code>t('auth.loginError')</code>, <code>t('common.loading')</code></li>
+        <li><code>MainLayout</code>: <code>t('nav.expedientes')</code>, <code>t('common.logout')</code></li>
+        <li><code>ExpedientesPage</code>: <code>t('expedientes.title')</code></li>
+        <li>Los ficheros <code>es.json</code>/<code>eu.json</code> (Semana 1) ya contenían todas las claves — ninguna nueva añadida</li>
+      </ul>
+      <h3>Verificación de claves i18n presentes vs necesarias</h3>
+      <table>
+        <tr><th>Clave</th><th>es.json</th><th>eu.json</th></tr>
+        <tr><td><code>auth.login</code></td><td>✅</td><td>✅</td></tr>
+        <tr><td><code>auth.username</code></td><td>✅</td><td>✅</td></tr>
+        <tr><td><code>auth.password</code></td><td>✅</td><td>✅</td></tr>
+        <tr><td><code>auth.loginError</code></td><td>✅</td><td>✅</td></tr>
+        <tr><td><code>auth.sessionExpired</code></td><td>✅</td><td>✅</td></tr>
+        <tr><td><code>common.loading</code></td><td>✅</td><td>✅</td></tr>
+        <tr><td><code>common.logout</code></td><td>✅</td><td>✅</td></tr>
+        <tr><td><code>nav.expedientes</code></td><td>✅</td><td>✅</td></tr>
+        <tr><td><code>expedientes.title</code></td><td>✅</td><td>✅</td></tr>
+      </table>
+      <h2>🔜 Pendiente</h2>
+      <ul>
+        <li>Selector de idioma con botones ES/EU y conmutación en caliente</li>
+      </ul>
+      <h2>🚧 Bloqueos</h2>
+      <p>Ninguno.</p>
+      <p class="hito"><em>Hito del día: todos los textos visibles en Semana 3 salen de los ficheros de traducción — la UI conmuta completa al cambiar idioma.</em></p>
+    </div>
+    <div class="ev-section">
+      <div class="ev-title">📸 Evidencias</div>
+      <div class="slots-list" id="slots-3">
+        <div class="ev-slot" id="slot-3-0">
+          <div class="slot-header">
+            <input class="slot-label" type="text" value="LoginPage en euskera — 'Saioa hasi', 'Erabiltzailea', 'Pasahitza'">
+            <button class="btn-rm-slot" onclick="removeSlot(3,0)" title="Eliminar">✕</button>
+          </div>
+          <div class="drop-zone" data-slot="3-0"><div class="drop-hint">Arrastra, haz clic o pega con Ctrl+V</div></div>
+          <input type="file" id="picker-3-0" accept="image/*" style="display:none" onchange="handlePicker(this,3,0)">
+          <div class="slot-image" id="slotimg-3-0"><img src="" alt="evidencia"><button class="btn-rm-img" onclick="removeImage(3,0)" title="Eliminar imagen">✕</button><textarea class="img-desc" rows="2" placeholder="Breve descripción..."></textarea></div>
+        </div>
+        <div class="ev-slot" id="slot-3-1">
+          <div class="slot-header">
+            <input class="slot-label" type="text" value="MainLayout en castellano — 'Expedientes' y 'Cerrar sesión'">
+            <button class="btn-rm-slot" onclick="removeSlot(3,1)" title="Eliminar">✕</button>
+          </div>
+          <div class="drop-zone" data-slot="3-1"><div class="drop-hint">Arrastra, haz clic o pega con Ctrl+V</div></div>
+          <input type="file" id="picker-3-1" accept="image/*" style="display:none" onchange="handlePicker(this,3,1)">
+          <div class="slot-image" id="slotimg-3-1"><img src="" alt="evidencia"><button class="btn-rm-img" onclick="removeImage(3,1)" title="Eliminar imagen">✕</button><textarea class="img-desc" rows="2" placeholder="Breve descripción..."></textarea></div>
+        </div>
+      </div>
+      <button class="btn-add-slot" onclick="addSlot(3)">+ Añadir evidencia</button>
+    </div>
+  </section>
+
+  <!-- ═══ DÍA 4 — VIERNES ═══ -->
+  <section class="day-card" id="day-4">
+    <div class="day-header">
+      <span class="day-name">Viernes</span>
+      <span class="day-date">2026-06-26</span>
+    </div>
+    <div class="day-content">
+      <h2>✅ Completado</h2>
+      <h3>Selector de idioma — <code>LanguageSelector.tsx</code></h3>
+      <ul>
+        <li>Botones <code>ES</code> / <code>EU</code> con estilos diferenciados para el idioma activo (<code>aria-pressed</code> para accesibilidad)</li>
+        <li><code>i18n.changeLanguage(code)</code> — conmutación en caliente sin recarga de página</li>
+        <li>Persistencia gestionada por <code>i18next-browser-languagedetector</code> en <code>localStorage['idioma']</code> — al recargar se restaura el idioma elegido</li>
+        <li>Colocado en <code>LoginPage</code> (antes de autenticarse) y en <code>MainLayout</code> (barra de navegación, siempre visible)</li>
+      </ul>
+      <h3>Demo semanal y cierre de Semana 3</h3>
+      <ul>
+        <li>Flujo completo verificado: acceso sin sesión → login → rutas privadas → cambio de idioma → logout → sesión restaurada tras recarga → 401 limpia sesión</li>
+        <li><code>tsc --noEmit</code>: sin errores de TypeScript</li>
+        <li>Commit: <code>feat: Semana 3 — Login frontend + rutas protegidas + i18n + selector idioma (Hito M3)</code></li>
+        <li>ROADMAP actualizado: <code>feat/semana3-login-frontend</code> ✅ Completada — Hito M3</li>
+      </ul>
+      <h2>🔜 Pendiente (Semana 4)</h2>
+      <ul>
+        <li>Crear rama <code>feat/semana4-busqueda</code></li>
+        <li>Migraciones Flyway V2: <code>persona</code>, <code>expediente</code>, <code>expediente_interesado</code>, <code>datos_contacto</code>, <code>solicitud_ayuda</code></li>
+        <li><code>GET /api/v1/expedientes</code> con filtros, paginación y ordenación en SQL parametrizado</li>
+        <li>Frontend: formulario de filtros + tabla de resultados paginada</li>
+      </ul>
+      <h2>🚧 Bloqueos</h2>
+      <p>Ninguno.</p>
+      <p class="hito"><em>Hito del día: <strong>Semana 3 cerrada</strong> — Login desde la UI, rutas protegidas activas, interfaz bilingüe ES/EU con conmutación en caliente. Listo para Semana 4 (expedientes y búsqueda).</em></p>
+    </div>
+    <div class="ev-section">
+      <div class="ev-title">📸 Evidencias</div>
+      <div class="slots-list" id="slots-4">
+        <div class="ev-slot" id="slot-4-0">
+          <div class="slot-header">
+            <input class="slot-label" type="text" value="LoginPage — formulario completo con selector ES/EU en esquina superior derecha">
+            <button class="btn-rm-slot" onclick="removeSlot(4,0)" title="Eliminar">✕</button>
+          </div>
+          <div class="drop-zone" data-slot="4-0"><div class="drop-hint">Arrastra, haz clic o pega con Ctrl+V</div></div>
+          <input type="file" id="picker-4-0" accept="image/*" style="display:none" onchange="handlePicker(this,4,0)">
+          <div class="slot-image" id="slotimg-4-0"><img src="" alt="evidencia"><button class="btn-rm-img" onclick="removeImage(4,0)" title="Eliminar imagen">✕</button><textarea class="img-desc" rows="2" placeholder="Breve descripción..."></textarea></div>
+        </div>
+        <div class="ev-slot" id="slot-4-1">
+          <div class="slot-header">
+            <input class="slot-label" type="text" value="Mensaje de error de credenciales incorrectas">
+            <button class="btn-rm-slot" onclick="removeSlot(4,1)" title="Eliminar">✕</button>
+          </div>
+          <div class="drop-zone" data-slot="4-1"><div class="drop-hint">Arrastra, haz clic o pega con Ctrl+V</div></div>
+          <input type="file" id="picker-4-1" accept="image/*" style="display:none" onchange="handlePicker(this,4,1)">
+          <div class="slot-image" id="slotimg-4-1"><img src="" alt="evidencia"><button class="btn-rm-img" onclick="removeImage(4,1)" title="Eliminar imagen">✕</button><textarea class="img-desc" rows="2" placeholder="Breve descripción..."></textarea></div>
+        </div>
+        <div class="ev-slot" id="slot-4-2">
+          <div class="slot-header">
+            <input class="slot-label" type="text" value="/expedientes con nombre de usuario y roles en la barra de navegación">
+            <button class="btn-rm-slot" onclick="removeSlot(4,2)" title="Eliminar">✕</button>
+          </div>
+          <div class="drop-zone" data-slot="4-2"><div class="drop-hint">Arrastra, haz clic o pega con Ctrl+V</div></div>
+          <input type="file" id="picker-4-2" accept="image/*" style="display:none" onchange="handlePicker(this,4,2)">
+          <div class="slot-image" id="slotimg-4-2"><img src="" alt="evidencia"><button class="btn-rm-img" onclick="removeImage(4,2)" title="Eliminar imagen">✕</button><textarea class="img-desc" rows="2" placeholder="Breve descripción..."></textarea></div>
+        </div>
+        <div class="ev-slot" id="slot-4-3">
+          <div class="slot-header">
+            <input class="slot-label" type="text" value="Selector de idioma — botón EU resaltado y toda la UI en euskera">
+            <button class="btn-rm-slot" onclick="removeSlot(4,3)" title="Eliminar">✕</button>
+          </div>
+          <div class="drop-zone" data-slot="4-3"><div class="drop-hint">Arrastra, haz clic o pega con Ctrl+V</div></div>
+          <input type="file" id="picker-4-3" accept="image/*" style="display:none" onchange="handlePicker(this,4,3)">
+          <div class="slot-image" id="slotimg-4-3"><img src="" alt="evidencia"><button class="btn-rm-img" onclick="removeImage(4,3)" title="Eliminar imagen">✕</button><textarea class="img-desc" rows="2" placeholder="Breve descripción..."></textarea></div>
+        </div>
+        <div class="ev-slot" id="slot-4-4">
+          <div class="slot-header">
+            <input class="slot-label" type="text" value="Botón 'Cerrar sesión' y redirección a /login">
+            <button class="btn-rm-slot" onclick="removeSlot(4,4)" title="Eliminar">✕</button>
+          </div>
+          <div class="drop-zone" data-slot="4-4"><div class="drop-hint">Arrastra, haz clic o pega con Ctrl+V</div></div>
+          <input type="file" id="picker-4-4" accept="image/*" style="display:none" onchange="handlePicker(this,4,4)">
+          <div class="slot-image" id="slotimg-4-4"><img src="" alt="evidencia"><button class="btn-rm-img" onclick="removeImage(4,4)" title="Eliminar imagen">✕</button><textarea class="img-desc" rows="2" placeholder="Breve descripción..."></textarea></div>
+        </div>
+      </div>
+      <button class="btn-add-slot" onclick="addSlot(4)">+ Añadir evidencia</button>
+    </div>
+  </section>
+
+</div>
+<div id="toast">✓ HTML guardado</div>
+
+<script>
+// ── Contadores de slots por día (para IDs únicos al añadir nuevos) ─────────
+const slotCounters = {};
+document.querySelectorAll('.ev-slot').forEach(slot => {
+  const [, di, si] = slot.id.match(/slot-(\d+)-(\d+)/);
+  slotCounters[di] = Math.max(slotCounters[di] || 0, +si + 1);
+});
+
+// ── Drag & drop en drop zones ───────────────────────────────────────────────
+document.addEventListener('dragover', e => {
+  const zone = e.target.closest('.drop-zone');
+  if (zone) { e.preventDefault(); zone.classList.add('drag-over'); }
+});
+document.addEventListener('dragleave', e => {
+  const zone = e.target.closest('.drop-zone');
+  if (zone) zone.classList.remove('drag-over');
+});
+document.addEventListener('drop', e => {
+  const zone = e.target.closest('.drop-zone');
+  if (!zone) return;
+  e.preventDefault();
+  zone.classList.remove('drag-over');
+  const [di, si] = zone.dataset.slot.split('-');
+  if (e.dataTransfer.files[0]) loadImage(e.dataTransfer.files[0], di, si);
+});
+
+// ── Slot activo (recibe el Ctrl+V) ─────────────────────────────────────────
+let activeSlot = null;
+
+function setActiveZone(zone) {
+  document.querySelectorAll('.drop-zone.active').forEach(z => z.classList.remove('active'));
+  if (zone) { zone.classList.add('active'); activeSlot = zone.dataset.slot; }
+}
+
+// ── Click en drop zone → marcar activo + abrir picker ──────────────────────
+document.addEventListener('click', e => {
+  const zone = e.target.closest('.drop-zone');
+  if (zone) {
+    setActiveZone(zone);
+    const [di, si] = zone.dataset.slot.split('-');
+    document.getElementById('picker-' + di + '-' + si).click();
+  }
+});
+
+// ── Ctrl+V / pegar desde portapapeles ──────────────────────────────────────
+document.addEventListener('paste', e => {
+  if (e.target.matches('input[type=text], textarea')) return;
+  const items = e.clipboardData && e.clipboardData.items;
+  if (!items) return;
+  let imageItem = null;
+  for (const item of items) {
+    if (item.type.startsWith('image/')) { imageItem = item; break; }
+  }
+  if (!imageItem) return;
+  e.preventDefault();
+  let target = activeSlot;
+  if (!target) {
+    const firstEmpty = document.querySelector('.drop-zone:not(.has-image)');
+    if (firstEmpty) target = firstEmpty.dataset.slot;
+  }
+  if (!target) return;
+  const [di, si] = target.split('-');
+  const file = imageItem.getAsFile();
+  if (file) loadImage(file, di, si);
+  const allZones = Array.from(document.querySelectorAll('.drop-zone:not(.has-image)'));
+  const next = allZones.find(z => z.dataset.slot !== target);
+  setActiveZone(next || null);
+});
+
+function handlePicker(input, di, si) {
+  if (input.files[0]) loadImage(input.files[0], di, si);
+  input.value = '';
+}
+
+function loadImage(file, di, si) {
+  if (!file.type.startsWith('image/')) return;
+  const reader = new FileReader();
+  reader.onload = e => setSlotImage(di, si, e.target.result);
+  reader.readAsDataURL(file);
+}
+
+function setSlotImage(di, si, src) {
+  const zone  = document.querySelector('.drop-zone[data-slot="' + di + '-' + si + '"]');
+  const imgEl = document.getElementById('slotimg-' + di + '-' + si);
+  const img   = imgEl.querySelector('img');
+  img.src     = src;
+  zone.classList.add('has-image');
+  imgEl.classList.add('visible');
+}
+
+function removeImage(di, si) {
+  const zone  = document.querySelector('.drop-zone[data-slot="' + di + '-' + si + '"]');
+  const imgEl = document.getElementById('slotimg-' + di + '-' + si);
+  imgEl.querySelector('img').src = '';
+  imgEl.querySelector('.img-desc').value = '';
+  zone.classList.remove('has-image');
+  imgEl.classList.remove('visible');
+}
+
+// ── Añadir nuevo slot ───────────────────────────────────────────────────────
+function addSlot(di) {
+  const si   = slotCounters[di] = (slotCounters[di] || 0) + 1;
+  const list = document.getElementById('slots-' + di);
+  const div  = document.createElement('div');
+  div.innerHTML = buildSlotHTML(di, si, '');
+  list.appendChild(div.firstElementChild);
+}
+
+function buildSlotHTML(di, si, label) {
+  return '<div class="ev-slot" id="slot-' + di + '-' + si + '">' +
+    '<div class="slot-header">' +
+      '<input type="text" class="slot-label" value="' + label.replace(/"/g,'&quot;') + '" placeholder="Descripción de la evidencia...">' +
+      '<button class="btn-rm-slot" title="Eliminar slot" onclick="removeSlot(' + di + ',' + si + ')">×</button>' +
+    '</div>' +
+    '<div class="drop-zone" data-slot="' + di + '-' + si + '">' +
+      '<div class="drop-hint">Arrastra, haz clic o pega con Ctrl+V</div>' +
+    '</div>' +
+    '<input type="file" id="picker-' + di + '-' + si + '" accept="image/*" style="display:none"' +
+           ' onchange="handlePicker(this,' + di + ',' + si + ')">' +
+    '<div class="slot-image" id="slotimg-' + di + '-' + si + '">' +
+      '<img src="" alt="evidencia">' +
+      '<button class="btn-rm-img" title="Eliminar imagen" onclick="removeImage(' + di + ',' + si + ')">×</button>' +
+      '<textarea class="img-desc" rows="2" placeholder="Breve descripción de lo que muestra la imagen..."></textarea>' +
+    '</div>' +
+  '</div>';
+}
+
+function removeSlot(di, si) {
+  const slot = document.getElementById('slot-' + di + '-' + si);
+  if (slot) slot.remove();
+}
+
+// ── Guardar HTML ────────────────────────────────────────────────────────────
+function guardarHtml() {
+  document.querySelectorAll('input[type=text], .slot-label').forEach(el => {
+    el.setAttribute('value', el.value);
+  });
+  document.querySelectorAll('textarea.img-desc').forEach(el => {
+    el.textContent = el.value;
+  });
+  document.querySelectorAll('.slot-image img').forEach(img => {
+    img.setAttribute('src', img.src);
+  });
+  const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  const a    = document.createElement('a');
+  a.href     = URL.createObjectURL(blob);
+  a.download = location.pathname.split('/').pop() || 'reporte-semanal.html';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  const toast = document.getElementById('toast');
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2500);
+}
+</script>
+
+</body></html>

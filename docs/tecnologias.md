@@ -261,24 +261,28 @@ com.ayudasgv/
 └── commons/                    ← Semana 6: auditoría AOP, errores globales
 ```
 
-### Spring Security (estado actual — Semana 1)
+### Spring Security y JWT (implementado en Semana 2)
 
-Con solo `SecurityConfig.java` configurado:
+`SecurityConfig.java` define una cadena de filtros **stateless** con `JwtAuthenticationFilter` insertado antes de `UsernamePasswordAuthenticationFilter`:
 
 ```
 Petición entrante
        │
        ▼
-¿La ruta empieza por /v3/api-docs/**, /swagger-ui/**?
+¿La ruta es pública? (/v1/auth/login, /v3/api-docs/**, /swagger-ui/**)
        ├── Sí → acceso libre (permitAll)
-       └── No → requiere autenticación (authenticated)
-              │
-              └── Sin configurar aún → Spring usa autenticación
-                  básica con usuario "user" y contraseña generada
-                  en cada arranque (visible en los logs)
+       └── No → JwtAuthenticationFilter
+                  │
+                  ├── Extrae "Authorization: Bearer <token>"
+                  ├── JwtProvider.isTokenValid() verifica firma + expiración
+                  ├── Token OK  → SecurityContext poblado (usuario + roles) → 200
+                  └── Token ausente/inválido → authenticationEntryPoint → 401
 ```
 
-En la **Semana 2** reemplazaremos la autenticación básica por JWT real.
+- **Login** (`POST /api/v1/auth/login`): `AuthService` valida `username`/`password` contra `usuario` (BCrypt, strength 10) y, si son correctas, `JwtProvider` emite un JWT firmado **HS256** con claims `roles` e `idioma`, válido 24h (`app.jwt.expiration-ms`).
+- **Sin sesión de servidor**: `SessionCreationPolicy.STATELESS` — no hay `HttpSession` ni cookies; cada petición se autentica solo con el JWT que envía el cliente.
+- **401 vs 403**: Spring Security 6 devuelve 403 a peticiones anónimas por defecto; se sobreescribe con un `authenticationEntryPoint` para que sea siempre 401 sin token válido.
+- **Frontend**: `axiosClient.ts` añade el `Authorization: Bearer` en cada petición (interceptor) y, ante un 401, limpia el `authStore` (Zustand) y redirige a `/login` (implementado en Semana 3).
 
 ### Cómo Spring Boot lee la configuración
 

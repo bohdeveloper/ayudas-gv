@@ -8,7 +8,7 @@
 |------|--------|--------|--------------|
 | `main` | Setup (S1) | ✅ Mergeada — Hito M1 el 2026-06-09 | — |
 | `feat/semana2-auth` | S2 — Auth backend | ✅ Completada — Hito M2 el 2026-06-12 | — |
-| `feat/semana3-login-frontend` | S3 — Login UI | ⏳ Pendiente | — |
+| `feat/semana3-login-frontend` | S3 — Login UI | ✅ Completada — Hito M3 el 2026-06-26 | — |
 | `feat/semana4-busqueda` | S4 — Búsqueda | ⏳ Pendiente | — |
 | `feat/semana5-detalle-secciones` | S5 — Detalle | ⏳ Pendiente | — |
 | `feat/semana6-transversales` | S6 — Transversales | ⏳ Pendiente | — |
@@ -78,26 +78,26 @@
 
 ---
 
-### Semana 3 — Login en frontend + idiomas
-> Rama: `feat/semana3-login-frontend`
+### Semana 3 — Login en frontend + idiomas ✅ COMPLETADA
+> Rama: `feat/semana3-login-frontend` | Hito M3 alcanzado: 2026-06-26
 
 **Tareas:**
-- [ ] Estructura del frontend (rutas y layout) y cliente HTTP (axios) con interceptor que envía el token
-- [ ] Pantalla de login en React que llama al backend, guarda el token y muestra error de credenciales
-- [ ] Rutas protegidas, logout y redirección a login al expirar la sesión
-- [ ] i18n con `react-i18next`: ficheros `es.json`/`eu.json` y textos de login y menú externalizados
-- [ ] Selector de idioma con persistencia en `localStorage` y conmutación en caliente
+- [x] Estructura del frontend (rutas y layout) y cliente HTTP (axios) con interceptor que envía el token
+- [x] Pantalla de login en React que llama al backend, guarda el token y muestra error de credenciales
+- [x] Rutas protegidas, logout y redirección a login al expirar la sesión
+- [x] i18n con `react-i18next`: ficheros `es.json`/`eu.json` y textos de login y menú externalizados
+- [x] Selector de idioma con persistencia en `localStorage` y conmutación en caliente
 
 **Aprende:** React Router, gestión de sesión en el cliente, i18next.
 
 **Hecho cuando:** Se inicia sesión desde la UI, las rutas privadas exigen autenticación y la interfaz cambia de idioma sin recargar.
 
 **Hitos diarios:**
-- Día 1 — estructura del frontend (rutas y layout) y cliente HTTP con interceptor que envía el token
-- Día 2 — pantalla de login conectada al backend, guarda el token y muestra error de credenciales
-- Día 3 — rutas protegidas, logout y redirección a login al expirar la sesión
-- Día 4 — i18n con react-i18next: ficheros es/eu y textos de login y menú externalizados
-- Día 5 — selector de idioma con persistencia y conmutación en caliente
+- Día 1 — estructura del frontend (rutas y layout) y cliente HTTP con interceptor que envía el token ✅
+- Día 2 — pantalla de login conectada al backend, guarda el token y muestra error de credenciales ✅
+- Día 3 — rutas protegidas, logout y redirección a login al expirar la sesión ✅
+- Día 4 — i18n con react-i18next: ficheros es/eu y textos de login y menú externalizados ✅
+- Día 5 — selector de idioma con persistencia y conmutación en caliente ✅
 
 **🏁 Hito M3 — Resultado demostrable:** Iniciar sesión desde la UI y cambiar entre castellano y euskera
 

@@ -143,3 +143,28 @@ Todas las rutas bajo `/api/v1/...` — versionado explícito para compatibilidad
 ```
 
 Los paquetes Java (`auth`, `expedientes`, `tramitacion`) están diseñados con fronteras limpias desde el inicio, sin dependencias cruzadas indebidas, para facilitar esta extracción.
+
+---
+
+## Decisiones técnicas tomadas
+
+| Decisión | Opción elegida | Alternativa descartada | Por qué |
+|----------|---------------|----------------------|---------|
+| Acceso a datos | JdbcTemplate + SQL explícito | JPA/Hibernate | Requisito del proyecto para aprender SQL |
+| Estado frontend | Zustand | Redux Toolkit | Más simple, menos boilerplate |
+| JWT library | jjwt 0.12.5 (HS256) | Spring Security OAuth | Más control, proyecto educativo |
+| i18n frontend | react-i18next | i18n-js | Estándar de React, mejor soporte |
+| Bilingüismo BD | columnas `_es`/`_eu` | tabla de traducciones | Solución más simple para 2 idiomas fijos |
+| Arquitectura inicial | Monolito modular | Microservicios desde el día 1 | El enunciado lo recomienda explícitamente |
+
+---
+
+## Convenciones del proyecto
+
+- **Idioma del código:** Inglés para nombres de variables/clases, español para comentarios complejos
+- **API base:** `/api/v1/...`
+- **Paginación:** query params `page` (0-based), `size`, `sort`
+- **i18n backend:** cabecera `Accept-Language: es` o `Accept-Language: eu`
+- **i18n frontend:** clave `idioma` en localStorage
+- **Contraseñas:** BCrypt strength 10, nunca en claro
+- **SQL:** parametrizado siempre con `NamedParameterJdbcTemplate`, nunca concatenación

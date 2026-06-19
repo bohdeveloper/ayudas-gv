@@ -11,10 +11,10 @@ Aplicación web interna para la gestión y tramitación de expedientes de ayudas
 | Capa | Tecnología |
 |------|-----------|
 | Frontend | React 18 + Vite + TypeScript 6 + react-i18next + Zustand |
-| Backend | Java 21 + Spring Boot 3.5.14 + Spring Security + JWT |
+| Backend | Java 21 + Spring Boot 3.5.15 + Spring Security + JWT |
 | Base de datos | PostgreSQL 15 + Flyway |
 | Infraestructura | Docker Compose (3 contenedores) |
-| API docs | Swagger UI (springdoc-openapi 2.5) |
+| API docs | Swagger UI (springdoc-openapi 2.7.0) |
 
 ---
 
@@ -82,10 +82,10 @@ ayudas-gv/
 │       ├── java/com/ayudasgv/
 │       │   ├── AyudasGvApplication.java
 │       │   ├── config/            # SecurityConfig, OpenApiConfig
-│       │   ├── auth/              # JWT, login (Semana 2)
-│       │   ├── expedientes/       # Búsqueda y consulta (Semanas 4-5)
+│       │   ├── auth/              # JWT, login — implementado (Semana 2)
+│       │   ├── expedientes/       # Búsqueda y consulta (Semanas 4-5, pendiente)
 │       │   ├── tramitacion/       # Trámites (Fase 1)
-│       │   └── commons/           # Auditoría AOP, errores, logging
+│       │   └── commons/           # GlobalExceptionHandler; auditoría AOP/logging (Semana 6)
 │       └── resources/
 │           ├── application.yml         # Config base (usa variables de entorno)
 │           ├── application-dev.yml     # Override para desarrollo local
@@ -95,21 +95,20 @@ ayudas-gv/
 │   ├── Dockerfile                 # Multi-stage: Node build → Nginx
 │   ├── nginx.conf                 # Sirve la SPA y proxea /api
 │   └── src/
-│       ├── api/                   # Capa HTTP (axios)
-│       ├── components/            # Componentes reutilizables
+│       ├── api/                   # Capa HTTP — axiosClient (interceptor JWT) + authApi
+│       ├── components/            # Layout, selector de idioma, componentes reutilizables
 │       ├── i18n/locales/          # es.json / eu.json
-│       ├── pages/                 # Login, Expedientes, ExpedienteDetalle
-│       ├── router/                # Rutas (públicas y protegidas)
-│       ├── store/                 # Estado global (Zustand)
+│       ├── pages/                 # Login (implementado); Expedientes (placeholder, Semana 4-5)
+│       ├── router/                # AppRouter + ProtectedRoute — rutas públicas y protegidas
+│       ├── store/                 # authStore (Zustand, persistido en localStorage)
 │       └── types/                 # Tipos TypeScript del dominio
 ├── docs/
 │   ├── tecnologias.md             # Explicación profunda del ecosistema técnico
-│   ├── arquitectura.md            # Diagramas de capas y módulos
+│   ├── arquitectura.md            # Diagramas de capas, módulos y decisiones técnicas
 │   ├── modelo-datos.md            # Esquema ER completo
 │   ├── fase0-planificacion.md     # Plan detallado semana a semana
-│   └── reportes/                  # Reportes diarios de desarrollo
+│   └── reportes/                  # Reportes diarios y semanales de desarrollo
 ├── docker-compose.yml             # Orquestación: postgres + backend + frontend
-├── PROJECT_MEMORY.md              # Estado actual y log de sesiones
 └── ROADMAP.md                     # Fases, semanas, hitos y seguimiento de ramas
 ```
 
@@ -119,7 +118,7 @@ ayudas-gv/
 
 | Fase | Objetivo | Estado |
 |------|----------|--------|
-| **Fase 0 — MVP** | Autenticación + búsqueda + consulta de expedientes por secciones | 🔄 S1 ✅ · S2–S6 pendientes |
+| **Fase 0 — MVP** | Autenticación + búsqueda + consulta de expedientes por secciones | 🔄 S1–S3 ✅ · S4–S6 pendientes |
 | Fase 1 — Tramitación | Registro de trámites y cambio de estado | ⏳ Pendiente |
 | Fase 2 — Alta | Creación de nuevos expedientes y solicitudes | ⏳ Pendiente |
 | Fase 3 — Resolución | Generación de documentos y notificaciones | ⏳ Pendiente |
@@ -174,7 +173,7 @@ La aplicación funciona íntegramente en castellano y euskera:
 | Documento | Descripción |
 |-----------|-------------|
 | [Tecnologías y ecosistema](docs/tecnologias.md) | Explicación profunda del stack, Docker y comunicaciones |
-| [Arquitectura](docs/arquitectura.md) | Diagramas de capas, módulos y endpoints |
+| [Arquitectura](docs/arquitectura.md) | Diagramas de capas, módulos, endpoints y decisiones técnicas |
 | [Modelo de datos](docs/modelo-datos.md) | Esquema ER completo por contextos |
 | [Planificación Fase 0](docs/fase0-planificacion.md) | Detalle semana a semana |
 | [ROADMAP](ROADMAP.md) | Fases, hitos y seguimiento de ramas |

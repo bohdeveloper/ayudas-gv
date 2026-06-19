@@ -2,7 +2,7 @@
 
 > **Documento vivo** — se actualiza al finalizar cada semana de desarrollo con las nuevas piezas incorporadas al sistema.
 >
-> Última actualización: **Semana 1 — 2026-06-09**
+> Última actualización: **Semana 3 — 2026-06-26**
 
 ---
 
@@ -261,24 +261,28 @@ com.ayudasgv/
 └── commons/                    ← Semana 6: auditoría AOP, errores globales
 ```
 
-### Spring Security (estado actual — Semana 1)
+### Spring Security y JWT (implementado en Semana 2)
 
-Con solo `SecurityConfig.java` configurado:
+`SecurityConfig.java` define una cadena de filtros **stateless** con `JwtAuthenticationFilter` insertado antes de `UsernamePasswordAuthenticationFilter`:
 
 ```
 Petición entrante
        │
        ▼
-¿La ruta empieza por /v3/api-docs/**, /swagger-ui/**?
+¿La ruta es pública? (/v1/auth/login, /v3/api-docs/**, /swagger-ui/**)
        ├── Sí → acceso libre (permitAll)
-       └── No → requiere autenticación (authenticated)
-              │
-              └── Sin configurar aún → Spring usa autenticación
-                  básica con usuario "user" y contraseña generada
-                  en cada arranque (visible en los logs)
+       └── No → JwtAuthenticationFilter
+                  │
+                  ├── Extrae "Authorization: Bearer <token>"
+                  ├── JwtProvider.isTokenValid() verifica firma + expiración
+                  ├── Token OK  → SecurityContext poblado (usuario + roles) → 200
+                  └── Token ausente/inválido → authenticationEntryPoint → 401
 ```
 
-En la **Semana 2** reemplazaremos la autenticación básica por JWT real.
+- **Login** (`POST /api/v1/auth/login`): `AuthService` valida `username`/`password` contra `usuario` (BCrypt, strength 10) y, si son correctas, `JwtProvider` emite un JWT firmado **HS256** con claims `roles` e `idioma`, válido 24h (`app.jwt.expiration-ms`).
+- **Sin sesión de servidor**: `SessionCreationPolicy.STATELESS` — no hay `HttpSession` ni cookies; cada petición se autentica solo con el JWT que envía el cliente.
+- **401 vs 403**: Spring Security 6 devuelve 403 a peticiones anónimas por defecto; se sobreescribe con un `authenticationEntryPoint` para que sea siempre 401 sin token válido.
+- **Frontend**: `axiosClient.ts` añade el `Authorization: Bearer` en cada petición (interceptor) y, ante un 401, limpia el `authStore` (Zustand) y redirige a `/login` (implementado en Semana 3).
 
 ### Cómo Spring Boot lee la configuración
 
@@ -345,6 +349,62 @@ location / {
 
 **Por qué `moduleResolution: bundler`**: Vite gestiona los imports durante el build. Este modo le dice a TypeScript que confíe en el bundler para la resolución de módulos, en lugar de aplicar las reglas de Node.js.
 
+### Routing, estado y cliente HTTP (Semana 3)
+
+#### React Router 6 — `AppRouter` y `ProtectedRoute`
+
+```
+/login  → público  — si ya autenticado, redirige a /expedientes
+/       → catch-all — siempre redirige a /expedientes
+
+Rutas privadas envueltas en <ProtectedRoute>:
+  /expedientes         → ExpedientesPage (placeholder S4)
+  /expedientes/:id     → ExpedienteDetalle (S5, pendiente)
+```
+
+`ProtectedRoute` lee `isAuthenticated` del store Zustand. Si es `false`, redirige a `/login` y guarda `location.pathname` en el state de React Router para volver a esa URL tras el login.
+
+#### Zustand — `authStore`
+
+Gestión de sesión con persistencia automática en `localStorage` (clave `auth-session`):
+
+```typescript
+// Campos persistidos entre recargas:
+token, username, nombre, roles, idiomaPreferido, isAuthenticated
+
+// Acciones:
+setSession(data: LoginResponse)  // tras login exitoso
+logout()                         // limpia todos los campos
+```
+
+`persist` de Zustand serializa el estado en JSON y lo restaura al montar la app — el usuario sigue autenticado tras cerrar y reabrir el navegador hasta que el JWT expire (24h).
+
+#### axios — `axiosClient` con interceptores
+
+```typescript
+// Interceptor de petición: añade Bearer en cada request a /api/v1/*
+config.headers.Authorization = `Bearer ${token}`
+
+// Interceptor de respuesta: limpia sesión automáticamente ante un 401
+if (error.response?.status === 401) useAuthStore.getState().logout()
+```
+
+El logout automático ante 401 garantiza que cuando el JWT expira en el backend, el frontend devuelve al usuario a `/login` sin intervención manual.
+
+#### react-i18next — internacionalización
+
+```
+Orden de detección del idioma activo:
+  1. localStorage['idioma']   (elección previa del usuario)
+  2. navigator.language       (idioma del navegador)
+  3. fallback: 'es'
+
+Idiomas soportados: 'es' (castellano) | 'eu' (euskera)
+Ficheros: src/i18n/locales/es.json · src/i18n/locales/eu.json
+```
+
+`LanguageSelector` llama a `i18n.changeLanguage(code)` → React re-renderiza todos los componentes que usan `useTranslation()` sin recargar la página. La elección se persiste automáticamente en `localStorage['idioma']` vía `i18next-browser-languagedetector`.
+
 ---
 
 ## 7. API docs: Swagger UI
@@ -357,7 +417,7 @@ Swagger UI se integra a través de la dependencia `springdoc-openapi-starter-web
 
 La clase `OpenApiConfig.java` añade los metadatos del proyecto (título, descripción, versión) que aparecen en la cabecera de Swagger UI.
 
-En la **Semana 2** añadiremos el esquema Bearer para que Swagger UI permita enviar el token JWT en las peticiones protegidas.
+Desde **Semana 2**, Swagger UI incluye el esquema Bearer: el botón "Authorize" permite pegar el JWT obtenido del `/api/v1/auth/login` y usarlo en las peticiones protegidas directamente desde la UI.
 
 ---
 
@@ -489,9 +549,9 @@ cd frontend && npm test -- --run --coverage
 
 | Semana | Añadido |
 |--------|---------|
-| S1 | Docker Compose, PostgreSQL, Flyway, Spring Boot básico, React+Nginx, Swagger UI |
-| S2 | Spring Security, JWT, BCrypt, filtros de autenticación *(próximamente)* |
-| S3 | React Router, Zustand, axios interceptors, react-i18next *(próximamente)* |
-| S4 | JdbcTemplate avanzado, paginación SQL, búsqueda dinámica *(próximamente)* |
-| S5 | Diseño de DTOs por sección, composición de vistas React *(próximamente)* |
-| S6 | Spring AOP, MDC/correlation-id, JUnit 5 + Mockito (backend), Vitest + Testing Library (frontend) *(próximamente)* |
+| S1 | Docker Compose, PostgreSQL 15, Flyway, Spring Boot 3.5 básico, React 18 + Vite + Nginx, Swagger UI |
+| S2 | Spring Security 6, JWT HS256 (24h), BCrypt strength 10, `JwtAuthFilter`, `SecurityConfig` stateless, esquema Bearer en Swagger |
+| S3 | React Router 6 (`AppRouter`, `ProtectedRoute`), Zustand `persist`, `axiosClient` (interceptores Bearer + logout 401), react-i18next (`LanguageDetector`, conmutación en caliente), `LanguageSelector` |
+| S4 | JdbcTemplate avanzado, paginación SQL, búsqueda dinámica *(pendiente)* |
+| S5 | Diseño de DTOs por sección, composición de vistas React *(pendiente)* |
+| S6 | Spring AOP, MDC/correlation-id, JUnit 5 + Mockito (backend), Vitest + Testing Library (frontend) *(pendiente)* |

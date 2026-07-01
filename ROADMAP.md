@@ -7,9 +7,9 @@
 | Rama | Semana | Estado | Merge a main |
 |------|--------|--------|--------------|
 | `main` | Setup (S1) | ✅ Mergeada — Hito M1 el 2026-06-09 | — |
-| `feat/semana2-auth` | S2 — Auth backend | ✅ Completada — Hito M2 el 2026-06-12 | — |
-| `feat/semana3-login-frontend` | S3 — Login UI | ✅ Completada — Hito M3 el 2026-06-26 | — |
-| `feat/semana4-busqueda` | S4 — Búsqueda | 🔄 En curso | — |
+| `feat/semana2-auth` | S2 — Auth backend | ✅ Completada — Hito M2 el 2026-06-12 | ✅ 2026-07-03 |
+| `feat/semana3-login-frontend` | S3 — Login UI | ✅ Completada — Hito M3 el 2026-06-26 | ✅ 2026-07-03 |
+| `feat/semana4-busqueda` | S4 — Búsqueda | ✅ Completada — Hito M4 el 2026-07-03 | ✅ 2026-07-03 |
 | `feat/semana5-detalle-secciones` | S5 — Detalle | ⏳ Pendiente | — |
 | `feat/semana6-transversales` | S6 — Transversales | ⏳ Pendiente | — |
 
@@ -103,8 +103,8 @@
 
 ---
 
-### Semana 4 — Modelo de expedientes y búsqueda
-> Rama: `feat/semana4-busqueda`
+### Semana 4 — Modelo de expedientes y búsqueda ✅ COMPLETADA
+> Rama: `feat/semana4-busqueda` | Hito M4 alcanzado: 2026-07-03
 
 **Tareas:**
 - [x] Migraciones V2: `persona`, `expediente`, `expediente_interesado`, `datos_contacto`, `solicitud_ayuda` y tablas de detalle — con datos de ejemplo *(verificado con docker-compose: V1-V4 aplicadas sin errores)*

@@ -1,22 +1,17 @@
-import { Outlet, NavLink, useNavigate } from 'react-router-dom'
+import { Outlet, NavLink } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { useAuthStore } from '../../store/authStore'
-import LanguageSelector from '../LanguageSelector'
+import UserMenu from '../UserMenu'
 
 export default function MainLayout() {
   const { t } = useTranslation()
-  const { nombre, logout } = useAuthStore()
-  const navigate = useNavigate()
-
-  function handleLogout() {
-    logout()
-    navigate('/login', { replace: true })
-  }
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <nav style={styles.nav}>
-        <div style={styles.brand}>GV Ayudas</div>
+        <div style={styles.brand}>
+          <span style={styles.brandMark}>GV</span>
+          <span style={styles.brandLabel}>Ayudas GV</span>
+        </div>
         <div style={styles.navLinks}>
           <NavLink
             to="/expedientes"
@@ -26,15 +21,13 @@ export default function MainLayout() {
           </NavLink>
         </div>
         <div style={styles.navRight}>
-          <LanguageSelector />
-          <span style={styles.user}>{nombre}</span>
-          <button style={styles.btnLogout} onClick={handleLogout}>
-            {t('common.logout')}
-          </button>
+          <UserMenu />
         </div>
       </nav>
       <main style={styles.main}>
-        <Outlet />
+        <div style={styles.mainInner}>
+          <Outlet />
+        </div>
       </main>
     </div>
   )
@@ -45,25 +38,40 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     alignItems: 'center',
     gap: '1.5rem',
-    padding: '0 1.5rem',
-    height: 56,
-    background: '#1e3a5f',
-    color: '#fff',
+    flexWrap: 'wrap',
+    padding: '0.65rem 1.5rem',
+    minHeight: 60,
+    background: 'var(--color-surface)',
+    borderBottom: '1px solid var(--color-border)',
+    color: 'var(--color-text)',
   },
-  brand: { fontWeight: 700, fontSize: '1.1rem', marginRight: '1rem' },
-  navLinks: { display: 'flex', gap: '1rem', flex: 1 },
-  link: { color: '#cbd5e1', textDecoration: 'none', fontSize: '0.9rem' },
-  linkActive: { color: '#fff', fontWeight: 600, borderBottom: '2px solid #38bdf8' },
-  navRight: { display: 'flex', alignItems: 'center', gap: '1rem', marginLeft: 'auto' },
-  user: { fontSize: '0.85rem', color: '#94a3b8' },
-  btnLogout: {
-    background: 'transparent',
-    border: '1px solid #475569',
-    color: '#cbd5e1',
-    borderRadius: 6,
-    padding: '4px 12px',
-    cursor: 'pointer',
-    fontSize: '0.85rem',
+  brand: { display: 'flex', alignItems: 'center', gap: '0.6rem', marginRight: '0.5rem' },
+  brandMark: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 30,
+    height: 30,
+    borderRadius: 'var(--radius-sm)',
+    background: 'var(--color-primary)',
+    color: 'var(--color-primary-contrast)',
+    fontWeight: 700,
+    fontSize: '0.72rem',
+    flexShrink: 0,
   },
+  brandLabel: { fontWeight: 700, fontSize: '0.95rem' },
+  navLinks: { display: 'flex', gap: '0.25rem', flex: 1 },
+  link: {
+    color: 'var(--color-text-muted)',
+    textDecoration: 'none',
+    fontSize: '0.88rem',
+    fontWeight: 500,
+    padding: '0.5rem 0.75rem',
+    borderRadius: 'var(--radius-sm)',
+    transition: 'background-color var(--transition-fast), color var(--transition-fast)',
+  },
+  linkActive: { color: 'var(--color-text)', background: 'var(--color-surface-raised)', fontWeight: 600 },
+  navRight: { display: 'flex', alignItems: 'center', gap: '0.85rem', marginLeft: 'auto' },
   main: { flex: 1, padding: '2rem 1.5rem' },
+  mainInner: { maxWidth: 1600, margin: '0 auto', width: '100%' },
 }

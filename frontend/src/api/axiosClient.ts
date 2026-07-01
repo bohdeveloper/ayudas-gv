@@ -1,17 +1,20 @@
 import axios from 'axios'
 import { useAuthStore } from '../store/authStore'
+import i18n from '../i18n'
 
 const axiosClient = axios.create({
   baseURL: '/api/v1',
   headers: { 'Content-Type': 'application/json' },
 })
 
-// Interceptor de petición: adjunta el JWT Bearer si existe en el store
+// Interceptor de petición: adjunta el JWT Bearer y el idioma activo
 axiosClient.interceptors.request.use((config) => {
   const token = useAuthStore.getState().token
   if (token) {
     config.headers.Authorization = `Bearer ${token}`
   }
+  // Accept-Language: el backend lo usa para traducir descripciones de catálogo (tipo de ayuda, estado)
+  config.headers['Accept-Language'] = i18n.language?.slice(0, 2) ?? 'es'
   return config
 })
 

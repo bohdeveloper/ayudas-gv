@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { login } from '../../api/authApi'
 import { useAuthStore } from '../../store/authStore'
 import LanguageSelector from '../../components/LanguageSelector'
+import { IconAlertCircle, IconEye, IconEyeOff } from '../../components/icons/Icon'
 
 export default function LoginPage() {
   const { t } = useTranslation()
@@ -13,6 +14,7 @@ export default function LoginPage() {
 
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
@@ -37,16 +39,24 @@ export default function LoginPage() {
   return (
     <div style={styles.page}>
       <div style={styles.card}>
-        <div style={styles.langRow}>
+        <div style={styles.topRow}>
+          <div style={styles.brand}>
+            <span style={styles.brandMark}>GV</span>
+            <div>
+              <p style={styles.brandTitle}>Ayudas GV</p>
+              <p style={styles.brandSubtitle}>Gestión de expedientes</p>
+            </div>
+          </div>
           <LanguageSelector />
         </div>
-        <h1 style={styles.title}>GV Ayudas</h1>
-        <p style={styles.subtitle}>{t('auth.login')}</p>
 
-        <form onSubmit={handleSubmit} style={styles.form}>
-          <label style={styles.label}>
+        <h1 style={styles.title}>{t('auth.login')}</h1>
+
+        <form onSubmit={handleSubmit} style={styles.form} noValidate>
+          <label style={styles.label} htmlFor="username">
             {t('auth.username')}
             <input
+              id="username"
               style={styles.input}
               type="text"
               value={username}
@@ -57,20 +67,37 @@ export default function LoginPage() {
             />
           </label>
 
-          <label style={styles.label}>
+          <label style={styles.label} htmlFor="password">
             {t('auth.password')}
-            <input
-              style={styles.input}
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete="current-password"
-              required
-              disabled={loading}
-            />
+            <div style={styles.passwordWrapper}>
+              <input
+                id="password"
+                style={{ ...styles.input, paddingRight: '2.5rem' }}
+                type={showPassword ? 'text' : 'password'}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
+                required
+                disabled={loading}
+              />
+              <button
+                type="button"
+                style={styles.togglePassword}
+                onClick={() => setShowPassword((v) => !v)}
+                aria-label={showPassword ? t('auth.hidePassword') : t('auth.showPassword')}
+                tabIndex={loading ? -1 : 0}
+              >
+                {showPassword ? <IconEyeOff /> : <IconEye />}
+              </button>
+            </div>
           </label>
 
-          {error && <p style={styles.errorMsg}>{error}</p>}
+          {error && (
+            <p style={styles.errorMsg} role="alert">
+              <IconAlertCircle style={{ flexShrink: 0 }} />
+              {error}
+            </p>
+          )}
 
           <button style={styles.btn} type="submit" disabled={loading}>
             {loading ? t('common.loading') : t('auth.login')}
@@ -87,57 +114,95 @@ const styles: Record<string, React.CSSProperties> = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    background: '#0f172a',
+    background:
+      'radial-gradient(1200px 600px at 50% -10%, rgba(74,99,224,0.16), transparent), var(--color-bg)',
+    padding: '1.5rem',
   },
   card: {
-    background: '#1e293b',
-    border: '1px solid #334155',
-    borderRadius: 12,
-    padding: '2rem 2.5rem',
+    background: 'var(--color-surface)',
+    border: '1px solid var(--color-border)',
+    borderRadius: 'var(--radius-lg)',
+    padding: '2rem 2.25rem',
     width: '100%',
-    maxWidth: 380,
-    boxShadow: '0 8px 32px rgba(0,0,0,0.4)',
+    maxWidth: 400,
+    boxShadow: 'var(--shadow-md)',
   },
-  langRow: { display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' },
-  title: { color: '#38bdf8', fontSize: '1.5rem', fontWeight: 700, marginBottom: '0.25rem' },
-  subtitle: { color: '#94a3b8', fontSize: '0.9rem', marginBottom: '1.5rem' },
-  form: { display: 'flex', flexDirection: 'column', gap: '1rem' },
+  topRow: { display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.75rem' },
+  brand: { display: 'flex', alignItems: 'center', gap: '0.65rem' },
+  brandMark: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 38,
+    height: 38,
+    borderRadius: 'var(--radius-md)',
+    background: 'var(--color-primary)',
+    color: 'var(--color-primary-contrast)',
+    fontWeight: 700,
+    fontSize: '0.85rem',
+    letterSpacing: '0.02em',
+    flexShrink: 0,
+  },
+  brandTitle: { color: 'var(--color-text)', fontSize: '0.92rem', fontWeight: 700, lineHeight: 1.2, margin: 0 },
+  brandSubtitle: { color: 'var(--color-text-muted)', fontSize: '0.75rem', margin: 0 },
+  title: { color: 'var(--color-text)', fontSize: '1.35rem', fontWeight: 700, marginBottom: '1.5rem' },
+  form: { display: 'flex', flexDirection: 'column', gap: '1.1rem' },
   label: {
     display: 'flex',
     flexDirection: 'column',
     gap: '0.4rem',
-    color: '#e2e8f0',
-    fontSize: '0.875rem',
+    color: 'var(--color-text)',
+    fontSize: '0.85rem',
     fontWeight: 500,
   },
   input: {
-    background: '#0f172a',
-    border: '1px solid #475569',
-    borderRadius: 6,
-    padding: '0.55rem 0.75rem',
-    color: '#e2e8f0',
-    fontSize: '0.9rem',
+    background: 'var(--color-bg)',
+    border: '1px solid var(--color-border-strong)',
+    borderRadius: 'var(--radius-sm)',
+    padding: '0.65rem 0.8rem',
+    color: 'var(--color-text)',
+    fontSize: '0.95rem',
+    fontFamily: 'inherit',
     outline: 'none',
+    width: '100%',
+    transition: 'border-color var(--transition-fast)',
+  },
+  passwordWrapper: { position: 'relative', display: 'flex' },
+  togglePassword: {
+    position: 'absolute',
+    right: 4,
+    top: '50%',
+    transform: 'translateY(-50%)',
+    background: 'transparent',
+    border: 'none',
+    color: 'var(--color-text-muted)',
+    cursor: 'pointer',
+    padding: '0.4rem',
+    display: 'flex',
+    borderRadius: 'var(--radius-sm)',
   },
   errorMsg: {
-    background: 'rgba(248,113,113,0.12)',
-    border: '1px solid #f87171',
-    borderRadius: 6,
-    color: '#f87171',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.5rem',
+    background: 'var(--color-danger-bg)',
+    border: '1px solid rgba(248,113,113,0.35)',
+    borderRadius: 'var(--radius-sm)',
+    color: 'var(--color-danger)',
     fontSize: '0.85rem',
-    padding: '0.5rem 0.75rem',
+    padding: '0.6rem 0.75rem',
     margin: 0,
   },
   btn: {
-    background: '#38bdf8',
-    color: '#0f172a',
+    background: 'var(--color-primary)',
+    color: 'var(--color-primary-contrast)',
     border: 'none',
-    borderRadius: 6,
-    padding: '0.65rem',
+    borderRadius: 'var(--radius-sm)',
+    padding: '0.7rem',
     fontWeight: 700,
     fontSize: '0.95rem',
     cursor: 'pointer',
-    marginTop: '0.5rem',
-    transition: 'opacity 0.2s',
+    marginTop: '0.25rem',
+    transition: 'background-color var(--transition-fast)',
   },
 }

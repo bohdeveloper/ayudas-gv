@@ -9,7 +9,7 @@
 | `main` | Setup (S1) | ✅ Mergeada — Hito M1 el 2026-06-09 | — |
 | `feat/semana2-auth` | S2 — Auth backend | ✅ Completada — Hito M2 el 2026-06-12 | — |
 | `feat/semana3-login-frontend` | S3 — Login UI | ✅ Completada — Hito M3 el 2026-06-26 | — |
-| `feat/semana4-busqueda` | S4 — Búsqueda | ⏳ Pendiente | — |
+| `feat/semana4-busqueda` | S4 — Búsqueda | 🔄 En curso | — |
 | `feat/semana5-detalle-secciones` | S5 — Detalle | ⏳ Pendiente | — |
 | `feat/semana6-transversales` | S6 — Transversales | ⏳ Pendiente | — |
 
@@ -107,21 +107,21 @@
 > Rama: `feat/semana4-busqueda`
 
 **Tareas:**
-- [ ] Migraciones V2: `persona`, `expediente`, `expediente_interesado`, `datos_contacto`, `solicitud_ayuda` y tablas de detalle — con datos de ejemplo *(SQL ya preparado, pendiente verificar con docker-compose)*
-- [ ] `GET /api/v1/expedientes` con filtros (número, tipo, estado, documento, fechas), paginación y ordenación mediante SQL parametrizado
-- [ ] Descripción de catálogo devuelta según el idioma de la petición (`Accept-Language`)
-- [ ] Frontend: formulario de filtros y tabla de resultados paginada conectada al backend
+- [x] Migraciones V2: `persona`, `expediente`, `expediente_interesado`, `datos_contacto`, `solicitud_ayuda` y tablas de detalle — con datos de ejemplo *(verificado con docker-compose: V1-V4 aplicadas sin errores)*
+- [x] `GET /api/v1/expedientes` con filtros (número, tipo, estado, documento, fechas), paginación y ordenación mediante SQL parametrizado
+- [x] Descripción de catálogo devuelta según el idioma de la petición (`Accept-Language`)
+- [x] Frontend: formulario de filtros y tabla de resultados paginada conectada al backend
 
 **Aprende:** JOINs y paginación en SQL, consultas dinámicas seguras (parametrizadas), tablas y paginación en React.
 
 **Hecho cuando:** Se buscan expedientes por varios filtros y se ven los resultados paginados en el idioma activo.
 
 **Hitos diarios:**
-- Día 1 — migración de `persona`, `expediente` y `expediente_interesado` con datos de ejemplo
-- Día 2 — migración de `datos_contacto`, `solicitud_ayuda` y tablas de detalle con más datos de ejemplo
-- Día 3 — endpoint de búsqueda con filtros básicos (número, tipo, estado) en SQL parametrizado
-- Día 4 — paginación, ordenación y descripción de catálogo según idioma en el resultado (backend)
-- Día 5 — frontend: formulario de filtros y tabla de resultados paginada conectada al backend
+- Día 1 — migración de `persona`, `expediente` y `expediente_interesado` con datos de ejemplo ✅
+- Día 2 — migración de `datos_contacto`, `solicitud_ayuda` y tablas de detalle con más datos de ejemplo ✅
+- Día 3 — endpoint de búsqueda con filtros básicos (número, tipo, estado) en SQL parametrizado ✅
+- Día 4 — paginación, ordenación y descripción de catálogo según idioma en el resultado (backend) ✅
+- Día 5 — frontend: formulario de filtros y tabla de resultados paginada conectada al backend ✅
 
 **🏁 Hito M4 — Resultado demostrable:** Buscar expedientes con filtros y ver resultados paginados
 

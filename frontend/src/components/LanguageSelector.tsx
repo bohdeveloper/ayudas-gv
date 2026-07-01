@@ -6,7 +6,7 @@ const LANGUAGES = [
 ]
 
 export default function LanguageSelector() {
-  const { i18n } = useTranslation()
+  const { i18n, t } = useTranslation()
   const current = i18n.language?.slice(0, 2) ?? 'es'
 
   function changeLanguage(code: string) {
@@ -15,10 +15,11 @@ export default function LanguageSelector() {
   }
 
   return (
-    <div style={styles.wrapper}>
+    <div style={styles.wrapper} role="group" aria-label={t('common.language')}>
       {LANGUAGES.map(({ code, label }) => (
         <button
           key={code}
+          type="button"
           onClick={() => changeLanguage(code)}
           style={{
             ...styles.btn,
@@ -34,22 +35,28 @@ export default function LanguageSelector() {
 }
 
 const styles: Record<string, React.CSSProperties> = {
-  wrapper: { display: 'flex', gap: 4 },
+  wrapper: {
+    display: 'flex',
+    gap: 2,
+    background: 'var(--color-bg)',
+    border: '1px solid var(--color-border)',
+    borderRadius: 'var(--radius-sm)',
+    padding: 2,
+  },
   btn: {
     background: 'transparent',
-    border: '1px solid #475569',
-    color: '#94a3b8',
-    borderRadius: 5,
-    padding: '3px 9px',
+    border: 'none',
+    color: 'var(--color-text-muted)',
+    borderRadius: 4,
+    padding: '4px 10px',
     cursor: 'pointer',
-    fontSize: '0.78rem',
+    fontSize: '0.75rem',
     fontWeight: 600,
     letterSpacing: '0.04em',
-    transition: 'background 0.15s, color 0.15s',
+    transition: 'background-color var(--transition-fast), color var(--transition-fast)',
   },
   btnActive: {
-    background: '#38bdf8',
-    borderColor: '#38bdf8',
-    color: '#0f172a',
+    background: 'var(--color-primary)',
+    color: 'var(--color-primary-contrast)',
   },
 }

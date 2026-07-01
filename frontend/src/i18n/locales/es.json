@@ -13,7 +13,15 @@
     "no": "No",
     "page": "Página",
     "of": "de",
-    "results": "resultados"
+    "results": "resultados",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "all": "Todos",
+    "lightMode": "Activar modo claro",
+    "darkMode": "Activar modo oscuro",
+    "settings": "Ajustes",
+    "appearance": "Apariencia",
+    "close": "Cerrar"
   },
   "auth": {
     "login": "Iniciar sesión",
@@ -21,7 +29,9 @@
     "password": "Contraseña",
     "loginError": "Credenciales incorrectas",
     "sessionExpired": "Sesión expirada. Inicie sesión de nuevo",
-    "accessDenied": "No tiene permisos para acceder a esta sección"
+    "accessDenied": "No tiene permisos para acceder a esta sección",
+    "showPassword": "Mostrar contraseña",
+    "hidePassword": "Ocultar contraseña"
   },
   "nav": {
     "expedientes": "Expedientes",
@@ -57,6 +67,12 @@
       "EMAIL": "Correo electrónico",
       "SMS": "SMS",
       "POSTAL": "Correo postal"
+    },
+    "estados": {
+      "REGISTRADO": "Registrado",
+      "ASIGNADO": "Asignado a instructor",
+      "EN_REVISION": "En revisión",
+      "RESUELTO": "Resuelto"
     }
   },
   "roles": {

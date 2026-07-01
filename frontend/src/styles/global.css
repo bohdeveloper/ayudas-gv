@@ -1,0 +1,156 @@
+/**
+ * Tokens de diseño y estilos base de la aplicación.
+ *
+ * Los componentes referencian estas variables (var(--color-x)) en sus estilos
+ * inline en lugar de hex hardcodeado, para mantener un único punto de verdad
+ * visual y poder ajustar la paleta sin tocar cada componente.
+ */
+:root {
+  /* Superficies */
+  --color-bg: #0a0f1c;
+  --color-surface: #131a2b;
+  --color-surface-raised: #1a2338;
+  --color-border: #2a3552;
+  --color-border-strong: #3a4770;
+
+  /* Texto */
+  --color-text: #e8ecf5;
+  --color-text-muted: #93a0bd;
+  --color-text-faint: #5b6884;
+
+  /* Marca / acción */
+  --color-primary: #4a63e0;
+  --color-primary-hover: #3b52c4;
+  --color-primary-contrast: #ffffff;
+
+  /* Estado semántico */
+  --color-success: #34d399;
+  --color-success-bg: rgba(52, 211, 153, 0.13);
+  --color-warning: #fbbf24;
+  --color-warning-bg: rgba(251, 191, 36, 0.13);
+  --color-info: #60a5fa;
+  --color-info-bg: rgba(96, 165, 250, 0.13);
+  --color-neutral: #93a0bd;
+  --color-neutral-bg: rgba(147, 160, 189, 0.13);
+  --color-danger: #f87171;
+  --color-danger-bg: rgba(248, 113, 113, 0.12);
+
+  /* Tipografía */
+  --font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* Forma */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --shadow-md: 0 8px 28px rgba(0, 0, 0, 0.35);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.25);
+
+  /* Movimiento */
+  --transition-fast: 150ms ease-out;
+  --transition-base: 200ms ease-out;
+}
+
+/**
+ * Tema claro — mismo conjunto de tokens, paleta reformulada para fondo claro
+ * (no es una simple inversión: los semánticos se oscurecen para mantener
+ * contraste AA sobre blanco). Activado con [data-theme="light"] en <html>,
+ * gestionado por src/store/themeStore.ts.
+ */
+:root[data-theme='light'] {
+  --color-bg: #f4f6fb;
+  --color-surface: #ffffff;
+  --color-surface-raised: #eef1f8;
+  --color-border: #dde3ef;
+  --color-border-strong: #c7d0e3;
+
+  --color-text: #121a2e;
+  --color-text-muted: #57607a;
+  --color-text-faint: #8891ab;
+
+  --color-primary: #3b52c4;
+  --color-primary-hover: #2f43a1;
+  --color-primary-contrast: #ffffff;
+
+  --color-success: #0f9d66;
+  --color-success-bg: rgba(15, 157, 102, 0.1);
+  --color-warning: #b45309;
+  --color-warning-bg: rgba(180, 83, 9, 0.1);
+  --color-info: #2563eb;
+  --color-info-bg: rgba(37, 99, 235, 0.1);
+  --color-neutral: #57607a;
+  --color-neutral-bg: rgba(87, 96, 122, 0.1);
+  --color-danger: #dc2626;
+  --color-danger-bg: rgba(220, 38, 38, 0.08);
+
+  --shadow-md: 0 8px 28px rgba(15, 23, 42, 0.1);
+  --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.07);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+:root {
+  color-scheme: dark;
+}
+:root[data-theme='light'] {
+  color-scheme: light;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color var(--transition-base), color var(--transition-base);
+}
+
+/* Foco visible solo para navegación por teclado — no en clic de ratón */
+:focus {
+  outline: none;
+}
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+button {
+  font-family: inherit;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+@keyframes ayudasgv-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -107,16 +107,33 @@ const semanasDir  = path.join(reportesDir, 'semanas');
 
 if (!fs.existsSync(semanasDir)) fs.mkdirSync(semanasDir, { recursive: true });
 
-const monday = getMondayOf(new Date());
-const days   = [];
+// Busca el reporte de un día tanto en docs/reportes/ (planos) como en
+// docs/reportes/semanaN/ (los reportes se archivan por semana tras generarse).
+function findReportFile(iso, slug) {
+  const flat = path.join(reportesDir, `${iso}-${slug}.md`);
+  if (fs.existsSync(flat)) return flat;
+
+  const subdirs = fs.readdirSync(reportesDir, { withFileTypes: true })
+    .filter((e) => e.isDirectory() && e.name !== 'semanas');
+  for (const dir of subdirs) {
+    const candidate = path.join(reportesDir, dir.name, `${iso}-${slug}.md`);
+    if (fs.existsSync(candidate)) return candidate;
+  }
+  return null;
+}
+
+// Fecha opcional por CLI (cualquier día de la semana deseada); por defecto, hoy.
+const dateArg = process.argv[2];
+const monday  = getMondayOf(dateArg ? new Date(dateArg) : new Date());
+const days    = [];
 
 for (let i = 0; i < 5; i++) {
   const d    = addDays(monday, i);
   const slug = DAY_SLUG[d.getDay()];
   const iso  = toISO(d);
-  const file = path.join(reportesDir, `${iso}-${slug}.md`);
+  const file = findReportFile(iso, slug);
 
-  if (fs.existsSync(file)) {
+  if (file) {
     const raw = fs.readFileSync(file, 'utf8');
     days.push({
       iso,

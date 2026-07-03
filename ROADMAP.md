@@ -10,7 +10,7 @@
 | `feat/semana2-auth` | S2 — Auth backend | ✅ Completada — Hito M2 el 2026-06-12 | ✅ 2026-07-03 |
 | `feat/semana3-login-frontend` | S3 — Login UI | ✅ Completada — Hito M3 el 2026-06-26 | ✅ 2026-07-03 |
 | `feat/semana4-busqueda` | S4 — Búsqueda | ✅ Completada — Hito M4 el 2026-07-03 | ✅ 2026-07-03 |
-| `feat/semana5-detalle-secciones` | S5 — Detalle | ⏳ Pendiente | — |
+| `feat/semana5-detalle-secciones` | S5 — Detalle | ✅ Completada — Hito M5 el 2026-07-10 | — |
 | `feat/semana6-transversales` | S6 — Transversales | ⏳ Pendiente | — |
 
 ---
@@ -127,27 +127,27 @@
 
 ---
 
-### Semana 5 — Consulta del expediente por secciones
-> Rama: `feat/semana5-detalle-secciones`
+### Semana 5 — Consulta del expediente por secciones ✅ COMPLETADA
+> Rama: `feat/semana5-detalle-secciones` | Hito M5 alcanzado: 2026-07-10
 
 **Tareas:**
-- [ ] `GET /api/v1/expedientes/{id}/generales` — DTO de datos generales
-- [ ] `GET /api/v1/expedientes/{id}/interesados` — DTO de interesados
-- [ ] `GET /api/v1/expedientes/{id}/contacto` — DTO de contacto y aviso
-- [ ] `GET /api/v1/expedientes/{id}/ayuda` — DTO diferenciado por tipo de ayuda (ASIG_DISCAP / PAGO_NAC / PARTO_MULT)
-- [ ] Frontend: vista de detalle con pestañas que cargan cada sección de forma independiente
-- [ ] Etiquetas de la UI internacionalizadas; enlace búsqueda → detalle
+- [x] `GET /api/v1/expedientes/{id}/generales` — DTO de datos generales
+- [x] `GET /api/v1/expedientes/{id}/interesados` — DTO de interesados
+- [x] `GET /api/v1/expedientes/{id}/contacto` — DTO de contacto y aviso
+- [x] `GET /api/v1/expedientes/{id}/ayuda` — DTO diferenciado por tipo de ayuda (ASIG_DISCAP / PAGO_NAC / PARTO_MULT)
+- [x] Frontend: vista de detalle con pestañas que cargan cada sección de forma independiente
+- [x] Etiquetas de la UI internacionalizadas; enlace búsqueda → detalle
 
 **Aprende:** Diseño de DTOs por sección, composición de vistas en React.
 
 **Hecho cuando:** Desde un resultado de búsqueda se abre el expediente y se navega por sus secciones, todas traducidas.
 
 **Hitos diarios:**
-- Día 1 — endpoint y DTO de la sección datos generales del expediente
-- Día 2 — endpoints/DTOs de interesados y de contacto y aviso
-- Día 3 — endpoint/DTO de datos de la ayuda (según tipo de ayuda)
-- Día 4 — frontend: vista de detalle con pestañas que cargan cada sección de forma independiente
-- Día 5 — etiquetas del detalle internacionalizadas y enlace búsqueda → detalle
+- Día 1 — endpoint y DTO de la sección datos generales del expediente ✅
+- Día 2 — endpoints/DTOs de interesados y de contacto y aviso ✅
+- Día 3 — endpoint/DTO de datos de la ayuda (según tipo de ayuda) ✅
+- Día 4 — frontend: vista de detalle con pestañas que cargan cada sección de forma independiente ✅
+- Día 5 — etiquetas del detalle internacionalizadas y enlace búsqueda → detalle ✅
 
 **🏁 Hito M5 — Resultado demostrable:** Abrir un expediente y navegar sus secciones
 

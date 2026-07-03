@@ -4,6 +4,7 @@ import ProtectedRoute from './ProtectedRoute'
 import MainLayout from '../components/layout/MainLayout'
 import LoginPage from '../pages/Login/LoginPage'
 import ExpedientesPage from '../pages/Expedientes/ExpedientesPage'
+import ExpedienteDetalle from '../pages/Expedientes/ExpedienteDetalle'
 
 export default function AppRouter() {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
@@ -25,7 +26,7 @@ export default function AppRouter() {
         }
       >
         <Route path="/expedientes" element={<ExpedientesPage />} />
-        {/* Semana 5: <Route path="/expedientes/:id" element={<ExpedienteDetalle />} /> */}
+        <Route path="/expedientes/:id" element={<ExpedienteDetalle />} />
       </Route>
 
       {/* Raíz y catch-all */}

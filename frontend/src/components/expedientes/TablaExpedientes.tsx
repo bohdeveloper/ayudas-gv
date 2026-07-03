@@ -1,7 +1,9 @@
+import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import type { ExpedienteResumen } from '../../types'
 import EstadoBadge from './EstadoBadge'
 import { IconInbox } from '../icons/Icon'
+import { formatFecha } from '../../utils/formatFecha'
 
 interface Props {
   expedientes: ExpedienteResumen[]
@@ -12,14 +14,6 @@ const SKELETON_ROWS = 5
 
 export default function TablaExpedientes({ expedientes, loading }: Props) {
   const { t, i18n } = useTranslation()
-
-  function formatFecha(fecha: string) {
-    return new Date(fecha).toLocaleDateString(i18n.language, {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    })
-  }
 
   return (
     <div style={styles.wrapper}>
@@ -50,14 +44,16 @@ export default function TablaExpedientes({ expedientes, loading }: Props) {
               expedientes.map((exp) => (
                 <tr key={exp.id} style={styles.tr}>
                   <td style={{ ...styles.td, ...styles.noWrap, fontWeight: 600 }} className="tabular-nums">
-                    {exp.numeroExpediente}
+                    <Link to={`/expedientes/${exp.id}`} style={styles.link}>
+                      {exp.numeroExpediente}
+                    </Link>
                   </td>
                   <td style={styles.td}>{exp.tipoAyuda.descripcion}</td>
                   <td style={{ ...styles.td, ...styles.noWrap }}>
                     <EstadoBadge codigo={exp.estado.codigo} descripcion={exp.estado.descripcion} />
                   </td>
                   <td style={{ ...styles.td, ...styles.noWrap }} className="tabular-nums">
-                    {formatFecha(exp.fechaRegistro)}
+                    {formatFecha(exp.fechaRegistro, i18n.language)}
                   </td>
                   <td
                     style={{
@@ -116,6 +112,7 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: '0.87rem',
   },
   noWrap: { whiteSpace: 'nowrap' },
+  link: { color: 'var(--color-primary)', textDecoration: 'none' },
   skeletonBar: {
     display: 'block',
     height: 12,

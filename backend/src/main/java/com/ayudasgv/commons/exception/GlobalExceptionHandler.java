@@ -35,6 +35,15 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * Captura la ausencia de un recurso solicitado (expediente, sección de detalle...) → 404 Not Found.
+     */
+    @ExceptionHandler(RecursoNoEncontradoException.class)
+    public ResponseEntity<ErrorResponse> handleRecursoNoEncontrado(RecursoNoEncontradoException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(new ErrorResponse(404, "Not Found", ex.getMessage()));
+    }
+
+    /**
      * Captura errores de validación de @NotBlank, @NotNull, etc. → 400 Bad Request.
      *
      * MethodArgumentNotValidException se lanza cuando @Valid falla en el controlador.

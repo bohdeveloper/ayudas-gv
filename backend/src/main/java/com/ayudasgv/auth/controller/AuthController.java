@@ -3,6 +3,7 @@ package com.ayudasgv.auth.controller;
 import com.ayudasgv.auth.dto.LoginRequest;
 import com.ayudasgv.auth.dto.LoginResponse;
 import com.ayudasgv.auth.service.AuthService;
+import com.ayudasgv.commons.audit.Auditable;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -67,6 +68,7 @@ public class AuthController {
         @ApiResponse(responseCode = "401", description = "Credenciales incorrectas")
     })
     @PostMapping("/login")
+    @Auditable(accion = "LOGIN", entidad = "USUARIO")
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
         LoginResponse response = authService.login(request);
         return ResponseEntity.ok(response);

@@ -11,7 +11,7 @@
 | `feat/semana3-login-frontend` | S3 — Login UI | ✅ Completada — Hito M3 el 2026-06-26 | ✅ 2026-07-03 |
 | `feat/semana4-busqueda` | S4 — Búsqueda | ✅ Completada — Hito M4 el 2026-07-03 | ✅ 2026-07-03 |
 | `feat/semana5-detalle-secciones` | S5 — Detalle | ✅ Completada — Hito M5 el 2026-07-10 | — |
-| `feat/semana6-transversales` | S6 — Transversales | ⏳ Pendiente | — |
+| `feat/semana6-transversales` | S6 — Transversales | ✅ Completada — Hito M6 el 2026-07-17 | — |
 
 ---
 
@@ -153,33 +153,35 @@
 
 ---
 
-### Semana 6 — Transversales, pulido y demo
-> Rama: `feat/semana6-transversales`
+### Semana 6 — Transversales, pulido y demo ✅ COMPLETADA
+> Rama: `feat/semana6-transversales` | Hito M6 alcanzado: 2026-07-17
 
 **Tareas:**
-- [ ] Auditoría transversal (AOP) que registra login y consultas en la tabla `auditoria`
-- [ ] Logging estructurado con `correlation-id` propagado por petición
-- [ ] `@ControllerAdvice` — respuestas de error homogéneas
-- [ ] Swagger completo y documentado
-- [ ] Pruebas unitarias de capa de servicios (JUnit 5 + Mockito) sobre la lógica clave
-- [ ] Prueba de repositorio/controlador (`@WebMvcTest` / MockMvc)
-- [ ] Pruebas de componentes frontend con Vitest + `@testing-library/react`: `LoginForm`, `ExpedienteTable`, `ExpedienteDetalle`
-- [ ] Pruebas de hooks con `renderHook`: `useAuth` (login, logout, token expirado)
-- [ ] Repaso de autorización por rol
-- [ ] README de arranque verificado y demo del MVP de principio a fin
+- [x] Auditoría transversal (AOP) que registra login y consultas en la tabla `auditoria`
+- [x] Logging estructurado con `correlation-id` propagado por petición
+- [x] `@ControllerAdvice` — respuestas de error homogéneas
+- [x] Swagger completo y documentado
+- [x] Pruebas unitarias de capa de servicios (JUnit 5 + Mockito) sobre la lógica clave
+- [x] Prueba de repositorio/controlador (`@WebMvcTest` / MockMvc)
+- [x] Pruebas de componentes frontend con Vitest + `@testing-library/react`: `LoginPage`, `TablaExpedientes`, `ExpedienteDetalle`
+- [x] Pruebas de hooks con `renderHook`: `useAuthStore` (login, logout) + interceptor de axios (token expirado)
+- [x] Repaso de autorización por rol
+- [x] README de arranque verificado y demo del MVP de principio a fin
 
 **Aprende:** AOP/interceptores, pruebas backend (JUnit 5 + Mockito + `@WebMvcTest`), pruebas frontend (Vitest + `@testing-library/react` + `vi.mock`).
 
 **Hecho cuando:** Las acciones relevantes quedan auditadas, la suite de pruebas pasa y el MVP se puede demostrar de principio a fin.
 
 **Hitos diarios:**
-- Día 1 — auditoría transversal (AOP) registrando login y consultas en tabla `auditoria`
-- Día 2 — logging estructurado con correlation-id y manejo de errores homogéneo (`@ControllerAdvice`)
-- Día 3 — pruebas unitarias de la capa de servicios (JUnit + Mockito) sobre la lógica clave
-- Día 4 — prueba de repositorio/controlador (`@WebMvcTest`), pruebas de componentes y hooks frontend con Vitest + Testing Library, repaso de autorización por rol
-- Día 5 — README de arranque, repaso final y demo del MVP completa
+- Día 1 — auditoría transversal (AOP) registrando login y consultas en tabla `auditoria` ✅
+- Día 2 — logging estructurado con correlation-id y manejo de errores homogéneo (`@ControllerAdvice`) ✅
+- Día 3 — pruebas unitarias de la capa de servicios (JUnit + Mockito) sobre la lógica clave ✅
+- Día 4 — prueba de repositorio/controlador (`@WebMvcTest`), pruebas de componentes y hooks frontend con Vitest + Testing Library, repaso de autorización por rol ✅
+- Día 5 — README de arranque, repaso final y demo del MVP completa ✅
 
 **🏁 Hito M6 — Resultado demostrable:** MVP cerrado: auditoría, pruebas, documentación y demo
+
+> **Nota:** el proyecto no tiene un hook `useAuth` separado — la sesión vive en el store de Zustand `useAuthStore`, que es lo que se probó con `renderHook`. El componente `LoginForm` mencionado originalmente es en realidad `LoginPage` (no hay un subcomponente de formulario aislado).
 
 ---
 

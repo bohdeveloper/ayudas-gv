@@ -4,6 +4,7 @@ import com.ayudasgv.auth.security.JwtAuthenticationFilter;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -28,9 +29,16 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
  *   ... → JwtAuthenticationFilter → UsernamePasswordAuthenticationFilter → ...
  *   Nuestro filtro va ANTES porque necesita poblar el SecurityContext antes
  *   de que Spring compruebe si la petición está autenticada.
+ *
+ * @EnableMethodSecurity activa las anotaciones @PreAuthorize/@PostAuthorize a
+ * nivel de método. En la Fase 0 todos los roles (CONSULTOR, INSTRUCTOR,
+ * RESPONSABLE, ADMIN) tienen los mismos permisos de solo lectura, así que hoy
+ * no hay ningún @PreAuthorize en los controladores — pero la infraestructura
+ * queda lista para la Fase 1, donde la tramitación se restringe por rol.
  */
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
     // Rutas públicas: no requieren token JWT

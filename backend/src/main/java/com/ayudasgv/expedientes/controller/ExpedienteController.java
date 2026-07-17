@@ -1,5 +1,6 @@
 package com.ayudasgv.expedientes.controller;
 
+import com.ayudasgv.commons.audit.Auditable;
 import com.ayudasgv.expedientes.dto.ExpedienteResumenDto;
 import com.ayudasgv.expedientes.dto.PageResponseDto;
 import com.ayudasgv.expedientes.dto.SeccionAyudaDto;
@@ -9,6 +10,8 @@ import com.ayudasgv.expedientes.dto.SeccionInteresadosDto;
 import com.ayudasgv.expedientes.service.ExpedienteService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -49,7 +52,12 @@ public class ExpedienteController {
                 + "Las descripciones de catálogo (tipo de ayuda, estado) se traducen según Accept-Language.",
         security = @SecurityRequirement(name = "bearerAuth")
     )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Página de resultados (puede estar vacía)"),
+        @ApiResponse(responseCode = "401", description = "Falta el token o no es válido")
+    })
     @GetMapping
+    @Auditable(accion = "READ", entidad = "EXPEDIENTE")
     public ResponseEntity<PageResponseDto<ExpedienteResumenDto>> buscar(
             @Parameter(description = "Número de expediente (coincidencia parcial)", example = "EXP-2024")
             @RequestParam(required = false) String numeroExpediente,
@@ -96,7 +104,13 @@ public class ExpedienteController {
                 + "404 si no existe un expediente con ese id.",
         security = @SecurityRequirement(name = "bearerAuth")
     )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Datos generales del expediente"),
+        @ApiResponse(responseCode = "401", description = "Falta el token o no es válido"),
+        @ApiResponse(responseCode = "404", description = "No existe un expediente con ese id")
+    })
     @GetMapping("/{id}/generales")
+    @Auditable(accion = "READ", entidad = "EXPEDIENTE")
     public ResponseEntity<SeccionGeneralesDto> generales(
             @Parameter(description = "Id del expediente") @PathVariable Long id,
             Locale locale) {
@@ -109,7 +123,13 @@ public class ExpedienteController {
                 + "404 si no existe un expediente con ese id.",
         security = @SecurityRequirement(name = "bearerAuth")
     )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Interesados del expediente"),
+        @ApiResponse(responseCode = "401", description = "Falta el token o no es válido"),
+        @ApiResponse(responseCode = "404", description = "No existe un expediente con ese id")
+    })
     @GetMapping("/{id}/interesados")
+    @Auditable(accion = "READ", entidad = "EXPEDIENTE")
     public ResponseEntity<SeccionInteresadosDto> interesados(
             @Parameter(description = "Id del expediente") @PathVariable Long id) {
         return ResponseEntity.ok(expedienteService.obtenerInteresados(id));
@@ -121,7 +141,13 @@ public class ExpedienteController {
                 + "404 si el expediente no existe o no tiene datos de contacto registrados.",
         security = @SecurityRequirement(name = "bearerAuth")
     )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Contacto y aviso del expediente"),
+        @ApiResponse(responseCode = "401", description = "Falta el token o no es válido"),
+        @ApiResponse(responseCode = "404", description = "No existe el expediente o no tiene datos de contacto")
+    })
     @GetMapping("/{id}/contacto")
+    @Auditable(accion = "READ", entidad = "EXPEDIENTE")
     public ResponseEntity<SeccionContactoDto> contacto(
             @Parameter(description = "Id del expediente") @PathVariable Long id) {
         return ResponseEntity.ok(expedienteService.obtenerContacto(id));
@@ -133,7 +159,13 @@ public class ExpedienteController {
                 + "(ASIG_DISCAP / PAGO_NAC / PARTO_MULT). 404 si el expediente no existe o no tiene solicitud registrada.",
         security = @SecurityRequirement(name = "bearerAuth")
     )
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = "Datos de la ayuda solicitada"),
+        @ApiResponse(responseCode = "401", description = "Falta el token o no es válido"),
+        @ApiResponse(responseCode = "404", description = "No existe el expediente o no tiene solicitud registrada")
+    })
     @GetMapping("/{id}/ayuda")
+    @Auditable(accion = "READ", entidad = "EXPEDIENTE")
     public ResponseEntity<SeccionAyudaDto> ayuda(
             @Parameter(description = "Id del expediente") @PathVariable Long id) {
         return ResponseEntity.ok(expedienteService.obtenerAyuda(id));

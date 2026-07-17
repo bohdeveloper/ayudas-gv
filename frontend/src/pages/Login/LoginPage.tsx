@@ -44,7 +44,7 @@ export default function LoginPage() {
             <span style={styles.brandMark}>GV</span>
             <div>
               <p style={styles.brandTitle}>Ayudas GV</p>
-              <p style={styles.brandSubtitle}>Gestión de expedientes</p>
+              <p style={styles.brandSubtitle}>{t('auth.tagline')}</p>
             </div>
           </div>
           <LanguageSelector />

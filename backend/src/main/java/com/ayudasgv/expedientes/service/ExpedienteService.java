@@ -82,16 +82,14 @@ public class ExpedienteService {
     public SeccionContactoDto obtenerContacto(Long id) {
         comprobarExisteExpediente(id);
         return expedienteRepository.buscarContacto(id)
-                .orElseThrow(() -> new RecursoNoEncontradoException(
-                        "El expediente " + id + " no tiene datos de contacto registrados"));
+                .orElseThrow(() -> new RecursoNoEncontradoException("expediente.contacto.notfound", id));
     }
 
     /** Sección "Datos de la ayuda" — 404 si el expediente no existe o no tiene solicitud registrada. */
     public SeccionAyudaDto obtenerAyuda(Long id) {
         comprobarExisteExpediente(id);
         return expedienteRepository.buscarAyuda(id)
-                .orElseThrow(() -> new RecursoNoEncontradoException(
-                        "El expediente " + id + " no tiene una solicitud de ayuda registrada"));
+                .orElseThrow(() -> new RecursoNoEncontradoException("expediente.ayuda.notfound", id));
     }
 
     private void comprobarExisteExpediente(Long id) {
@@ -101,6 +99,6 @@ public class ExpedienteService {
     }
 
     private static RecursoNoEncontradoException expedienteNoEncontrado(Long id) {
-        return new RecursoNoEncontradoException("No existe un expediente con id " + id);
+        return new RecursoNoEncontradoException("expediente.notfound", id);
     }
 }

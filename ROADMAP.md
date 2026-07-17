@@ -15,6 +15,30 @@
 
 ---
 
+## Auditoría final de Fase 0 frente al enunciado (2026-07-17)
+
+Antes de dar por cerrada la Fase 0 se contrastó el código, migración por migración y
+endpoint por endpoint, contra `docs/instrucciones-iniciales/enunciado-proyecto-ayudas-gv.docx`.
+Se encontraron y cerraron 3 desviaciones puntuales sobre el enunciado:
+
+- **Sección 8.4** — los ficheros `messages_es/eu.properties` existían pero no se usaban:
+  `GlobalExceptionHandler` tenía los mensajes de error escritos directamente en español.
+  Ahora se resuelven vía `MessageSource` según `Accept-Language` (`RecursoNoEncontradoException`
+  y `BadCredentialsException` llevan la *clave* del mensaje, no el texto ya traducido; los
+  `@NotBlank` de `LoginRequest` usan `{clave}` para que Hibernate Validator también resuelva
+  contra el `MessageSource`). Se añadió además un `messages.properties` raíz (sin sufijo de
+  idioma) porque Spring Boot solo activa `MessageSourceAutoConfiguration` si ese fichero existe.
+- **Sección 10** — no había pruebas de repositorio/SQL contra una BD real. Se añadieron 25
+  pruebas nuevas (`@JdbcTest` + H2 en modo compatibilidad PostgreSQL, ejecutando las migraciones
+  Flyway reales) para `UsuarioRepository`, `ExpedienteRepository` y `AuditoriaRepository`.
+- Un texto de `LoginPage` ("Gestión de expedientes") no pasaba por `i18next` — corregido con
+  la clave `auth.tagline`.
+
+Backend: 52 pruebas en verde (27 previas + 25 de repositorio). Frontend: 16 pruebas y build
+sin cambios. Detalle completo de la auditoría en el historial de conversación de esta sesión.
+
+---
+
 ## Fase 0 — MVP (6 semanas) ✅ COMPLETADA
 
 **Objetivo:** Una persona autenticada puede buscar y consultar expedientes organizados por secciones.

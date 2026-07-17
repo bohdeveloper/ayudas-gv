@@ -74,7 +74,7 @@ Aplicación: http://localhost:5173
 ## Pruebas
 
 ```bash
-# Backend — JUnit 5 + Mockito + @WebMvcTest (26 pruebas)
+# Backend — JUnit 5 + Mockito + @WebMvcTest + @JdbcTest con H2 (52 pruebas)
 cd backend
 mvn test
 

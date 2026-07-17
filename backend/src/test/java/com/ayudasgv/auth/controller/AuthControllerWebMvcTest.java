@@ -8,6 +8,7 @@ import com.ayudasgv.commons.exception.GlobalExceptionHandler;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.context.MessageSourceAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -35,10 +36,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @Import(JwtProvider.class): @WebMvcTest detecta igualmente JwtAuthenticationFilter
  * (es un {@code Filter} — uno de los tipos que este slice registra siempre, aunque
  * los filtros estén desactivados), y ese filtro necesita JwtProvider en su constructor.
+ *
+ * @Import(MessageSourceAutoConfiguration.class): @WebMvcTest no carga la aplicación
+ * completa, así que el MessageSource resuelto por spring.messages.basename no está
+ * disponible por defecto — sin esto, GlobalExceptionHandler recibiría un MessageSource
+ * "vacío" y devolvería la clave sin resolver en vez del texto de messages_es/eu.properties.
  */
 @WebMvcTest(AuthController.class)
 @AutoConfigureMockMvc(addFilters = false)
-@Import({GlobalExceptionHandler.class, JwtProvider.class})
+@Import({GlobalExceptionHandler.class, JwtProvider.class, MessageSourceAutoConfiguration.class})
 class AuthControllerWebMvcTest {
 
     @Autowired
@@ -62,14 +68,19 @@ class AuthControllerWebMvcTest {
 
     @Test
     void login_conCredencialesIncorrectas_devuelve401Homogeneo() throws Exception {
-        when(authService.login(any())).thenThrow(new BadCredentialsException("Credenciales incorrectas"));
+        when(authService.login(any())).thenThrow(new BadCredentialsException("auth.login.error"));
 
+        // Accept-Language explícito: el mensaje se resuelve vía MessageSource según el idioma
+        // de la petición, no está hardcodeado — sin la cabecera, el locale por defecto de
+        // MockHttpServletRequest no es determinista entre entornos (ver sección 8.4 del enunciado).
         mockMvc.perform(post("/v1/auth/login")
+                        .header("Accept-Language", "es")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(new LoginRequest("admin", "mala-clave"))))
                 .andExpect(status().isUnauthorized())
                 .andExpect(jsonPath("$.status").value(401))
-                .andExpect(jsonPath("$.error").value("Unauthorized"));
+                .andExpect(jsonPath("$.error").value("Unauthorized"))
+                .andExpect(jsonPath("$.message").value("Credenciales incorrectas"));
     }
 
     @Test

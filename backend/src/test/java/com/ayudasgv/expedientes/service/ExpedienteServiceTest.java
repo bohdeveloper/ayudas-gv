@@ -104,9 +104,15 @@ class ExpedienteServiceTest {
     void obtenerGenerales_conIdInexistente_lanza404() {
         when(expedienteRepository.buscarGenerales(eq(99L), any())).thenReturn(Optional.empty());
 
+        // La excepción lleva la CLAVE del mensaje (para que GlobalExceptionHandler la
+        // resuelva vía MessageSource según Accept-Language), no el texto ya traducido.
         assertThatThrownBy(() -> expedienteService.obtenerGenerales(99L, Locale.forLanguageTag("es")))
                 .isInstanceOf(RecursoNoEncontradoException.class)
-                .hasMessageContaining("99");
+                .satisfies(ex -> {
+                    var notFound = (RecursoNoEncontradoException) ex;
+                    assertThat(notFound.getMessageKey()).isEqualTo("expediente.notfound");
+                    assertThat(notFound.getArgs()).containsExactly(99L);
+                });
     }
 
     @Test
@@ -135,7 +141,8 @@ class ExpedienteServiceTest {
 
         assertThatThrownBy(() -> expedienteService.obtenerContacto(1L))
                 .isInstanceOf(RecursoNoEncontradoException.class)
-                .hasMessageContaining("contacto");
+                .satisfies(ex -> assertThat(((RecursoNoEncontradoException) ex).getMessageKey())
+                        .isEqualTo("expediente.contacto.notfound"));
     }
 
     @Test
@@ -145,7 +152,8 @@ class ExpedienteServiceTest {
 
         assertThatThrownBy(() -> expedienteService.obtenerAyuda(1L))
                 .isInstanceOf(RecursoNoEncontradoException.class)
-                .hasMessageContaining("solicitud");
+                .satisfies(ex -> assertThat(((RecursoNoEncontradoException) ex).getMessageKey())
+                        .isEqualTo("expediente.ayuda.notfound"));
     }
 
     @Test

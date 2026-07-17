@@ -12,6 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.context.MessageSourceAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
@@ -39,9 +40,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * INSTRUCTOR, RESPONSABLE, ADMIN) tienen los mismos permisos de lectura, así que
  * el criterio de "autorizado" es simplemente "trae un JWT válido, sea cual sea
  * su rol" — se verifica con {@code accesoPermitido_paraCualquierRolSeed}.
+ *
+ * MessageSourceAutoConfiguration se importa porque este slice no carga la aplicación
+ * completa: sin él, GlobalExceptionHandler no tendría el MessageSource real (basename
+ * i18n/messages) y los mensajes de error no se resolverían según Accept-Language.
  */
 @WebMvcTest(ExpedienteController.class)
-@Import({SecurityConfig.class, JwtAuthenticationFilter.class, JwtProvider.class, GlobalExceptionHandler.class})
+@Import({SecurityConfig.class, JwtAuthenticationFilter.class, JwtProvider.class, GlobalExceptionHandler.class,
+        MessageSourceAutoConfiguration.class})
 @TestPropertySource(properties = {
         "app.jwt.secret=clave-de-pruebas-hs256-de-al-menos-32-caracteres",
         "app.jwt.expiration-ms=60000"
@@ -78,15 +84,36 @@ class ExpedienteControllerWebMvcTest {
     @Test
     void generales_conIdInexistente_devuelve404ConCuerpoHomogeneo() throws Exception {
         when(expedienteService.obtenerGenerales(anyLong(), any()))
-                .thenThrow(new RecursoNoEncontradoException("No existe un expediente con id 99"));
+                .thenThrow(new RecursoNoEncontradoException("expediente.notfound", 99L));
 
         String token = jwtProvider.generateToken("admin", List.of("ADMIN"), "es");
 
-        mockMvc.perform(get("/v1/expedientes/99/generales").header("Authorization", "Bearer " + token))
+        // Accept-Language explícito: el mensaje se resuelve vía MessageSource
+        // (messages_es.properties: "expediente.notfound=Expediente no encontrado: {0}").
+        mockMvc.perform(get("/v1/expedientes/99/generales")
+                        .header("Authorization", "Bearer " + token)
+                        .header("Accept-Language", "es"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.status").value(404))
                 .andExpect(jsonPath("$.error").value("Not Found"))
-                .andExpect(jsonPath("$.message").value("No existe un expediente con id 99"));
+                .andExpect(jsonPath("$.message").value("Expediente no encontrado: 99"));
+    }
+
+    @Test
+    void generales_conIdInexistente_yAcceptLanguageEu_devuelveMensajeEnEuskera() throws Exception {
+        when(expedienteService.obtenerGenerales(anyLong(), any()))
+                .thenThrow(new RecursoNoEncontradoException("expediente.notfound", 99L));
+
+        String token = jwtProvider.generateToken("admin", List.of("ADMIN"), "es");
+
+        // Mismo escenario que el test anterior, pero en euskera: prueba que el mensaje de
+        // error se resuelve dinámicamente vía MessageSource según Accept-Language, y no es
+        // texto fijo en español (messages_eu.properties: "expediente.notfound=Ez da espedientea aurkitu: {0}").
+        mockMvc.perform(get("/v1/expedientes/99/generales")
+                        .header("Authorization", "Bearer " + token)
+                        .header("Accept-Language", "eu"))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.message").value("Ez da espedientea aurkitu: 99"));
     }
 
     @Test

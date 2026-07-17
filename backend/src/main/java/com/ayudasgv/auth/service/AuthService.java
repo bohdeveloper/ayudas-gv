@@ -56,14 +56,14 @@ public class AuthService {
                 .orElseThrow(() -> {
                     // Logeamos a nivel WARN para detectar intentos de acceso inválidos
                     log.warn("Intento de login con usuario inexistente: {}", request.username());
-                    return new BadCredentialsException("Credenciales incorrectas");
+                    return new BadCredentialsException("auth.login.error");
                 });
 
         // 2. Verificar la contraseña: compara el texto plano con el hash BCrypt de BD
         //    passwordEncoder.matches() aplica el mismo salt que usó el hash original
         if (!passwordEncoder.matches(request.password(), usuario.passwordHash())) {
             log.warn("Contraseña incorrecta para el usuario: {}", request.username());
-            throw new BadCredentialsException("Credenciales incorrectas");
+            throw new BadCredentialsException("auth.login.error");
         }
 
         // 3. Credenciales válidas → generar JWT firmado

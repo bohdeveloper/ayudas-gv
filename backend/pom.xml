@@ -117,6 +117,17 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- H2 — base de datos embebida en modo compatibilidad PostgreSQL, solo para
+             pruebas de repositorio (@JdbcTest): permite ejecutar las migraciones Flyway
+             reales y verificar el SQL de los repositorios contra una BD real sin depender
+             de un PostgreSQL levantado (alternativa a Testcontainers, sección 10 del
+             enunciado: "Testcontainers con PostgreSQL, o H2 en modo compatibilidad") -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 
     <build>

@@ -25,6 +25,7 @@
   },
   "auth": {
     "login": "Saioa hasi",
+    "tagline": "Espedienteen kudeaketa",
     "username": "Erabiltzailea",
     "password": "Pasahitza",
     "loginError": "Kredentzialak ez dira zuzenak",

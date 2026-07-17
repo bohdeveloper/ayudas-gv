@@ -6,7 +6,10 @@ import jakarta.validation.constraints.NotBlank;
 /**
  * DTO con las credenciales que el cliente envía en el cuerpo del POST /auth/login.
  *
- * @NotBlank: valida que el campo no sea null ni vacío/espacios.
+ * @NotBlank: valida que el campo no sea null ni vacío/espacios. El mensaje entre
+ * llaves ({@code {validation.username.required}}) no es texto literal: Hibernate
+ * Validator lo resuelve como clave contra messages_es/eu.properties usando el
+ * MessageSource de la aplicación, en el idioma de la petición (Accept-Language).
  * Si la validación falla (campo vacío), Spring devuelve 400 Bad Request
  * antes incluso de que el método del controlador se ejecute.
  *
@@ -15,11 +18,11 @@ import jakarta.validation.constraints.NotBlank;
  */
 public record LoginRequest(
 
-    @NotBlank(message = "El nombre de usuario es obligatorio")
+    @NotBlank(message = "{validation.username.required}")
     @Schema(description = "Nombre de usuario", example = "admin")
     String username,
 
-    @NotBlank(message = "La contraseña es obligatoria")
+    @NotBlank(message = "{validation.password.required}")
     @Schema(description = "Contraseña en claro (se compara contra el hash BCrypt en BD)", example = "admin123")
     String password
 

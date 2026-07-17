@@ -25,6 +25,7 @@
   },
   "auth": {
     "login": "Iniciar sesión",
+    "tagline": "Gestión de expedientes",
     "username": "Usuario",
     "password": "Contraseña",
     "loginError": "Credenciales incorrectas",

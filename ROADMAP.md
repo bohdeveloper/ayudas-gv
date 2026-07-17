@@ -10,12 +10,12 @@
 | `feat/semana2-auth` | S2 — Auth backend | ✅ Completada — Hito M2 el 2026-06-12 | ✅ 2026-07-03 |
 | `feat/semana3-login-frontend` | S3 — Login UI | ✅ Completada — Hito M3 el 2026-06-26 | ✅ 2026-07-03 |
 | `feat/semana4-busqueda` | S4 — Búsqueda | ✅ Completada — Hito M4 el 2026-07-03 | ✅ 2026-07-03 |
-| `feat/semana5-detalle-secciones` | S5 — Detalle | ✅ Completada — Hito M5 el 2026-07-10 | — |
-| `feat/semana6-transversales` | S6 — Transversales | ✅ Completada — Hito M6 el 2026-07-17 | — |
+| `feat/semana5-detalle-secciones` | S5 — Detalle | ✅ Completada — Hito M5 el 2026-07-10 | ✅ 2026-07-03 |
+| `feat/semana6-transversales` | S6 — Transversales | ✅ Completada — Hito M6 el 2026-07-17 | ✅ 2026-07-17 |
 
 ---
 
-## Fase 0 — MVP (6 semanas) 🔄
+## Fase 0 — MVP (6 semanas) ✅ COMPLETADA
 
 **Objetivo:** Una persona autenticada puede buscar y consultar expedientes organizados por secciones.
 
@@ -185,7 +185,7 @@
 
 ---
 
-## ⚠️ Nota de ritmo y riesgos
+## ⚠️ Nota de ritmo y riesgos (retrospectiva Fase 0, ya cerrada)
 
 - **Semana 4 es la más densa** (modelo de datos + búsqueda completa). Si hay retraso, lo natural es mover la tabla de resultados del frontend a la semana 5 y deslizar el resto. No recortar la semana 6 — auditoría y pruebas son parte del entregable, no un extra.
 - **Spring Security + JWT (semana 2)** suele llevar más tiempo del esperado la primera vez. Reservar margen.

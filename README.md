@@ -91,7 +91,7 @@ npm test -- --run
 ayudas-gv/
 ├── backend/                       # Spring Boot — monolito modular
 │   ├── Dockerfile                 # Multi-stage: Maven build → JRE runtime
-│   ├── pom.xml                    # Spring Boot 3.5.14, Java 21
+│   ├── pom.xml                    # Spring Boot 3.5.15, Java 21
 │   └── src/main/
 │       ├── java/com/ayudasgv/
 │       │   ├── AyudasGvApplication.java

@@ -358,8 +358,8 @@ location / {
 /       → catch-all — siempre redirige a /expedientes
 
 Rutas privadas envueltas en <ProtectedRoute>:
-  /expedientes         → ExpedientesPage (placeholder S4)
-  /expedientes/:id     → ExpedienteDetalle (S5, pendiente)
+  /expedientes         → ExpedientesPage (búsqueda con filtros y tabla paginada, S4)
+  /expedientes/:id     → ExpedienteDetalle (detalle por secciones, S5)
 ```
 
 `ProtectedRoute` lee `isAuthenticated` del store Zustand. Si es `false`, redirige a `/login` y guarda `location.pathname` en el state de React Router para volver a esa URL tras el login.
@@ -552,6 +552,6 @@ cd frontend && npm test -- --run --coverage
 | S1 | Docker Compose, PostgreSQL 15, Flyway, Spring Boot 3.5 básico, React 18 + Vite + Nginx, Swagger UI |
 | S2 | Spring Security 6, JWT HS256 (24h), BCrypt strength 10, `JwtAuthFilter`, `SecurityConfig` stateless, esquema Bearer en Swagger |
 | S3 | React Router 6 (`AppRouter`, `ProtectedRoute`), Zustand `persist`, `axiosClient` (interceptores Bearer + logout 401), react-i18next (`LanguageDetector`, conmutación en caliente), `LanguageSelector` |
-| S4 | JdbcTemplate avanzado, paginación SQL, búsqueda dinámica *(pendiente)* |
-| S5 | Diseño de DTOs por sección, composición de vistas React *(pendiente)* |
-| S6 | Spring AOP, MDC/correlation-id, JUnit 5 + Mockito (backend), Vitest + Testing Library (frontend) *(pendiente)* |
+| S4 | JdbcTemplate avanzado, paginación SQL, búsqueda dinámica |
+| S5 | Diseño de DTOs por sección, composición de vistas React |
+| S6 | Spring AOP, MDC/correlation-id, JUnit 5 + Mockito (backend), Vitest + Testing Library (frontend) |

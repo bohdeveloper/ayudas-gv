@@ -71,6 +71,20 @@ Aplicación: http://localhost:5173
 
 ---
 
+## Pruebas
+
+```bash
+# Backend — JUnit 5 + Mockito + @WebMvcTest (26 pruebas)
+cd backend
+mvn test
+
+# Frontend — Vitest + Testing Library (16 pruebas)
+cd frontend
+npm test -- --run
+```
+
+---
+
 ## Estructura del proyecto
 
 ```
@@ -82,10 +96,10 @@ ayudas-gv/
 │       ├── java/com/ayudasgv/
 │       │   ├── AyudasGvApplication.java
 │       │   ├── config/            # SecurityConfig, OpenApiConfig
-│       │   ├── auth/              # JWT, login — implementado (Semana 2)
-│       │   ├── expedientes/       # Búsqueda y consulta (Semanas 4-5, pendiente)
-│       │   ├── tramitacion/       # Trámites (Fase 1)
-│       │   └── commons/           # GlobalExceptionHandler; auditoría AOP/logging (Semana 6)
+│       │   ├── auth/              # JWT, login (Semana 2)
+│       │   ├── expedientes/       # Búsqueda y consulta por secciones (Semanas 4-5)
+│       │   ├── tramitacion/       # Trámites (Fase 1, pendiente)
+│       │   └── commons/           # GlobalExceptionHandler + auditoría AOP + correlation-id (Semana 6)
 │       └── resources/
 │           ├── application.yml         # Config base (usa variables de entorno)
 │           ├── application-dev.yml     # Override para desarrollo local
@@ -95,10 +109,10 @@ ayudas-gv/
 │   ├── Dockerfile                 # Multi-stage: Node build → Nginx
 │   ├── nginx.conf                 # Sirve la SPA y proxea /api
 │   └── src/
-│       ├── api/                   # Capa HTTP — axiosClient (interceptor JWT) + authApi
-│       ├── components/            # Layout, selector de idioma, componentes reutilizables
+│       ├── api/                   # Capa HTTP — axiosClient (interceptor JWT) + authApi + expedientes*Api
+│       ├── components/            # Layout, selector de idioma, tabla/filtros/detalle de expedientes
 │       ├── i18n/locales/          # es.json / eu.json
-│       ├── pages/                 # Login (implementado); Expedientes (placeholder, Semana 4-5)
+│       ├── pages/                 # Login, listado de expedientes, detalle por secciones
 │       ├── router/                # AppRouter + ProtectedRoute — rutas públicas y protegidas
 │       ├── store/                 # authStore (Zustand, persistido en localStorage)
 │       └── types/                 # Tipos TypeScript del dominio
@@ -118,7 +132,7 @@ ayudas-gv/
 
 | Fase | Objetivo | Estado |
 |------|----------|--------|
-| **Fase 0 — MVP** | Autenticación + búsqueda + consulta de expedientes por secciones | 🔄 S1–S3 ✅ · S4–S6 pendientes |
+| **Fase 0 — MVP** | Autenticación + búsqueda + consulta de expedientes por secciones | ✅ S1–S6 completas |
 | Fase 1 — Tramitación | Registro de trámites y cambio de estado | ⏳ Pendiente |
 | Fase 2 — Alta | Creación de nuevos expedientes y solicitudes | ⏳ Pendiente |
 | Fase 3 — Resolución | Generación de documentos y notificaciones | ⏳ Pendiente |

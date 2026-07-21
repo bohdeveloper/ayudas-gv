@@ -19,11 +19,15 @@
 | Fase 3 — Resolución y notificaciones | PENDIENTE |
 | Fase 4 — Reglas de negocio y cálculo de cuantías | PENDIENTE |
 
-**Pendiente inmediato:**
-- Arrancar la Fase K8s siguiendo [docs/kubernetes-aprendizaje.md](docs/kubernetes-aprendizaje.md):
-  instalar minikube, construir las imágenes dentro del clúster y desplegar el stack.
-- Working tree: pendiente de commit la adopción de SDD (spec.md, plan.md, guía K8s, README/CLAUDE
-  reorganizados, ROADMAP.md fusionado y eliminado).
+**Próxima sesión — empezar por el Bloque 0 de la Fase K8s** (repaso de Docker consolidado).
+Guía: [docs/kubernetes-aprendizaje.md](docs/kubernetes-aprendizaje.md) → Parte 1.
+
+- **Punto de entrada exacto:** `docker compose up --build -d` en la raíz y verificar los 3 contenedores
+  con `docker compose ps` (ejercicios 1.1–1.4 de la guía).
+- **Herramental verificado (2026-07-21):** Docker 29.5 + Compose v5.1 + kubectl v1.34 instalados.
+  **Falta `minikube`** — se instala al llegar al Bloque 1 (`winget install Kubernetes.minikube`).
+- Estado del repo: adopción de SDD **commiteada y subida a GitLab** (commit `71ee239`).
+  **Pendiente:** push a GitHub (el token PAT del remoto `origin` está caducado — renovar credencial).
 
 > **Decisión de secuencia (usuario, 2026-07-21):** primero dominar Docker + Kubernetes sobre este
 > proyecto; la Fase 1 (Tramitación) se aborda **después**, cuando el clúster esté montado y entendido.

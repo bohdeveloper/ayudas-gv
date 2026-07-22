@@ -19,15 +19,17 @@
 | Fase 3 — Resolución y notificaciones | PENDIENTE |
 | Fase 4 — Reglas de negocio y cálculo de cuantías | PENDIENTE |
 
-**Próxima sesión — empezar por el Bloque 0 de la Fase K8s** (repaso de Docker consolidado).
-Guía: [docs/kubernetes-aprendizaje.md](docs/kubernetes-aprendizaje.md) → Parte 1.
+**Próxima sesión — empezar por el Bloque 1 de la Fase K8s** (clúster local con minikube).
+Guía: [docs/kubernetes-aprendizaje.md](docs/kubernetes-aprendizaje.md) → Parte 1. Repaso de Docker en
+[docs/docker-guia.md](docs/docker-guia.md).
 
-- **Punto de entrada exacto:** `docker compose up --build -d` en la raíz y verificar los 3 contenedores
-  con `docker compose ps` (ejercicios 1.1–1.4 de la guía).
-- **Herramental verificado (2026-07-21):** Docker 29.5 + Compose v5.1 + kubectl v1.34 instalados.
-  **Falta `minikube`** — se instala al llegar al Bloque 1 (`winget install Kubernetes.minikube`).
-- Estado del repo: adopción de SDD **commiteada y subida a GitLab** (commit `71ee239`).
-  **Pendiente:** push a GitHub (el token PAT del remoto `origin` está caducado — renovar credencial).
+- **Punto de entrada exacto:** instalar `minikube` (`winget install Kubernetes.minikube`) y
+  `minikube start --driver=docker`; luego `kubectl get nodes`.
+- **Herramental (2026-07-22, PC nuevo `c:\aplic\ayudas_gv`):** Docker Desktop 29.6.2 + Compose v5.3.1
+  instalados y verificados (stack completo levantado y login OK). Java 21 + Maven 3.9 + Node presentes.
+  **Faltan `kubectl` y `minikube`** — se instalan al empezar el Bloque 1.
+- Estado del repo: clonado desde GitHub (`origin` → `github.com/bohdeveloper/ayudas-gv`), rama `main`
+  al día (GitHub ya contiene todo hasta commit `86cdfc9`; la nota previa de "push pendiente" queda resuelta).
 
 > **Decisión de secuencia (usuario, 2026-07-21):** primero dominar Docker + Kubernetes sobre este
 > proyecto; la Fase 1 (Tramitación) se aborda **después**, cuando el clúster esté montado y entendido.
@@ -43,10 +45,10 @@ Guía: [docs/kubernetes-aprendizaje.md](docs/kubernetes-aprendizaje.md) → Part
 > [docs/kubernetes-aprendizaje.md](docs/kubernetes-aprendizaje.md). Este apartado es el checklist; el
 > "cómo" y el "por qué" están en la guía.
 
-### Bloque 0 — Repaso de Docker (consolidación)
-- [ ] Levantar el stack con `docker compose up --build` y verificar los 3 contenedores (ej. 1.1–1.4 de la guía)
-- [ ] Explicar por escrito el multi-stage build de `backend/Dockerfile` y el de `frontend/Dockerfile`
-- [ ] Interiorizar la red por nombre de servicio (`postgres`, `backend`) — base del DNS de K8s
+### Bloque 0 — Repaso de Docker (consolidación) — COMPLETADA (2026-07-22)
+- [x] Levantar el stack con `docker compose up --build` y verificar los 3 contenedores (ej. 1.1–1.4 de la guía) — 2026-07-22: 3 contenedores Up (postgres healthy), Flyway V1–V5 aplicadas, login `admin` OK vía Nginx
+- [x] Explicar por escrito el multi-stage build de `backend/Dockerfile` y el de `frontend/Dockerfile` — 2026-07-22: [docs/docker-guia.md](docs/docker-guia.md) §3.1–3.2
+- [x] Interiorizar la red por nombre de servicio (`postgres`, `backend`) — base del DNS de K8s — 2026-07-22: [docs/docker-guia.md](docs/docker-guia.md) §4 + demostrado en vivo (Flyway→`postgres:5432`, Nginx→`backend:8080`)
 
 ### Bloque 1 — Clúster local (minikube)
 - [ ] Instalar `minikube` + `kubectl` (Windows/winget) y `minikube start --driver=docker`

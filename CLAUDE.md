@@ -17,10 +17,12 @@ Este archivo se carga en cada sesión. Contiene **solo reglas de trabajo**; el c
 
 ## Herramientas del proyecto
 
-- **graphify** — grafo de código en `graphify-out/`. Para preguntas sobre el código/arquitectura, usar
-  primero `graphify query "<pregunta>"` (y `graphify path`/`graphify explain`) antes de grep/lectura amplia.
-  Tras modificar código, `graphify update .` mantiene el grafo (el hook PostToolUse ya lo dispara).
-  Trigger `/graphify` → invocar la Skill `graphify`.
+- **codebase-memory-mcp** — grafo de código consultable vía sus tools MCP (config en `.mcp.json`, snapshot
+  committeable en `.codebase-memory/`). Para preguntas sobre el código/arquitectura, usar primero sus tools
+  (`search_graph`, `trace_path`, `query_graph`, `get_architecture`, `search_code`, `get_code_snippet`) antes
+  de grep/lectura amplia. El índice se mantiene solo (watcher incremental tras editar); reindexar solo tras un
+  `git pull` grande. Grafo visual navegable en `.codebase-memory/graph.html` — **regenerar al cerrar cada fase**
+  (o tras cambios grandes). Trigger `/grafo-designer` → invocar la Skill `grafo-designer`.
 - Skills y agentes disponibles: resumen y cuándo usarlos en `spec.md` §6 (tabla de skills).
 
 ## Convenciones de entorno

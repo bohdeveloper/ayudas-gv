@@ -71,7 +71,8 @@ ayudas-gv/
 ├── docs/                       # Documentación (ver §7)
 ├── docker-compose.yml
 ├── spec.md · plan.md · README.md · CLAUDE.md
-└── graphify-out/               # Grafo de código (graphify)
+├── .mcp.json                   # Config del grafo de código (codebase-memory-mcp)
+└── .codebase-memory/           # Snapshot committeable del grafo + graph.html
 ```
 
 ### Patrones de arquitectura establecidos
@@ -87,6 +88,10 @@ ayudas-gv/
 - **Auditoría transversal:** vía `@Aspect` (AOP) → tabla `auditoria`; correlation-id propagado por petición.
 - **Errores homogéneos:** `@ControllerAdvice` / `GlobalExceptionHandler`.
 - **i18n:** sin literales hardcoded; frontend por `t('clave')`, backend por `MessageSource` + `Accept-Language`.
+- **Salud estructural (grafo de código, 2026-07-23):** sin ciclos de importación — mantenerlo así.
+  Abstracciones núcleo (las más conectadas) a reutilizar y nunca duplicar: `useAuthStore` (hub del estado de
+  auth; todas las páginas y menús del frontend leen de él, no hay hook `useAuth` separado) y
+  `ExpedienteRepository` (acceso a datos SQL de expedientes).
 
 ### Modelo de dominio (resumen)
 
@@ -190,7 +195,7 @@ En Compose están en `docker-compose.yml`; en Kubernetes irán a ConfigMap/Secre
 ### Antes de desarrollar
 1. Leer `spec.md` y `plan.md`; confirmar que la tarea está en el plan (si no, añadirla primero).
 2. Contrastar con los invariantes de §3; avisar si algo choca.
-3. Explorar el código con **graphify** (`graphify query/path/explain`) antes de grep/lectura amplia.
+3. Explorar el código con **codebase-memory-mcp** (tools MCP: `search_graph`/`trace_path`/`query_graph`/`get_architecture`) antes de grep/lectura amplia.
 4. Buscar entidad/helper existente que ya cubra el concepto antes de crear uno nuevo.
 5. Usar la skill de diseño (`ux-ui-designer`) antes de maquetar UI nueva.
 6. Desglosar tareas grandes en fases dentro de `plan.md`.
@@ -207,13 +212,14 @@ reutilizar servicios y repositorios existentes, SQL parametrizado siempre.
 5. Registrar: marcar `plan.md` con fecha; decisiones nuevas → `spec.md`; cambios de alcance/stack → `README.md`.
 6. Commit solo cuando el usuario lo pida, en el estilo del `git log` (mensajes `tipo: descripción`).
 7. `/simplify` opcional al cerrar una fase.
-8. `graphify update .` tras editar código (el hook PostToolUse ya lo dispara automáticamente).
+8. El grafo (codebase-memory-mcp) se refresca solo tras editar (watcher incremental); reindexar solo tras un
+   `git pull` grande. Regenerar `.codebase-memory/graph.html` al cerrar cada fase.
 
 ### Skills del proyecto y cuándo usarlas
 
 | Skill | Cuándo |
 |-------|--------|
-| `graphify` | Cualquier pregunta sobre el código/arquitectura; navegación del repo. Trigger `/graphify` |
+| `grafo-designer` | Cualquier pregunta sobre el código/arquitectura; navegación del repo vía codebase-memory-mcp. Trigger `/grafo-designer` |
 | `spec-driven` | Mantener `spec.md`/`plan.md` al día; adoptar/reordenar SDD |
 | `ux-ui-designer` (agente) | Diseño o rediseño de páginas/componentes, sistema de diseño, responsive, accesibilidad |
 | `git-master` (agente) | Operaciones Git no triviales: conflictos, rebase, estrategia de ramas, rescate de historial |

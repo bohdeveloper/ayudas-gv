@@ -49,9 +49,6 @@ desktop.ini
 coverage/
 htmlcov/
 
-# Docker
-.dockerignore
-
 # Documentos Word originales (no necesarios en el repo)
 *.docx
 *.doc

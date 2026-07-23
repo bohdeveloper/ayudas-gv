@@ -22,6 +22,7 @@
 **Próxima sesión — empezar por el Bloque 1 de la Fase K8s** (clúster local con minikube).
 Guía: [docs/kubernetes-aprendizaje.md](docs/kubernetes-aprendizaje.md) → Parte 1. Repaso de Docker en
 [docs/docker-guia.md](docs/docker-guia.md).
+Calendario completo de lo que queda (fin proyectado 10/08/2026): [docs/reportes/itinerario.md](docs/reportes/itinerario.md).
 
 - **Punto de entrada exacto:** instalar `minikube` (`winget install Kubernetes.minikube`) y
   `minikube start --driver=docker`; luego `kubectl get nodes`.
@@ -51,6 +52,8 @@ Guía: [docs/kubernetes-aprendizaje.md](docs/kubernetes-aprendizaje.md) → Part
 - [x] Interiorizar la red por nombre de servicio (`postgres`, `backend`) — base del DNS de K8s — 2026-07-22: [docs/docker-guia.md](docs/docker-guia.md) §4 + demostrado en vivo (Flyway→`postgres:5432`, Nginx→`backend:8080`)
 
 ### Bloque 1 — Clúster local (minikube)
+- [x] **Prep (2026-07-23):** `.dockerignore` en `backend/` y `frontend/` para reducir el contexto de build
+  antes de construir dentro de minikube — verificado con build real (contexto 102,83 kB / 31,05 kB)
 - [ ] Instalar `minikube` + `kubectl` (Windows/winget) y `minikube start --driver=docker`
 - [ ] `kubectl get nodes` → 1 nodo Ready; explorar `minikube dashboard`
 - [ ] Construir `ayudas-gv-backend:1.0` y `ayudas-gv-frontend:1.0` **dentro** del Docker de minikube

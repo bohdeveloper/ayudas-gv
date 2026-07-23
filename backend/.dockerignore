@@ -1,0 +1,39 @@
+# Contexto de build del backend.
+# El Dockerfile es multi-stage: la etapa `build` (maven:3.9) solo necesita
+# `pom.xml` y `src/`; todo lo demas puede quedar fuera del contexto para que
+# `docker build` (tambien dentro de minikube) suba menos datos al demonio.
+
+# Artefactos de compilacion (se generan dentro de la imagen, no se copian)
+target/
+*.jar
+*.war
+*.ear
+*.class
+
+# Maven wrapper y metadatos que la imagen no usa (compila con la imagen maven)
+.mvn/
+mvnw
+mvnw.cmd
+
+# IDE / editor
+.idea/
+*.iml
+.vscode/
+.settings/
+.classpath
+.project
+*.swp
+*.swo
+
+# Logs y temporales
+*.log
+logs/
+
+# Docker / Git / OS
+.dockerignore
+Dockerfile
+.git/
+.gitignore
+.DS_Store
+Thumbs.db
+desktop.ini

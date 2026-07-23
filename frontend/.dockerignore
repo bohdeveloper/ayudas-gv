@@ -1,0 +1,40 @@
+# Contexto de build del frontend.
+# El Dockerfile hace `COPY . .`, asi que SIN este fichero se subirian
+# `node_modules/` y `dist/` enteros al contexto. `npm ci` regenera las
+# dependencias dentro de la imagen a partir de package-lock.json.
+#
+# NO excluir: nginx.conf (lo copia la etapa 2), index.html, package*.json,
+# src/, public/, tsconfig*.json, vite.config.ts (los necesita `npm run build`).
+
+# Dependencias y artefactos (regenerados dentro de la imagen)
+node_modules/
+dist/
+build/
+.cache/
+coverage/
+
+# Variables de entorno (nunca al contexto de build)
+.env
+.env.local
+.env.*.local
+
+# IDE / editor
+.idea/
+*.iml
+.vscode/
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*
+logs/
+
+# Docker / Git / OS
+.dockerignore
+Dockerfile
+.git/
+.gitignore
+.DS_Store
+Thumbs.db
+desktop.ini

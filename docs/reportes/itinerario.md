@@ -41,8 +41,8 @@ La demo/cierre semanal cae el viernes (o último día laborable de la ventana).
 | lun 20/07 | *(hecho)* Migración a PC nuevo + herramental (Docker Desktop, Java/Maven/Node) | — |
 | mar 21/07 | *(hecho)* Verificación del stack + fijar punto de entrada K8s | — |
 | mié 22/07 | *(hecho)* **Bloque 0** — repaso Docker consolidado ([docker-guia.md](../docker-guia.md)) | COMPLETADA |
-| **jue 23/07** | **Bloques 1+2** — `.dockerignore` (hecho hoy) · instalar minikube+kubectl · clúster local · construir imágenes `:1.0` dentro de minikube · crear `k8s/` (namespace, config/secret, postgres, backend, frontend, ingress) · 3 Pods Running + login e2e | **EN CURSO** |
-| vie 24/07 | **Bloques 3+4** — escalar/self-healing/rolling-update+rollback · namespace `ayudas-staging` · actuator + probes HTTP · resiliencia JWT · límites de recursos · respuestas orales de entrevista → **cierre Fase K8s** + demo en vivo | PENDIENTE |
+| **jue 23/07** | **Bloque 1** (completo) + `.dockerignore` + **migración graphify→codebase-memory-mcp** (no prevista) + Bloque 2 iniciado (namespace). El Bloque 2 se desbordó a mañana | COMPLETADA (parcial) |
+| vie 24/07 | **Bloques 2 + 3 + 4** (reslot) — desplegar en `k8s/` (namespace→config/secret→postgres→backend→frontend→ingress, 3 Pods Running + login e2e) · escalar/self-healing/rolling-update+rollback · ejercicios integradores (si da tiempo) → **cierre Fase K8s** | PENDIENTE |
 
 ### Semana 8 (27–31 jul) — Tramitación, Alta y arranque de Resolución
 

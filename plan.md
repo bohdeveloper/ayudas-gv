@@ -19,9 +19,9 @@
 | Fase 3 — Resolución y notificaciones | PENDIENTE |
 | Fase 4 — Reglas de negocio y cálculo de cuantías | PENDIENTE |
 
-**Próxima sesión — empezar por el Bloque 1 de la Fase K8s** (clúster local con minikube).
-Guía: [docs/kubernetes-aprendizaje.md](docs/kubernetes-aprendizaje.md) → Parte 1. Repaso de Docker en
-[docs/docker-guia.md](docs/docker-guia.md).
+**Próxima sesión (viernes 24/07) — Bloque 2 de la Fase K8s** (desplegar en `k8s/`), y si da tiempo Bloques 3 y 4.
+Bloque 1 completado el 23/07 (clúster minikube + imágenes `:1.0` dentro del clúster). Ya existe `k8s/00-namespace.yaml`
+(pendiente de aplicar). Guía: [docs/kubernetes-aprendizaje.md](docs/kubernetes-aprendizaje.md) → Parte 4.
 Calendario completo de lo que queda (fin proyectado 10/08/2026): [docs/reportes/itinerario.md](docs/reportes/itinerario.md).
 
 - **Punto de entrada exacto:** instalar `minikube` (`winget install Kubernetes.minikube`) y
@@ -54,10 +54,10 @@ Calendario completo de lo que queda (fin proyectado 10/08/2026): [docs/reportes/
 ### Bloque 1 — Clúster local (minikube)
 - [x] **Prep (2026-07-23):** `.dockerignore` en `backend/` y `frontend/` para reducir el contexto de build
   antes de construir dentro de minikube — verificado con build real (contexto 102,83 kB / 31,05 kB)
-- [ ] Instalar `minikube` + `kubectl` (Windows/winget) y `minikube start --driver=docker`
-- [ ] `kubectl get nodes` → 1 nodo Ready; explorar `minikube dashboard`
-- [ ] Construir `ayudas-gv-backend:1.0` y `ayudas-gv-frontend:1.0` **dentro** del Docker de minikube
-- [ ] Entender por qué sin ese paso el Pod queda en `ImagePullBackOff`
+- [x] Instalar `minikube` + `kubectl` (Windows/winget) y `minikube start --driver=docker` — 2026-07-23: minikube v1.38.1, K8s v1.35.1 (driver docker, 2 CPU / 8100 MB)
+- [x] `kubectl get nodes` → 1 nodo Ready — 2026-07-23: nodo `minikube` Ready (control-plane); explorado con `cluster-info` y `get pods -A` (7 Pods de `kube-system` Running)
+- [x] Construir `ayudas-gv-backend:1.0` y `ayudas-gv-frontend:1.0` **dentro** del Docker de minikube — 2026-07-23: vía `docker-env`; backend 245 MB, frontend 62.7 MB
+- [x] Entender por qué sin ese paso el Pod queda en `ImagePullBackOff` — 2026-07-23: dos demonios Docker separados; el nodo busca la imagen en su propio Docker, no en el de Windows
 
 ### Bloque 2 — Desplegar la app (crear `k8s/`)
 - [ ] `k8s/00-namespace.yaml` → namespace `ayudas-dev` y fijarlo como contexto por defecto

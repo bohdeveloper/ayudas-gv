@@ -1,0 +1,27 @@
+# Ingress: entrada HTTP única al clúster.
+#
+# Variante A (activa) — enrutar TODO al frontend y dejar que su nginx.conf proxee /api → backend:8080.
+# Es la más simple y robusta: no depende de rewrite-target y reutiliza el proxy que ya funciona en Compose.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ayudas-ingress
+  namespace: ayudas-dev
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend
+                port: { number: 80 }
+# ---
+# Variante B (alternativa didáctica) — separar /api hacia el backend directamente desde el Ingress.
+# Requiere el rewrite-target y es más frágil; probarla ayuda a entender por qué la A basta aquí.
+#   metadata.annotations:
+#     nginx.ingress.kubernetes.io/rewrite-target: /$1
+#   rules[0].http.paths:
+#     - path: /api(/|$)(.*)   → backend:8080  (pathType: ImplementationSpecific)
+#     - path: /()(.*)         → frontend:80   (pathType: ImplementationSpecific)

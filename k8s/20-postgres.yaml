@@ -1,0 +1,68 @@
+# PostgreSQL: PVC (persistencia) + Deployment (1 réplica) + Service ClusterIP 'postgres'.
+# El nombre del Service ('postgres') es el hostname que resuelve el backend por DNS.
+# Una sola réplica: en producción sería un StatefulSet (PVC ReadWriteOnce no se replica).
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+  namespace: ayudas-dev
+spec:
+  accessModes: ["ReadWriteOnce"]
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: ayudas-dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:15-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: ayudas_gv
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef: { name: backend-secret, key: DB_USER }
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef: { name: backend-secret, key: DB_PASSWORD }
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "ayudasgv", "-d", "ayudas_gv"]
+            initialDelaySeconds: 5
+            periodSeconds: 10
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: postgres-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: ayudas-dev
+spec:
+  selector:
+    app: postgres
+  ports:
+    - port: 5432
+      targetPort: 5432
+  # sin 'type' → ClusterIP (solo interno). El nombre 'postgres' es el hostname DNS.

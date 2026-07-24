@@ -1,0 +1,23 @@
+# ConfigMap (no sensible) + Secret (credenciales) del backend.
+# Traducción del bloque environment: de docker-compose.yml.
+# DB_URL usa el host 'postgres' = nombre del Service (paso 20) → DNS interno de K8s.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config
+  namespace: ayudas-dev
+data:
+  DB_URL: jdbc:postgresql://postgres:5432/ayudas_gv
+  SERVER_PORT: "8080"
+  JWT_EXPIRATION: "86400000"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: backend-secret
+  namespace: ayudas-dev
+type: Opaque
+stringData:                 # stringData: se escribe en claro; K8s lo codifica en base64
+  DB_USER: ayudasgv
+  DB_PASSWORD: ayudasgv
+  JWT_SECRET: cambia-esto-en-produccion-clave-secreta-larga

@@ -59,16 +59,16 @@ Calendario completo de lo que queda (fin proyectado 10/08/2026): [docs/reportes/
 - [x] Construir `ayudas-gv-backend:1.0` y `ayudas-gv-frontend:1.0` **dentro** del Docker de minikube — 2026-07-23: vía `docker-env`; backend 245 MB, frontend 62.7 MB
 - [x] Entender por qué sin ese paso el Pod queda en `ImagePullBackOff` — 2026-07-23: dos demonios Docker separados; el nodo busca la imagen en su propio Docker, no en el de Windows
 
-### Bloque 2 — Desplegar la app (crear `k8s/`)
-- [ ] `k8s/00-namespace.yaml` → namespace `ayudas-dev` y fijarlo como contexto por defecto
-- [ ] `k8s/10-backend-config.yaml` → ConfigMap (no sensible) + Secret (credenciales) desde `docker-compose.yml`
-- [ ] `k8s/20-postgres.yaml` → Deployment + PVC (persistencia) + Service ClusterIP `postgres`
-- [ ] `k8s/30-backend.yaml` → Deployment (envFrom Config+Secret, probes 8080) + Service `backend`
-- [ ] `k8s/40-frontend.yaml` → Deployment (Nginx:80) + Service `frontend`
-- [ ] `k8s/50-ingress.yaml` → Ingress (`/`→frontend, `/api`→backend) con addon ingress habilitado
-- [ ] Los 3 Pods en `Running`; login `admin/admin123` funcionando de extremo a extremo dentro del clúster
-- [ ] Demostrar el DNS interno (`getent hosts postgres` desde el Pod del backend)
-- [ ] Diagnosticar un fallo provocado (Secret con contraseña mal) con `describe` + `logs`
+### Bloque 2 — Desplegar la app (crear `k8s/`) — COMPLETADA (2026-07-24)
+- [x] `k8s/00-namespace.yaml` → namespace `ayudas-dev` y fijarlo como contexto por defecto — 2026-07-24
+- [x] `k8s/10-backend-config.yaml` → ConfigMap (no sensible) + Secret (credenciales) desde `docker-compose.yml` — 2026-07-24
+- [x] `k8s/20-postgres.yaml` → Deployment + PVC (persistencia) + Service ClusterIP `postgres` — 2026-07-24
+- [x] `k8s/30-backend.yaml` → Deployment (envFrom Config+Secret, probes 8080) + Service `backend` — 2026-07-24
+- [x] `k8s/40-frontend.yaml` → Deployment (Nginx:80) + Service `frontend` — 2026-07-24
+- [x] `k8s/50-ingress.yaml` → Ingress (variante A: todo `/`→frontend, cuyo Nginx proxea `/api`→`backend:8080`) con addon ingress habilitado — 2026-07-24
+- [x] Los 3 Pods en `Running`; login `admin/admin123` funcionando de extremo a extremo dentro del clúster — 2026-07-24: HTTP 200 + JWT vía port-forward al frontend y vía Ingress
+- [x] Demostrar el DNS interno (`getent hosts postgres` desde el Pod del backend) — 2026-07-24: `postgres` → 10.111.20.147 (ClusterIP del Service)
+- [x] Diagnosticar un fallo provocado (Secret con contraseña mal) con `describe` + `logs` — 2026-07-24: `FATAL: password authentication failed for user "ayudasgv"`; `describe` mostró Readiness probe failed + BackOff; arreglado restaurando el Secret
 
 ### Bloque 3 — Operar (la esencia de orquestar)
 - [ ] Escalar el backend a 3 réplicas y comprobar los 3 endpoints del Service

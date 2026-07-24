@@ -1,0 +1,39 @@
+# Frontend React + Nginx: Deployment (imagen local) + Service ClusterIP 'frontend'.
+# El nginx.conf proxea /api/ → backend:8080/api/, que resuelve al Service 'backend' por DNS.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: ayudas-dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: ayudas-gv-frontend:1.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+          readinessProbe:
+            httpGet: { path: /, port: 80 }
+            initialDelaySeconds: 5
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  namespace: ayudas-dev
+spec:
+  selector:
+    app: frontend
+  ports:
+    - port: 80
+      targetPort: 80

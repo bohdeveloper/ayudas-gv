@@ -1,0 +1,51 @@
+# Backend Spring Boot: Deployment (imagen local de minikube) + Service ClusterIP 'backend'.
+# envFrom inyecta el ConfigMap + el Secret como variables de entorno de una sola vez.
+# Probes TCP al 8080 con initialDelaySeconds generoso: Spring Boot + Flyway tardan en arrancar.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: ayudas-dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          image: ayudas-gv-backend:1.0
+          imagePullPolicy: IfNotPresent      # usa la imagen local de minikube (no la busca en internet)
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef: { name: backend-config }
+            - secretRef: { name: backend-secret }
+          readinessProbe:
+            tcpSocket: { port: 8080 }
+            initialDelaySeconds: 30           # Spring Boot + Flyway tardan en arrancar
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket: { port: 8080 }
+            initialDelaySeconds: 60
+            periodSeconds: 15
+          resources:
+            requests: { cpu: "250m", memory: "384Mi" }
+            limits:   { cpu: "1",    memory: "768Mi" }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: ayudas-dev
+spec:
+  selector:
+    app: backend
+  ports:
+    - port: 8080
+      targetPort: 8080
+  # ClusterIP: el frontend le habla por 'backend:8080'

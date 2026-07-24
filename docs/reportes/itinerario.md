@@ -6,6 +6,9 @@
 >
 > **Ritmo asumido:** media jornada, **~4h/día laborable** (una "sesión" = ~4h). Decisión del usuario (2026-07-23).
 > **Anclas fijadas por el usuario:** 22/07 Bloque 0 · 23/07 Bloques 1+2 · 24/07 Bloques 3+4 · 27/07 arranca Fase 1.
+> **Real (al 24/07):** 23/07 Bloque 1 completo + Bloque 2 iniciado · 24/07 Bloque 2 completo + material de repaso
+> para reunión (no previsto). Los Bloques 3+4 se reslotean al **lunes 27/07** (cierre de la Fase K8s), que
+> comparte sesión con el arranque de la Fase 1.
 > Sin emojis (convención del proyecto): marcadores `COMPLETADA · EN CURSO · PENDIENTE`.
 
 ---
@@ -19,8 +22,8 @@
 
 | Fase restante | Sesiones (~4h) | Ventana de fechas |
 |---------------|:--------------:|-------------------|
-| Fase K8s — Bloques 1–4 | 2 | jue 23/07 – vie 24/07 |
-| Fase 1 — Tramitación | 2 | lun 27/07 – mar 28/07 |
+| Fase K8s — Bloques 1–4 | 2 | jue 23/07 – lun 27/07 (Bloques 3+4) |
+| Fase 1 — Tramitación | 2 | lun 27/07 – mar 28/07 (arranca la tarde del 27) |
 | Fase 2 — Alta y registro | 2 | mié 29/07 – jue 30/07 |
 | Fase 3 — Resolución y notificaciones | 2 | vie 31/07 – lun 03/08 |
 | Fase 4 — Reglas de negocio y cuantías | 2 | mar 04/08 – mié 05/08 |
@@ -42,13 +45,13 @@ La demo/cierre semanal cae el viernes (o último día laborable de la ventana).
 | mar 21/07 | *(hecho)* Verificación del stack + fijar punto de entrada K8s | — |
 | mié 22/07 | *(hecho)* **Bloque 0** — repaso Docker consolidado ([docker-guia.md](../docker-guia.md)) | COMPLETADA |
 | **jue 23/07** | **Bloque 1** (completo) + `.dockerignore` + **migración graphify→codebase-memory-mcp** (no prevista) + Bloque 2 iniciado (namespace). El Bloque 2 se desbordó a mañana | COMPLETADA (parcial) |
-| vie 24/07 | **Bloques 2 + 3 + 4** (reslot) — desplegar en `k8s/` (namespace→config/secret→postgres→backend→frontend→ingress, 3 Pods Running + login e2e) · escalar/self-healing/rolling-update+rollback · ejercicios integradores (si da tiempo) → **cierre Fase K8s** | PENDIENTE |
+| **vie 24/07** | **Bloque 2** (completo) — desplegar en `k8s/` (namespace→config/secret→postgres→backend→frontend→ingress, 3 Pods Running + login e2e + DNS interno + fallo provocado diagnosticado) + **material de repaso Docker/K8s para reunión** (no previsto). Los Bloques 3+4 se reslotean al lunes | COMPLETADA (parcial) |
 
 ### Semana 8 (27–31 jul) — Tramitación, Alta y arranque de Resolución
 
 | Día | Sesión | Entregable del día |
 |-----|--------|--------------------|
-| lun 27/07 | **Fase 1 (1/2)** — asignación de instructor (rol RESPONSABLE) · registro de trámites por flujo · cambio de estado del expediente · regla "instructor solo tramita lo asignado" (empezar por la prueba, TDD) · traza en `auditoria` | PENDIENTE |
+| lun 27/07 | **Fase K8s — Bloques 3+4** (cierre): escalar a 3 réplicas · self-healing · rolling update `:1.0`→`:1.1` + `rollout undo` · postgres→StatefulSet · ejercicios integradores (~½ sesión, es `kubectl`) → **cierre Fase K8s**. Luego **Fase 1 (1/2, arranque)** — asignación de instructor (rol RESPONSABLE) · registro de trámites por flujo · regla "instructor solo tramita lo asignado" (TDD) | PENDIENTE |
 | mar 28/07 | **Fase 1 (2/2)** — sección Tramitación en el detalle (histórico + instructor) · notificación en idioma del interesado · endpoints REST en Swagger · pruebas en verde → **cierre Fase 1** | PENDIENTE |
 | mié 29/07 | **Fase 2 (1/2)** — formulario de alta de expediente (validación cliente + servidor) · gestión de interesados (SOLICITANTE / REPRESENTANTE / CAUSANTE) · datos de contacto y aviso | PENDIENTE |
 | jue 30/07 | **Fase 2 (2/2)** — formulario específico por tipo (`ASIG_DISCAP` / `PAGO_NAC` / `PARTO_MULT`) · persistencia con SQL parametrizado · autorización de alta por rol → **cierre Fase 2** | PENDIENTE |

@@ -1,11 +1,11 @@
 {
     "schema_version": 2,
-    "commit": "c28ff700923d39f32df3831467c71f87ca754e74",
-    "indexed_at": "2026-07-24T08:18:28Z",
+    "commit": "76036afa5b85594b076f08ef01736b03465678fd",
+    "indexed_at": "2026-07-24T10:09:25Z",
     "project": "C-aplic-ayudas_gv",
-    "nodes": 1716,
-    "edges": 3090,
+    "nodes": 1727,
+    "edges": 3099,
     "original_size": 5046272,
-    "compressed_size": 871642,
+    "compressed_size": 873125,
     "compression_level": 3
 }

@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Reporte semanal — Semana 20 de julio de 2026 – 24 de julio de 2026</title>
+<style>
+  :root {
+    --bg:#0f172a; --surface:#1e293b; --border:#334155;
+    --accent:#38bdf8; --accent2:#818cf8;
+    --text:#e2e8f0; --muted:#94a3b8;
+    --ok:#4ade80; --warn:#fbbf24; --danger:#f87171;
+    --r:12px;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;
+       font-size:15px;line-height:1.65;padding:2rem 1rem}
+  .container{max-width:920px;margin:0 auto}
+
+  /* ── Header ── */
+  header{display:flex;align-items:center;justify-content:space-between;
+         margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem}
+  .header-left h1{font-size:1.65rem;color:var(--accent);font-weight:700}
+  .header-left p{color:var(--muted);font-size:.9rem;margin-top:.2rem}
+
+  /* ── Week summary ── */
+  .week-summary{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);
+                padding:1.1rem 1.5rem;margin-bottom:2.5rem}
+  .week-summary h2{font-size:.82rem;text-transform:uppercase;letter-spacing:.06em;
+                   color:var(--accent2);margin-bottom:.5rem}
+  .week-summary ul{padding-left:1.4rem;margin:.2rem 0}
+  .week-summary li{margin:.25rem 0}
+  .week-summary code{background:#0f2240;color:#7dd3fc;padding:.1em .4em;border-radius:4px;
+                     font-size:.85em;font-family:'Cascadia Code','Fira Code',monospace}
+
+  /* ── Day card ── */
+  .day-card{background:var(--surface);border:1px solid var(--border);
+            border-radius:var(--r);margin-bottom:2rem;overflow:hidden}
+  .day-header{display:flex;align-items:center;justify-content:space-between;
+              background:var(--border);padding:.75rem 1.25rem}
+  .day-name{font-weight:700;font-size:1.05rem;color:var(--accent2)}
+  .day-date{font-size:.82rem;color:var(--muted)}
+  .day-content{padding:1.25rem 1.5rem}
+
+  /* ── Markdown ── */
+  .day-content .intro{color:var(--muted);font-size:.9rem;font-style:italic;
+                      border-left:3px solid var(--border);padding-left:.75rem;margin-bottom:.6rem}
+  .day-content h2{font-size:.9rem;text-transform:uppercase;letter-spacing:.06em;
+                  color:var(--ok);margin:1.1rem 0 .4rem;border-bottom:1px solid var(--border);padding-bottom:.3rem}
+  .day-content h3{color:var(--warn);font-size:.9rem;margin:.9rem 0 .3rem}
+  .day-content ul{padding-left:1.5rem;margin:.3rem 0 .6rem}
+  .day-content li{margin:.2rem 0}
+  .day-content code{background:#0f2240;color:#7dd3fc;padding:.1em .4em;border-radius:4px;
+                    font-size:.85em;font-family:'Cascadia Code','Fira Code',monospace}
+  .day-content p{margin:.3rem 0}
+  .day-content p.hito{color:var(--accent);font-style:italic;
+                       border-left:3px solid var(--accent);padding-left:.75rem;margin-top:.8rem}
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <div class="header-left">
+      <h1>Reporte semanal</h1>
+      <p>Semana 20 de julio de 2026 – 24 de julio de 2026 · Semana 7 · Fase K8s (Docker + Kubernetes)</p>
+    </div>
+  </header>
+
+  <section class="week-summary">
+    <h2>Resumen de la semana</h2>
+    <ul>
+      <li><b>Lunes 20/07</b> — Migración a PC nuevo (<code>c:\aplic\ayudas_gv</code>) y puesta a punto del entorno.</li>
+      <li><b>Martes 21/07</b> — Adopción de Spec-Driven Development (<code>spec.md</code> + <code>plan.md</code>, <code>ROADMAP.md</code> eliminado) y guía de aprendizaje de Kubernetes.</li>
+      <li><b>Miércoles 22/07</b> — Fase K8s Bloque 0: repaso de Docker consolidado (<code>docker-guia.md</code>).</li>
+      <li><b>Jueves 23/07</b> — Bloque 1 completo (clúster minikube + imágenes <code>:1.0</code>) + migración del grafo de código a codebase-memory-mcp (no prevista) + Bloque 2 iniciado.</li>
+      <li><b>Viernes 24/07</b> — Bloque 2 completado: Ayudas GV desplegada de extremo a extremo en minikube + material de repaso Docker/K8s para una reunión.</li>
+    </ul>
+    <p style="margin-top:.6rem;color:var(--muted);font-size:.88rem">
+      Hito de la semana: Fase 0 ya cerrada; la Fase K8s avanza de Docker a un clúster real (Bloques 0–2 hechos).
+      Los Bloques 3 (operar) y 4 (ejercicios) quedan pendientes para el lunes 27/07 → cierre de la Fase K8s.
+    </p>
+  </section>
+
+  <section class="day-card">
+    <div class="day-header">
+      <span class="day-name">Lunes</span>
+      <span class="day-date">2026-07-20</span>
+    </div>
+    <div class="day-content">
+      <p class="intro">Inicio de la Semana 7, tras cerrar la Fase 0 (MVP) el viernes 17/07. Arranque del trabajo en un PC nuevo (<code>c:\aplic\ayudas_gv</code>) y preparación del terreno para la Fase K8s. Reporte reconstruido a posteriori (jornada sin commits).</p>
+      <h2>Completado</h2>
+      <h3>Migración al PC nuevo y puesta a punto del entorno</h3>
+      <ul>
+        <li>Clon del repositorio desde GitHub (<code>origin</code> → <code>github.com/bohdeveloper/ayudas-gv</code>) en el PC nuevo (<code>c:\aplic\ayudas_gv</code>), rama <code>main</code> al día</li>
+        <li>Instalación del herramental de desarrollo: Docker Desktop + Compose, Java 21, Maven 3.9 y Node (la verificación formal quedó registrada el 22/07)</li>
+      </ul>
+      <h2>Bloqueos</h2>
+      <p>Ninguno.</p>
+      <p class="hito"><em>Hito del día: entorno de desarrollo montado en el PC nuevo con el repositorio clonado y el herramental instalado, listo para reanudar el trabajo tras el cierre de la Fase 0.</em></p>
+    </div>
+  </section>
+
+  <section class="day-card">
+    <div class="day-header">
+      <span class="day-name">Martes</span>
+      <span class="day-date">2026-07-21</span>
+    </div>
+    <div class="day-content">
+      <p class="intro">Reorganización metodológica antes de arrancar la Fase K8s: se adopta Spec-Driven Development y se decide la secuencia de las fases restantes.</p>
+      <h2>Completado</h2>
+      <h3>Adopción de Spec-Driven Development</h3>
+      <ul>
+        <li>Creados <code>spec.md</code> (memoria viva del proyecto) y <code>plan.md</code> (plan vivo con el histórico de fases fusionado dentro)</li>
+        <li>Eliminado <code>ROADMAP.md</code> (280 líneas): su contenido se fusiona en <code>plan.md</code> para no tener dos fuentes de verdad</li>
+        <li><code>CLAUDE.md</code> reescrito para dejar solo reglas de trabajo y enforzar el flujo SDD; <code>README.md</code> actualizado como presentación pública</li>
+      </ul>
+      <h3>Guía de aprendizaje de Kubernetes</h3>
+      <ul>
+        <li>Redactada <code>docs/kubernetes-aprendizaje.md</code> (756 líneas): guía didáctica construida sobre este proyecto real (postgres + backend + frontend), con teoría mínima, práctica y ejercicios organizados en bloques</li>
+      </ul>
+      <h3>Decisión de secuencia y punto de entrada</h3>
+      <ul>
+        <li>Decisión del usuario: primero dominar Docker + Kubernetes sobre este proyecto; la Fase 1 (Tramitación) se aborda después, con el clúster ya montado</li>
+        <li>Fijado en <code>plan.md</code> el punto de entrada de la próxima sesión (Bloque 0 de la Fase K8s)</li>
+      </ul>
+      <h2>Bloqueos</h2>
+      <p>Ninguno.</p>
+      <p class="hito"><em>Hito del día: proyecto reorganizado bajo Spec-Driven Development (fuente única) y guía de aprendizaje de Kubernetes redactada; decidida la secuencia — K8s antes de la Fase 1.</em></p>
+    </div>
+  </section>
+
+  <section class="day-card">
+    <div class="day-header">
+      <span class="day-name">Miércoles</span>
+      <span class="day-date">2026-07-22</span>
+    </div>
+    <div class="day-content">
+      <p class="intro">Fase K8s, Bloque 0: repaso de Docker consolidado sobre el proyecto real, antes de dar el salto a Kubernetes. Verificación del herramental en el PC nuevo y cierre del bloque.</p>
+      <h2>Completado</h2>
+      <h3>Verificación del herramental (PC nuevo)</h3>
+      <ul>
+        <li>Docker Desktop 29.6.2 + Compose v5.3.1 instalados y verificados: stack completo levantado y login OK</li>
+        <li>Java 21 + Maven 3.9 + Node presentes. Anotado que faltan <code>kubectl</code> y <code>minikube</code> — se instalarán en el Bloque 1</li>
+      </ul>
+      <h3>Bloque 0 — Repaso de Docker (consolidación)</h3>
+      <ul>
+        <li><b>Stack en marcha:</b> <code>docker compose up --build</code> → 3 contenedores <code>Up</code> (postgres <code>healthy</code>), migraciones Flyway V1–V5 aplicadas, login <code>admin</code> OK a través de Nginx</li>
+        <li><b>Multi-stage builds explicados por escrito</b> (<code>docker-guia.md</code> §3.1–3.2): por qué la imagen final no lleva Maven/Node (imagen pequeña, menor superficie de ataque)</li>
+        <li><b>Red por nombre de servicio interiorizada</b> — base del DNS de Kubernetes: Flyway conecta a <code>postgres:5432</code> y Nginx proxea a <code>backend:8080</code> por el nombre del servicio</li>
+        <li>Redactada <code>docs/docker-guia.md</code> (340 líneas). Bloque 0 <b>COMPLETADA (2026-07-22)</b></li>
+      </ul>
+      <h2>Bloqueos</h2>
+      <p>Ninguno.</p>
+      <p class="hito"><em>Hito del día: Bloque 0 de la Fase K8s cerrado. Stack Docker verificado en el PC nuevo, multi-stage builds y red por nombre de servicio documentados — listo el modelo mental de Docker para dar el salto a Kubernetes.</em></p>
+    </div>
+  </section>
+
+  <section class="day-card">
+    <div class="day-header">
+      <span class="day-name">Jueves</span>
+      <span class="day-date">2026-07-23</span>
+    </div>
+    <div class="day-content">
+      <p class="intro">Fase K8s. Bloque 1 completo + Bloque 2 iniciado, más una migración de herramienta no planificada (graphify → codebase-memory-mcp). El Bloque 2 se traslada al viernes.</p>
+      <h2>Completado</h2>
+      <h3><code>.dockerignore</code> para backend y frontend</h3>
+      <ul>
+        <li>Creados <code>backend/.dockerignore</code> y <code>frontend/.dockerignore</code> para reducir el contexto de build antes de construir dentro de minikube. Verificado con build real: contexto <b>102,83 kB</b> (backend) y <b>31,05 kB</b> (frontend)</li>
+      </ul>
+      <h3>Migración del grafo de código: graphify → codebase-memory-mcp (no planificado)</h3>
+      <ul>
+        <li>Ejecutada la skill <code>migrate-graphify</code>: indexado con codebase-memory-mcp (1628 nodos, 3014 aristas), snapshot committeable <code>.codebase-memory/</code>, <code>.mcp.json</code> versionable y grafo visual <code>graph.html</code></li>
+        <li>Conocimiento rescatado a <code>spec.md</code>. Retirados <code>graphify-out/</code>, la skill local y los 3 hooks de <code>settings.json</code>. Verificado end-to-end</li>
+      </ul>
+      <h3>Bloque 1 completado (clúster local)</h3>
+      <ul>
+        <li>Instalado <code>minikube</code> v1.38.1 y clúster arrancado con <code>minikube start --driver=docker</code>: Kubernetes <b>v1.35.1</b>, 1 nodo <code>Ready</code>, 7 Pods de <code>kube-system</code> Running</li>
+        <li>Construidas las dos imágenes dentro del Docker de minikube (vía <code>docker-env</code>): <code>ayudas-gv-backend:1.0</code> (245 MB) y <code>ayudas-gv-frontend:1.0</code> (62,7 MB)</li>
+        <li>Interiorizado el concepto clave: dos demonios Docker separados → sin construir ahí, el Pod quedaría en <code>ImagePullBackOff</code></li>
+      </ul>
+      <h3>Bloque 2 iniciado</h3>
+      <ul>
+        <li>Creada la carpeta <code>k8s/</code> y el primer manifiesto <code>k8s/00-namespace.yaml</code> (namespace <code>ayudas-dev</code>). Resto del Bloque 2 trasladado al viernes</li>
+      </ul>
+      <h2>Bloqueos</h2>
+      <p>Ninguno.</p>
+      <p class="hito"><em>Hito del día: Bloque 1 de la Fase K8s completado (clúster minikube con Kubernetes v1.35.1 e imágenes <code>:1.0</code> construidas dentro del clúster) y migración del grafo de código a codebase-memory-mcp cerrada y verificada.</em></p>
+    </div>
+  </section>
+
+  <section class="day-card">
+    <div class="day-header">
+      <span class="day-name">Viernes</span>
+      <span class="day-date">2026-07-24</span>
+    </div>
+    <div class="day-content">
+      <p class="intro">Fase K8s. Bloque 2 completo — la app desplegada de extremo a extremo en minikube — más material de repaso Docker/K8s para una reunión (no planificado). Los Bloques 3 y 4 se trasladan al lunes.</p>
+      <h2>Completado</h2>
+      <h3>Bloque 2 completado (desplegar la app en <code>k8s/</code>)</h3>
+      <ul>
+        <li>Aplicado el namespace <code>ayudas-dev</code> y fijado como contexto por defecto</li>
+        <li><code>k8s/10-backend-config.yaml</code> — ConfigMap (no sensible) + Secret (credenciales), derivados de <code>docker-compose.yml</code></li>
+        <li><code>k8s/20-postgres.yaml</code> — Deployment + PVC (persistencia) + Service ClusterIP <code>postgres</code></li>
+        <li><code>k8s/30-backend.yaml</code> — Deployment (<code>envFrom</code> Config+Secret, probes al 8080) + Service <code>backend</code></li>
+        <li><code>k8s/40-frontend.yaml</code> — Deployment (Nginx:80) + Service <code>frontend</code></li>
+        <li><code>k8s/50-ingress.yaml</code> — Ingress (todo <code>/</code> → frontend, cuyo Nginx proxea <code>/api</code> → <code>backend:8080</code>), con el addon <code>ingress</code> habilitado</li>
+        <li><b>Verificación end-to-end:</b> 3 Pods en <code>Running</code> y login <code>admin/admin123</code> (HTTP 200 + JWT) por <code>port-forward</code> y por el Ingress</li>
+        <li><b>DNS interno demostrado:</b> <code>getent hosts postgres</code> desde el Pod del backend → <code>10.111.20.147</code> (ClusterIP del Service)</li>
+        <li><b>Fallo provocado diagnosticado:</b> Secret con la contraseña mal → <code>FATAL: password authentication failed</code>; <code>describe</code> mostró Readiness probe failed + BackOff; arreglado restaurando el Secret. Bloque 2 <b>COMPLETADA</b></li>
+      </ul>
+      <h3>Material de repaso Docker/K8s para la reunión (no planificado)</h3>
+      <ul>
+        <li><code>docs/docker-k8s-diagramas.md</code> (230 líneas): diagramas de apoyo (Compose vs clúster, objetos K8s, flujo de una petición)</li>
+        <li><code>docs/entrevista-docker-k8s-preguntas.md</code> (212 líneas): batería de preguntas y respuestas orales de entrevista sobre Docker y Kubernetes</li>
+        <li>Reindexado el grafo de código tras los documentos nuevos y actualizado el snapshot <code>.codebase-memory/</code></li>
+      </ul>
+      <h2>Pendiente (lunes 27/07)</h2>
+      <ul>
+        <li><b>Bloque 3</b> (operar): escalar a 3 réplicas · self-healing · rolling update <code>:1.0</code>→<code>:1.1</code> + <code>rollout undo</code> · postgres → StatefulSet</li>
+        <li><b>Bloque 4</b> (ejercicios integradores) → cierre de la Fase K8s; luego arranca la Fase 1 (Tramitación)</li>
+      </ul>
+      <h2>Bloqueos</h2>
+      <p>Ninguno.</p>
+      <p class="hito"><em>Hito del día: Bloque 2 de la Fase K8s completado — Ayudas GV desplegada de extremo a extremo en minikube (namespace, ConfigMap+Secret, postgres con PVC, backend, frontend e Ingress; 3 Pods Running y login e2e), con el DNS interno demostrado y un fallo provocado diagnosticado.</em></p>
+    </div>
+  </section>
+</div>
+</body></html>

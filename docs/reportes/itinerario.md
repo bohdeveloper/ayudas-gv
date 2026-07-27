@@ -6,9 +6,10 @@
 >
 > **Ritmo asumido:** media jornada, **~4h/día laborable** (una "sesión" = ~4h). Decisión del usuario (2026-07-23).
 > **Anclas fijadas por el usuario:** 22/07 Bloque 0 · 23/07 Bloques 1+2 · 24/07 Bloques 3+4 · 27/07 arranca Fase 1.
-> **Real (al 24/07):** 23/07 Bloque 1 completo + Bloque 2 iniciado · 24/07 Bloque 2 completo + material de repaso
-> para reunión (no previsto). Los Bloques 3+4 se reslotean al **lunes 27/07** (cierre de la Fase K8s), que
-> comparte sesión con el arranque de la Fase 1.
+> **Real (al 27/07):** 23/07 Bloque 1 completo + Bloque 2 iniciado · 24/07 Bloque 2 completo + material de repaso
+> para reunión (no previsto) · 27/07 Bloque 3 completo (modo aprendizaje paso a paso). El **Bloque 4** y el
+> arranque de la Fase 1 se reslotean al **martes 28/07**; el resto se desplaza **1 día laborable** y el fin
+> proyectado pasa de 10/08 a **11/08**.
 > Sin emojis (convención del proyecto): marcadores `COMPLETADA · EN CURSO · PENDIENTE`.
 
 ---
@@ -16,19 +17,19 @@
 ## Resumen ejecutivo
 
 - **Punto de partida:** jueves 23/07/2026 (Fase 0 MVP cerrada; Fase K8s Bloque 0 cerrado el 22/07).
-- **Trabajo restante:** 13 sesiones de ~4h ≈ **~52 horas**.
-- **Fin proyectado:** **lunes 10/08/2026** (demo final y cierre).
-- **Duración natural:** ~2,5 semanas laborables (23/07 → 10/08), fines de semana excluidos.
+- **Trabajo restante (desde el 28/07):** 11 sesiones de ~4h ≈ **~44 horas**.
+- **Fin proyectado:** **martes 11/08/2026** (demo final y cierre) — corrido 1 día tras el reslot del 27/07.
+- **Duración natural:** ~3 semanas laborables (23/07 → 11/08), fines de semana excluidos.
 
 | Fase restante | Sesiones (~4h) | Ventana de fechas |
 |---------------|:--------------:|-------------------|
-| Fase K8s — Bloques 1–4 | 2 | jue 23/07 – lun 27/07 (Bloques 3+4) |
-| Fase 1 — Tramitación | 2 | lun 27/07 – mar 28/07 (arranca la tarde del 27) |
-| Fase 2 — Alta y registro | 2 | mié 29/07 – jue 30/07 |
-| Fase 3 — Resolución y notificaciones | 2 | vie 31/07 – lun 03/08 |
-| Fase 4 — Reglas de negocio y cuantías | 2 | mar 04/08 – mié 05/08 |
-| Evolución arquitectónica (microservicios en K8s) | 3 | jue 06/08 – lun 10/08 |
-| **Total** | **13** | **jue 23/07 – lun 10/08** |
+| Fase K8s — Bloques 1–4 | 3 | jue 23/07 – mar 28/07 (Bloque 4 el 28) |
+| Fase 1 — Tramitación | 2 | mar 28/07 – mié 29/07 (arranca la tarde del 28) |
+| Fase 2 — Alta y registro | 2 | jue 30/07 – vie 31/07 |
+| Fase 3 — Resolución y notificaciones | 2 | lun 03/08 – mar 04/08 |
+| Fase 4 — Reglas de negocio y cuantías | 2 | mié 05/08 – jue 06/08 |
+| Evolución arquitectónica (microservicios en K8s) | 3 | vie 07/08 – mar 11/08 |
+| **Total** | **14** | **jue 23/07 – mar 11/08** |
 
 ---
 
@@ -51,27 +52,28 @@ La demo/cierre semanal cae el viernes (o último día laborable de la ventana).
 
 | Día | Sesión | Entregable del día |
 |-----|--------|--------------------|
-| lun 27/07 | **Fase K8s — Bloques 3+4** (cierre): escalar a 3 réplicas · self-healing · rolling update `:1.0`→`:1.1` + `rollout undo` · postgres→StatefulSet · ejercicios integradores (~½ sesión, es `kubectl`) → **cierre Fase K8s**. Luego **Fase 1 (1/2, arranque)** — asignación de instructor (rol RESPONSABLE) · registro de trámites por flujo · regla "instructor solo tramita lo asignado" (TDD) | PENDIENTE |
-| mar 28/07 | **Fase 1 (2/2)** — sección Tramitación en el detalle (histórico + instructor) · notificación en idioma del interesado · endpoints REST en Swagger · pruebas en verde → **cierre Fase 1** | PENDIENTE |
-| mié 29/07 | **Fase 2 (1/2)** — formulario de alta de expediente (validación cliente + servidor) · gestión de interesados (SOLICITANTE / REPRESENTANTE / CAUSANTE) · datos de contacto y aviso | PENDIENTE |
-| jue 30/07 | **Fase 2 (2/2)** — formulario específico por tipo (`ASIG_DISCAP` / `PAGO_NAC` / `PARTO_MULT`) · persistencia con SQL parametrizado · autorización de alta por rol → **cierre Fase 2** | PENDIENTE |
-| vie 31/07 | **Fase 3 (1/2)** — generación de documentos de resolución (favorable/desfavorable) · idioma del documento según `idioma_notificacion` · traza en `auditoria` + **demo semanal** | PENDIENTE |
+| **lun 27/07** | **Bloque 3** (completo) — escalar a 3 réplicas con balanceo verificado (3/1/2) · self-healing con cero caídas · rolling update `:1.0`→`:1.1` + `rollout undo` · limitación de postgres **demostrada rompiéndola en vivo** (dos postmasters sobre el mismo PVC; BD recuperada íntegra). Trabajado paso a paso en modo aprendizaje; el Bloque 4 se resloteó a mañana | COMPLETADA (parcial) |
+| mar 28/07 | **Fase K8s — Bloque 4** (cierre): namespace `ayudas-staging` · probes con actuator · resiliencia JWT · `resources.requests/limits` · endurecer `20-postgres.yaml` (`Recreate` + `ReadWriteOncePod`) · `change-cause` · respuestas orales → **cierre Fase K8s**. Luego **Fase 1 (1/2, arranque)** — asignación de instructor (rol RESPONSABLE) · registro de trámites por flujo · regla "instructor solo tramita lo asignado" (TDD) | PENDIENTE |
+| mié 29/07 | **Fase 1 (2/2)** — sección Tramitación en el detalle (histórico + instructor) · notificación en idioma del interesado · endpoints REST en Swagger · pruebas en verde → **cierre Fase 1** | PENDIENTE |
+| jue 30/07 | **Fase 2 (1/2)** — formulario de alta de expediente (validación cliente + servidor) · gestión de interesados (SOLICITANTE / REPRESENTANTE / CAUSANTE) · datos de contacto y aviso | PENDIENTE |
+| vie 31/07 | **Fase 2 (2/2)** — formulario específico por tipo (`ASIG_DISCAP` / `PAGO_NAC` / `PARTO_MULT`) · persistencia con SQL parametrizado · autorización de alta por rol → **cierre Fase 2** + **demo semanal** | PENDIENTE |
 
 ### Semana 9 (03–07 ago) — Resolución, Reglas de negocio y microservicios
 
 | Día | Sesión | Entregable del día |
 |-----|--------|--------------------|
-| lun 03/08 | **Fase 3 (2/2)** — notificaciones por canal (EMAIL / SMS / POSTAL) · traza de emisión → **cierre Fase 3** | PENDIENTE |
-| mar 04/08 | **Fase 4 (1/2)** — validación de requisitos por tipo de ayuda (grados, supuestos habilitantes, límites de ingresos) antes de proponer/resolver | PENDIENTE |
-| mié 05/08 | **Fase 4 (2/2)** — cálculo orientativo de cuantías (SMI, referencia 1.000 €) · incompatibilidades (progenitores, prestaciones análogas) · pruebas → **cierre Fase 4** | PENDIENTE |
-| jue 06/08 | **Microservicios (1/3)** — extraer `ms-tramitacion` como primer bounded context (coincide con Fase 1) | PENDIENTE |
-| vie 07/08 | **Microservicios (2/3)** — `gateway` (enrutado + propagación de token) delante de los servicios + **demo semanal** | PENDIENTE |
+| lun 03/08 | **Fase 3 (1/2)** — generación de documentos de resolución (favorable/desfavorable) · idioma del documento según `idioma_notificacion` · traza en `auditoria` | PENDIENTE |
+| mar 04/08 | **Fase 3 (2/2)** — notificaciones por canal (EMAIL / SMS / POSTAL) · traza de emisión → **cierre Fase 3** | PENDIENTE |
+| mié 05/08 | **Fase 4 (1/2)** — validación de requisitos por tipo de ayuda (grados, supuestos habilitantes, límites de ingresos) antes de proponer/resolver | PENDIENTE |
+| jue 06/08 | **Fase 4 (2/2)** — cálculo orientativo de cuantías (SMI, referencia 1.000 €) · incompatibilidades (progenitores, prestaciones análogas) · pruebas → **cierre Fase 4** | PENDIENTE |
+| vie 07/08 | **Microservicios (1/3)** — extraer `ms-tramitacion` como primer bounded context (coincide con Fase 1) + **demo semanal** | PENDIENTE |
 
-### Semana 10 (10 ago) — cierre
+### Semana 10 (10–11 ago) — cierre
 
 | Día | Sesión | Entregable del día |
 |-----|--------|--------------------|
-| lun 10/08 | **Microservicios (3/3)** — desplegar cada servicio como Deployment+Service en `k8s/` (reutilizando la Fase K8s) · pruebas e2e · **demo final y cierre del proyecto** | PENDIENTE |
+| lun 10/08 | **Microservicios (2/3)** — `gateway` (enrutado + propagación de token) delante de los servicios | PENDIENTE |
+| mar 11/08 | **Microservicios (3/3)** — desplegar cada servicio como Deployment+Service en `k8s/` (reutilizando la Fase K8s) · pruebas e2e · **demo final y cierre del proyecto** | PENDIENTE |
 
 ---
 
@@ -79,7 +81,7 @@ La demo/cierre semanal cae el viernes (o último día laborable de la ventana).
 
 | Fase | Base de la estimación |
 |------|-----------------------|
-| **K8s 1–4** | Guía didáctica ya escrita ([kubernetes-aprendizaje.md](../kubernetes-aprendizaje.md)); manifiestos de referencia listos en el Apéndice B → sobre todo ejecución + interiorización. 2 sesiones (anclas del usuario). |
+| **K8s 1–4** | Guía didáctica ya escrita ([kubernetes-aprendizaje.md](../kubernetes-aprendizaje.md)); manifiestos de referencia listos en el Apéndice B → sobre todo ejecución + interiorización. Estimadas 2 sesiones (anclas del usuario); **reales 3**: el modo aprendizaje paso a paso (ejecutar, observar y razonar cada ejercicio) rinde más conocimiento por sesión pero cubre menos puntos. |
 | **Fase 1** | Modelo de datos ya previsto (`tramite`, `tipo_tramite`); auth, auditoría e i18n ya existen de Fase 0. El grueso es lógica de tramitación + una regla de autorización en backend + una sección de frontend. 2 sesiones. |
 | **Fase 2** | Formularios y validación doble + 3 variantes por tipo de ayuda. El modelo (`persona`, `expediente`, `solicitud_ayuda`) ya está de Fase 0 → sobre todo escritura (INSERT parametrizado) y UI. 2 sesiones. |
 | **Fase 3** | Generación de documentos + notificaciones por canal. Riesgo: integración real de EMAIL/SMS puede quedar simulada (stub) en local. 2 sesiones. |
@@ -88,8 +90,12 @@ La demo/cierre semanal cae el viernes (o último día laborable de la ventana).
 
 **Riesgos y holguras.** Las fases 1 y 4 son las que con más probabilidad se desbordan a una 3.ª sesión
 (regla de negocio y cálculo de cuantías, respectivamente). Si ocurre, el fin proyectado se corre 1–2 días
-laborables (→ 11–12/08). La integración real de notificaciones (Fase 3) puede quedar como stub local y
-completarse en la fase de microservicios si aporta valor.
+laborables (→ 12–13/08 desde el 11/08 actual). La integración real de notificaciones (Fase 3) puede quedar como
+stub local y completarse en la fase de microservicios si aporta valor.
+
+> **Aviso de holgura (2026-07-27).** Los desplazamientos previos (Bloque 2 al 24/07, Bloques 3+4 al 27/07) se
+> absorbieron sin mover el fin. El de hoy **ya no**: consumida la holgura, el fin pasa de 10/08 a 11/08. A
+> partir de aquí, cada desbordamiento se traslada 1:1 a la fecha de cierre.
 
 ---
 

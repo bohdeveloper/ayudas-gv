@@ -70,11 +70,11 @@ Calendario completo de lo que queda (fin proyectado 10/08/2026): [docs/reportes/
 - [x] Demostrar el DNS interno (`getent hosts postgres` desde el Pod del backend) — 2026-07-24: `postgres` → 10.111.20.147 (ClusterIP del Service)
 - [x] Diagnosticar un fallo provocado (Secret con contraseña mal) con `describe` + `logs` — 2026-07-24: `FATAL: password authentication failed for user "ayudasgv"`; `describe` mostró Readiness probe failed + BackOff; arreglado restaurando el Secret
 
-### Bloque 3 — Operar (la esencia de orquestar)
-- [ ] Escalar el backend a 3 réplicas y comprobar los 3 endpoints del Service
-- [ ] Self-healing: matar un Pod y ver cómo el Deployment lo recrea (sin afectar al frontend)
-- [ ] Rolling update `:1.0`→`:1.1` con `kubectl set image` y `rollout status`; luego `rollout undo`
-- [ ] Razonar por qué postgres (PVC ReadWriteOnce) no se replica como el backend → StatefulSet
+### Bloque 3 — Operar (la esencia de orquestar) — COMPLETADA (2026-07-27)
+- [x] Escalar el backend a 3 réplicas y comprobar los 3 endpoints del Service — 2026-07-27: `kubectl scale` → 3 endpoints `true` en el EndpointSlice; balanceo real demostrado (6 logins repartidos 3/1/2 entre los Pods, vía logs `Login exitoso`)
+- [x] Self-healing: matar un Pod y ver cómo el Deployment lo recrea (sin afectar al frontend) — 2026-07-27: Pod nuevo en 2s, recuperación completa en 77s, 4 logins HTTP 200 durante la ventana; el Pod moribundo pasó a `ready=false` en los endpoints antes de morir y el que arrancaba recibió 0 peticiones; frontend y postgres intactos
+- [x] Rolling update `:1.0`→`:1.1` con `kubectl set image` y `rollout status`; luego `rollout undo` — 2026-07-27: imagen `:1.1` construida con `minikube image build` (derivada de `:1.0` + marca `APP_VERSION`); ReplicaSet nuevo `5b48dd7c5c`, surge de 1 Pod (maxSurge 25%→1, maxUnavailable 25%→0), cero caída; `undo` reinfló el RS viejo `fd8f6dd8b` y añadió la revisión 5
+- [x] Razonar por qué postgres (PVC ReadWriteOnce) no se replica como el backend → StatefulSet — 2026-07-27: probado en vivo escalando a 2 réplicas. **RWO limita por nodo, no por Pod**: en un solo nodo ambos Pods montaron el PVC; los namespaces de PID hicieron que el 2.º postmaster (también PID 1) tomara el `postmaster.pid` ajeno por un lock huérfano suyo, lo borrara y arrancara → dos postmasters ~76s sobre el mismo directorio. Al bajar a 1 réplica, el original hizo `immediate shutdown because data directory lock file is invalid` y reinició. BD íntegra (Flyway V1–V5 `success`, datos OK). Conclusiones: `ReadWriteOncePod` sí lo impediría; el StatefulSet resuelve identidad y disco por Pod (`volumeClaimTemplates`) pero **no** da replicación de Postgres (eso es un operador tipo CloudNativePG o BD gestionada)
 
 ### Bloque 4 — Ejercicios integradores (blindaje entrevista)
 - [ ] Segundo entorno con namespace `ayudas-staging` (mismo stack, ConfigMap distinto)
@@ -83,6 +83,11 @@ Calendario completo de lo que queda (fin proyectado 10/08/2026): [docs/reportes/
 - [ ] Resiliencia con JWT stateless: borrar un Pod mientras se navega, sin perder sesión
 - [ ] `resources.requests/limits` y diferencia OOMKilled (memoria) vs throttling (CPU)
 - [ ] Preparar respuestas orales de 30s a las preguntas típicas (lista en la guía, Parte 6)
+- [ ] **Endurecer `k8s/20-postgres.yaml`** (hallazgo del Bloque 3, 2026-07-27): `strategy: Recreate` — con
+  el `RollingUpdate` por defecto, cambiar la imagen de postgres provocaría el mismo doble montaje que
+  rompió el Pod hoy — y `accessModes: ["ReadWriteOncePod"]` como red de seguridad frente a un escalado accidental
+- [ ] Anotar `kubernetes.io/change-cause` en los Deployments para que `rollout history` sea legible
+  (hoy las 5 revisiones salen con `CHANGE-CAUSE: <none>`)
 
 **Hecho cuando:** el usuario puede, de memoria, desplegar el stack en minikube, escalarlo, matar un Pod
 y verlo recuperarse, y hacer un rolling update con rollback; y explica con soltura Pod/Deployment/Service/

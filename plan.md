@@ -21,7 +21,7 @@
 
 **Próxima sesión (viernes 24/07) — Bloque 2 de la Fase K8s** (desplegar en `k8s/`), y si da tiempo Bloques 3 y 4.
 Bloque 1 completado el 23/07 (clúster minikube + imágenes `:1.0` dentro del clúster). Ya existe `k8s/00-namespace.yaml`
-(pendiente de aplicar). Guía: [docs/kubernetes-aprendizaje.md](docs/kubernetes-aprendizaje.md) → Parte 4.
+(pendiente de aplicar). Guía: [docs/kubernetes-aprendizaje.md](docs/docker-k8s/kubernetes-aprendizaje.md) → Parte 4.
 Calendario completo de lo que queda (fin proyectado 10/08/2026): [docs/reportes/itinerario.md](docs/reportes/itinerario.md).
 
 - **Punto de entrada exacto:** instalar `minikube` (`winget install Kubernetes.minikube`) y
@@ -43,13 +43,13 @@ Calendario completo de lo que queda (fin proyectado 10/08/2026): [docs/reportes/
 > dominar las operaciones de orquestación (escalar, autocurar, actualizar sin caída), como preparación
 > para un nuevo proyecto profesional con este stack.
 > **Método:** guía didáctica con teoría mínima + práctica + ejercicios en
-> [docs/kubernetes-aprendizaje.md](docs/kubernetes-aprendizaje.md). Este apartado es el checklist; el
+> [docs/kubernetes-aprendizaje.md](docs/docker-k8s/kubernetes-aprendizaje.md). Este apartado es el checklist; el
 > "cómo" y el "por qué" están en la guía.
 
 ### Bloque 0 — Repaso de Docker (consolidación) — COMPLETADA (2026-07-22)
 - [x] Levantar el stack con `docker compose up --build` y verificar los 3 contenedores (ej. 1.1–1.4 de la guía) — 2026-07-22: 3 contenedores Up (postgres healthy), Flyway V1–V5 aplicadas, login `admin` OK vía Nginx
-- [x] Explicar por escrito el multi-stage build de `backend/Dockerfile` y el de `frontend/Dockerfile` — 2026-07-22: [docs/docker-guia.md](docs/docker-guia.md) §3.1–3.2
-- [x] Interiorizar la red por nombre de servicio (`postgres`, `backend`) — base del DNS de K8s — 2026-07-22: [docs/docker-guia.md](docs/docker-guia.md) §4 + demostrado en vivo (Flyway→`postgres:5432`, Nginx→`backend:8080`)
+- [x] Explicar por escrito el multi-stage build de `backend/Dockerfile` y el de `frontend/Dockerfile` — 2026-07-22: [docs/docker-guia.md](docs/docker-k8s/docker-guia.md) §3.1–3.2
+- [x] Interiorizar la red por nombre de servicio (`postgres`, `backend`) — base del DNS de K8s — 2026-07-22: [docs/docker-guia.md](docs/docker-k8s/docker-guia.md) §4 + demostrado en vivo (Flyway→`postgres:5432`, Nginx→`backend:8080`)
 
 ### Bloque 1 — Clúster local (minikube)
 - [x] **Prep (2026-07-23):** `.dockerignore` en `backend/` y `frontend/` para reducir el contexto de build
@@ -91,12 +91,12 @@ Calendario completo de lo que queda (fin proyectado 10/08/2026): [docs/reportes/
 
 ### Material didáctico (divulgación de la Fase K8s) — COMPLETADA (2026-07-28)
 
-- [x] Reescribir [docs/kubernetes-aprendizaje.md](docs/kubernetes-aprendizaje.md) en lenguaje llano: mantener
+- [x] Reescribir [docs/kubernetes-aprendizaje.md](docs/docker-k8s/kubernetes-aprendizaje.md) en lenguaje llano: mantener
   el vocabulario técnico (Pod, Namespace, Service...) pero explicar cada concepto con una **analogía cotidiana**
   y prosa sencilla. No tocar el Apéndice B (manifiestos de referencia) — 2026-07-28: **25 analogías** en
   recuadros `> **Imagínalo así.**` (Partes 0–5 y 7); corregido además el ejercicio 5.4, que daba por hecho un
   resultado que el Bloque 3 demostró falso
-- [x] Crear [docs/kubernetes-desde-0.md](docs/kubernetes-desde-0.md): resumen de los Bloques 1–4 contado desde
+- [x] Crear [docs/kubernetes-desde-0.md](docs/docker-k8s/kubernetes-desde-0.md): resumen de los Bloques 1–4 contado desde
   cero, sin dar por sabido nada, con las mismas analogías y con lo que realmente pasó en cada sesión (incluido
   el incidente de postgres del 27/07). Público: alguien que no ha tocado Kubernetes nunca — 2026-07-28:
   343 líneas, 13 analogías, cierra con las 6 preguntas de entrevista respondidas en 30 segundos
@@ -120,6 +120,17 @@ Ingress/ConfigMap/Secret/Namespace. Entregable físico: carpeta `k8s/` versionad
 - [x] **Hook `Stop` que la vigila** — 2026-07-28: `.claude/hooks/git-cola-limpia.sh` (+ `.claude/settings.json`).
   Avisa solo de los **rezagados** (sin tocar en 45 min) para no generar ruido con el trabajo en curso; los
   borrados sin commit se reportan siempre. Probado en crudo: JSON válido y filtro por antigüedad correcto
+- [x] **Reorganizar `docs/`** — 2026-07-28: la carpeta acumulaba 9 documentos sueltos en la raíz más dos
+  `.excalidraw` mezclados. Ahora: [docs/docker-k8s/](docs/docker-k8s/) (los 4 documentos de la Fase K8s),
+  [docs/diagramas/](docs/diagramas/) (los `.excalidraw`) y un índice [docs/README.md](docs/README.md) con
+  tabla por bloque y "por dónde empezar". Los documentos del sistema (`arquitectura`, `modelo-datos`,
+  `tecnologias`, `fase0-planificacion`) se quedan en la raíz de `docs/`
+- [x] **Fusionar el material de la reunión** — 2026-07-28: `docker-k8s-diagramas.md` (230 líneas) +
+  `entrevista-docker-k8s-preguntas.md` (212) → [docs/docker-k8s/entrevista-docker-k8s.md](docs/docker-k8s/entrevista-docker-k8s.md)
+  (453). Mismo día de origen (24/07), mismo propósito y uno ya enlazaba al otro como "modelo visual de apoyo".
+  Parte 1 = 10 diagramas Mermaid, Parte 2 = 30 preguntas con respuesta modelo + chuleta. Contenido íntegro de
+  ambos; solo se reescribió la cabecera. Enlaces relativos corregidos y referencias actualizadas en
+  `README.md`, `spec.md`, `plan.md` e itinerario — sin enlaces rotos
 
 ---
 

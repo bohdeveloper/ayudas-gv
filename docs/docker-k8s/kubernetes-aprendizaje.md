@@ -6,7 +6,7 @@
 >
 > Cómo usarla: sigue los bloques en orden. Cada bloque tiene **(1) teoría mínima**, **(2) manos a la obra**
 > y **(3) ejercicios** con su verificación. No copies y pegues sin leer: el objetivo es interiorizar, no
-> tener YAML que funcione. El checklist de progreso vive en [../plan.md](../plan.md) (fase "K8s").
+> tener YAML que funcione. El checklist de progreso vive en [plan.md](../../plan.md) (fase "K8s").
 
 **Cómo leer las analogías.** Cada concepto técnico lleva debajo un recuadro `> **Imagínalo así.**` con una
 comparación de andar por casa. No son adornos: están pensadas para que puedas **explicar el concepto en voz

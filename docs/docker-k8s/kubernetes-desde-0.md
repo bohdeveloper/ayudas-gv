@@ -5,7 +5,7 @@
 >
 > El **manual de trabajo** (comandos, ejercicios, ficheros completos) es
 > [kubernetes-aprendizaje.md](kubernetes-aprendizaje.md). El **checklist** vivo está en
-> [../plan.md](../plan.md). Esto de aquí es el relato: lo que le contarías a alguien en una cafetería.
+> [plan.md](../../plan.md). Esto de aquí es el relato: lo que le contarías a alguien en una cafetería.
 >
 > Cada concepto lleva su recuadro `> **Imagínalo así.**`. Las palabras técnicas (Pod, Service, Namespace) se
 > usan siempre — la gracia es que puedas soltarlas **sabiendo lo que significan**, no repetirlas de memoria.
@@ -114,7 +114,7 @@ dentro de él.
 **Lo que había que conseguir:** que Ayudas GV entera —base de datos, backend y frontend— funcionara dentro
 del clúster, y poder hacer login de punta a punta.
 
-Aquí nació la carpeta [k8s/](../k8s/), que es la traducción del `docker-compose.yml` al idioma de Kubernetes.
+Aquí nació la carpeta [k8s/](../../k8s/), que es la traducción del `docker-compose.yml` al idioma de Kubernetes.
 Seis ficheros, aplicados **en el orden en que se necesitan unos a otros**:
 
 > **Imagínalo así.** Es **mudarse a un piso**. Primero la llave y el piso vacío, luego el alta de luz y agua,
@@ -301,7 +301,9 @@ El último bloque cierra la Fase K8s. Son ejercicios que combinan lo anterior:
 <a name="preguntas"></a>
 ## Las seis preguntas y cómo responderlas en 30 segundos
 
-Las típicas de entrevista, con la respuesta corta y la imagen por si te quedas en blanco.
+Las típicas de entrevista, con la respuesta corta y la imagen por si te quedas en blanco. Aquí están las seis
+nucleares con analogía; la batería completa (30 preguntas de Docker y K8s, más los diagramas de apoyo y la
+chuleta de comandos) está en [entrevista-docker-k8s.md](entrevista-docker-k8s.md).
 
 **1. ¿Pod, Deployment y Service?**
 El **Pod** es tu programa en marcha, y es desechable. El **Deployment** se encarga de que siempre haya N Pods
@@ -339,5 +341,5 @@ y, para replicación real, con un operador o una base de datos gestionada.
 ---
 
 *Documento divulgativo de la Fase K8s de Ayudas GV. Detalle técnico y comandos en
-[kubernetes-aprendizaje.md](kubernetes-aprendizaje.md); estado del trabajo en [../plan.md](../plan.md);
-diario de cada sesión en [reportes/](reportes/).*
+[kubernetes-aprendizaje.md](kubernetes-aprendizaje.md); estado del trabajo en [plan.md](../../plan.md);
+diario de cada sesión en [../reportes/](../reportes/).*

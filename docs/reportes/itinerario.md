@@ -52,7 +52,7 @@ La demo/cierre semanal cae el viernes (o último día laborable de la ventana).
 |-----|--------|--------------------|
 | lun 20/07 | *(hecho)* Migración a PC nuevo + herramental (Docker Desktop, Java/Maven/Node) | — |
 | mar 21/07 | *(hecho)* Verificación del stack + fijar punto de entrada K8s | — |
-| mié 22/07 | *(hecho)* **Bloque 0** — repaso Docker consolidado ([docker-guia.md](../docker-guia.md)) | COMPLETADA |
+| mié 22/07 | *(hecho)* **Bloque 0** — repaso Docker consolidado ([docker-guia.md](../docker-k8s/docker-guia.md)) | COMPLETADA |
 | **jue 23/07** | **Bloque 1** (completo) + `.dockerignore` + **migración graphify→codebase-memory-mcp** (no prevista) + Bloque 2 iniciado (namespace). El Bloque 2 se desbordó a mañana | COMPLETADA (parcial) |
 | **vie 24/07** | **Bloque 2** (completo) — desplegar en `k8s/` (namespace→config/secret→postgres→backend→frontend→ingress, 3 Pods Running + login e2e + DNS interno + fallo provocado diagnosticado) + **material de repaso Docker/K8s para reunión** (no previsto). Los Bloques 3+4 se reslotean al lunes | COMPLETADA (parcial) |
 
@@ -61,7 +61,7 @@ La demo/cierre semanal cae el viernes (o último día laborable de la ventana).
 | Día | Sesión | Entregable del día |
 |-----|--------|--------------------|
 | **lun 27/07** | **Bloque 3** (completo) — escalar a 3 réplicas con balanceo verificado (3/1/2) · self-healing con cero caídas · rolling update `:1.0`→`:1.1` + `rollout undo` · limitación de postgres **demostrada rompiéndola en vivo** (dos postmasters sobre el mismo PVC; BD recuperada íntegra). Trabajado paso a paso en modo aprendizaje; el Bloque 4 se resloteó a mañana | COMPLETADA (parcial) |
-| **mar 28/07** | **Día sin sesión de proyecto** — entrevista técnica y preparación de la reunión. Lo único desarrollado (mañana, no previsto): material divulgativo de la Fase K8s (`kubernetes-aprendizaje.md` reescrita con 25 analogías + `kubernetes-desde-0.md` + 2 diagramas del entorno) e higiene del repositorio (snapshot del grafo fuera del control de versiones + política de cola limpia + hook `Stop`). El Bloque 4 y el arranque de la Fase 1 se reslotean a mañana | SIN SESIÓN |
+| **mar 28/07** | **Día sin sesión de proyecto** — entrevista técnica y preparación de la reunión. Lo único desarrollado (mañana, no previsto): material divulgativo de la Fase K8s (`kubernetes-aprendizaje.md` reescrita con 25 analogías + `kubernetes-desde-0.md` + 2 diagramas del entorno) e higiene del repositorio (snapshot del grafo fuera del control de versiones + política de cola limpia + hook `Stop`) + reorganización de `docs/` (carpetas `docker-k8s/` y `diagramas/`, dos documentos fusionados en uno e índice `docs/README.md`). El Bloque 4 y el arranque de la Fase 1 se reslotean a mañana | SIN SESIÓN |
 | mié 29/07 | **Fase K8s — Bloque 4** (cierre): namespace `ayudas-staging` · probes con actuator · resiliencia JWT · `resources.requests/limits` · endurecer `20-postgres.yaml` (`Recreate` + `ReadWriteOncePod`) · `change-cause` · respuestas orales → **cierre Fase K8s**. Luego **Fase 1 (1/2, arranque)** — asignación de instructor (rol RESPONSABLE) · registro de trámites por flujo · regla "instructor solo tramita lo asignado" (TDD) | PENDIENTE |
 | jue 30/07 | **Fase 1 (2/2)** — sección Tramitación en el detalle (histórico + instructor) · notificación en idioma del interesado · endpoints REST en Swagger · pruebas en verde → **cierre Fase 1** | PENDIENTE |
 | vie 31/07 | **Fase 2 (1/2)** — formulario de alta de expediente (validación cliente + servidor) · gestión de interesados (SOLICITANTE / REPRESENTANTE / CAUSANTE) · datos de contacto y aviso + **demo semanal** | PENDIENTE |
@@ -90,7 +90,7 @@ La demo/cierre semanal cae el viernes (o último día laborable de la ventana).
 
 | Fase | Base de la estimación |
 |------|-----------------------|
-| **K8s 1–4** | Guía didáctica ya escrita ([kubernetes-aprendizaje.md](../kubernetes-aprendizaje.md)); manifiestos de referencia listos en el Apéndice B → sobre todo ejecución + interiorización. Estimadas 2 sesiones (anclas del usuario); **reales 3**: el modo aprendizaje paso a paso (ejecutar, observar y razonar cada ejercicio) rinde más conocimiento por sesión pero cubre menos puntos. |
+| **K8s 1–4** | Guía didáctica ya escrita ([kubernetes-aprendizaje.md](../docker-k8s/kubernetes-aprendizaje.md)); manifiestos de referencia listos en el Apéndice B → sobre todo ejecución + interiorización. Estimadas 2 sesiones (anclas del usuario); **reales 3**: el modo aprendizaje paso a paso (ejecutar, observar y razonar cada ejercicio) rinde más conocimiento por sesión pero cubre menos puntos. |
 | **Fase 1** | Modelo de datos ya previsto (`tramite`, `tipo_tramite`); auth, auditoría e i18n ya existen de Fase 0. El grueso es lógica de tramitación + una regla de autorización en backend + una sección de frontend. 2 sesiones. |
 | **Fase 2** | Formularios y validación doble + 3 variantes por tipo de ayuda. El modelo (`persona`, `expediente`, `solicitud_ayuda`) ya está de Fase 0 → sobre todo escritura (INSERT parametrizado) y UI. 2 sesiones. |
 | **Fase 3** | Generación de documentos + notificaciones por canal. Riesgo: integración real de EMAIL/SMS puede quedar simulada (stub) en local. 2 sesiones. |

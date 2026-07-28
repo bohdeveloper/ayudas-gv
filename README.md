@@ -4,7 +4,7 @@
 
 Aplicación web interna para la gestión y tramitación de expedientes de ayudas de carácter social (arts. 351–362 y 373 del TRLGSS).
 
-> **Estado:** Fase 0 (MVP) completada. Foco actual: aprender **Docker + Kubernetes** desplegando la app en un clúster local — ver [guía paso a paso](docs/kubernetes-aprendizaje.md).
+> **Estado:** Fase 0 (MVP) completada. Foco actual: aprender **Docker + Kubernetes** desplegando la app en un clúster local — ver [guía paso a paso](docs/docker-k8s/kubernetes-aprendizaje.md).
 > El repo sigue **Spec-Driven Development**: la fuente de verdad es [spec.md](spec.md) (memoria) + [plan.md](plan.md) (trabajo).
 
 ---
@@ -120,11 +120,15 @@ ayudas-gv/
 │       ├── store/                 # authStore (Zustand, persistido en localStorage)
 │       └── types/                 # Tipos TypeScript del dominio
 ├── docs/
+│   ├── README.md                  # Índice de la documentación (empezar aquí)
 │   ├── tecnologias.md             # Explicación profunda del ecosistema técnico
 │   ├── arquitectura.md            # Diagramas de capas, módulos y decisiones técnicas
 │   ├── modelo-datos.md            # Esquema ER completo
 │   ├── fase0-planificacion.md     # Plan detallado semana a semana (histórico)
-│   ├── kubernetes-aprendizaje.md  # Guía paso a paso de Docker + Kubernetes con ejercicios
+│   ├── docker-k8s/                # Fase K8s: guía con ejercicios, relato divulgativo,
+│   │                              #   referencia de Docker y preparación de entrevista
+│   ├── diagramas/                 # Diagramas .excalidraw del entorno (Docker y K8s)
+│   ├── instrucciones-iniciales/   # Enunciado original del proyecto (.docx)
 │   └── reportes/                  # Reportes diarios y semanales de desarrollo
 ├── docker-compose.yml             # Orquestación local: postgres + backend + frontend
 ├── spec.md                        # Memoria del proyecto (SDD)
@@ -196,7 +200,9 @@ La aplicación funciona íntegramente en castellano y euskera:
 |-----------|-------------|
 | [spec.md](spec.md) | Memoria del proyecto: qué es, arquitectura, decisiones, metodología (SDD) |
 | [plan.md](plan.md) | Plan de trabajo vivo: fases, checklist e histórico condensado (SDD) |
-| [Guía Docker + Kubernetes](docs/kubernetes-aprendizaje.md) | Paso a paso con ejercicios (learning track actual) |
+| [Índice de la documentación](docs/README.md) | Mapa de todo lo que hay en `docs/` y por dónde empezar |
+| [Guía Docker + Kubernetes](docs/docker-k8s/kubernetes-aprendizaje.md) | Paso a paso con ejercicios (learning track actual) |
+| [Kubernetes desde 0](docs/docker-k8s/kubernetes-desde-0.md) | El mismo track contado en cristiano, para quien no ha tocado K8s nunca |
 | [Tecnologías y ecosistema](docs/tecnologias.md) | Explicación profunda del stack, Docker y comunicaciones |
 | [Arquitectura](docs/arquitectura.md) | Diagramas de capas, módulos, endpoints y decisiones técnicas |
 | [Modelo de datos](docs/modelo-datos.md) | Esquema ER completo por contextos |

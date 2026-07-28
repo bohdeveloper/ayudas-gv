@@ -246,8 +246,12 @@ reutilizar servicios y repositorios existentes, SQL parametrizado siempre.
 | [spec.md](spec.md) | **Este documento.** Memoria: qué es, arquitectura, decisiones, metodología |
 | [plan.md](plan.md) | Plan de trabajo vivo: fases, checkboxes y histórico condensado |
 | [README.md](README.md) | Escaparate público del repo: qué es, features, stack, arranque |
-| [docs/kubernetes-aprendizaje.md](docs/kubernetes-aprendizaje.md) | **Guía paso a paso de Docker + Kubernetes con ejercicios** (learning track actual) |
-| [docs/docker-guia.md](docs/docker-guia.md) | Referencia de Docker: instalación, cada archivo Docker y comunicación entre contenedores (Bloque 0) |
+| [docs/README.md](docs/README.md) | **Índice de la documentación**: mapa de `docs/` y por dónde empezar |
+| [docs/docker-k8s/kubernetes-aprendizaje.md](docs/docker-k8s/kubernetes-aprendizaje.md) | **Guía paso a paso de Docker + Kubernetes con ejercicios** (learning track actual) |
+| [docs/docker-k8s/kubernetes-desde-0.md](docs/docker-k8s/kubernetes-desde-0.md) | Relato divulgativo de la Fase K8s: qué se hizo, por qué y qué se aprendió, sin dar nada por sabido |
+| [docs/docker-k8s/docker-guia.md](docs/docker-k8s/docker-guia.md) | Referencia de Docker: instalación, cada archivo Docker y comunicación entre contenedores (Bloque 0) |
+| [docs/docker-k8s/entrevista-docker-k8s.md](docs/docker-k8s/entrevista-docker-k8s.md) | Modelo visual (diagramas Mermaid) + 30 preguntas con respuesta modelo + chuleta de comandos |
+| [docs/diagramas/](docs/diagramas/) | Diagramas `.excalidraw` del entorno Docker y del despliegue en Kubernetes |
 | [docs/arquitectura.md](docs/arquitectura.md) | Diagramas de capas, módulos, endpoints y decisiones técnicas |
 | [docs/modelo-datos.md](docs/modelo-datos.md) | Esquema ER completo por contextos + DDL |
 | [docs/tecnologias.md](docs/tecnologias.md) | Explicación profunda del ecosistema técnico |

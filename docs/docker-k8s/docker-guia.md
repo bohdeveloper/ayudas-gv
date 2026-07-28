@@ -2,7 +2,7 @@
 
 > Guía de referencia del entorno de contenedores del proyecto: qué se instala y por qué, qué hace
 > cada archivo Docker y cómo se comunican las tres piezas entre sí.
-> Es el material escrito del **Bloque 0 de la Fase K8s** (ver [plan.md](../plan.md)).
+> Es el material escrito del **Bloque 0 de la Fase K8s** (ver [plan.md](../../plan.md)).
 > El "cómo operar el clúster" está en [kubernetes-aprendizaje.md](kubernetes-aprendizaje.md).
 
 ---
@@ -109,7 +109,7 @@ Es un **multi-stage build**:
 
 **Por qué:** la imagen final no contiene Maven, ni el código fuente, ni el `.m2`, ni el JDK completo
 — solo JRE + tu `.jar`. Más pequeña, arranca antes y con menos superficie de ataque (menos software =
-menos vulnerabilidades). Encaja con el invariante de seguridad de [spec.md §3](../spec.md).
+menos vulnerabilidades). Encaja con el invariante de seguridad de [spec.md §3](../../spec.md).
 
 **Caché de capas (líneas 2-3-4):** Docker construye por capas y cachea cada instrucción. Copiar
 primero solo `pom.xml` y bajar dependencias, y *después* copiar `src`, hace que si cambias código Java
@@ -208,7 +208,7 @@ postgres:
 ```
 - Usa la **imagen oficial** de Postgres: no hay Dockerfile para la BD, se descarga lista.
 - `ports: "5433:5432"` — mapeo **host:contenedor**. Dentro escucha en `5432`; hacia Windows se expone
-  en `5433`. Es deliberado ([spec.md §5](../spec.md)): el 5432 se reserva por si hay un Postgres local.
+  en `5433`. Es deliberado ([spec.md §5](../../spec.md)): el 5432 se reserva por si hay un Postgres local.
 - `volumes: postgres_data:/var/lib/postgresql/data` — al mapear el directorio de datos a un **volumen
   con nombre**, los datos sobreviven aunque borres el contenedor. Por eso `docker compose down`
   conserva datos y `docker compose down -v` los borra.
@@ -237,7 +237,7 @@ backend:
 - `DB_URL: ...//postgres:5432/...` — el backend se conecta usando el host **`postgres`** (nombre de
   servicio) y el puerto **interno `5432`** (no el 5433; el 5433 solo existe hacia Windows). Entre
   contenedores se usan los puertos internos.
-- Estas variables son las "críticas" de [spec.md §5](../spec.md), leídas por `application.yml`.
+- Estas variables son las "críticas" de [spec.md §5](../../spec.md), leídas por `application.yml`.
   `JWT_SECRET` es de ejemplo a propósito (deuda formativa; en prod → Secret de Kubernetes).
 - `depends_on ... service_healthy` — el backend no arranca hasta que el healthcheck de Postgres pasa.
   Importante: al arrancar, Spring ejecuta las **migraciones Flyway** (V1…V4) que crean las tablas.
@@ -337,4 +337,4 @@ No hay `.dockerignore` en `backend/` ni en `frontend/`. Al construir, Docker env
 ("context") al motor. Sin `.dockerignore`, el `COPY . .` del frontend arrastra `node_modules/` local,
 `.git`, etc.: builds más lentos y a veces incorrectos (un `node_modules` de Windows pisando el
 `npm ci` del contenedor). Añadir dos `.dockerignore` es una mejora pequeña y didáctica; se abordará
-como punto propio en [plan.md](../plan.md) (regla SDD: nada se implementa sin estar en el plan).
+como punto propio en [plan.md](../../plan.md) (regla SDD: nada se implementa sin estar en el plan).

@@ -11,6 +11,10 @@
 > proyecto** (entrevista técnica + preparación de la reunión); solo material divulgativo de K8s e higiene del repo
 > por la mañana. El **Bloque 4** y el arranque de la Fase 1 se reslotean al **miércoles 29/07**; el resto se
 > desplaza **1 día laborable más** y el fin proyectado pasa de 11/08 a **12/08**.
+>
+> **La fecha de cierre no es un compromiso rígido** (decisión del usuario, 2026-07-28): si hay que ampliarla,
+> se amplía. Este documento sigue calendarizando para tener visibilidad del avance, pero un corrimiento no es
+> un problema a resolver ni motivo para recortar alcance o bajar la profundidad del aprendizaje.
 > Sin emojis (convención del proyecto): marcadores `COMPLETADA · EN CURSO · PENDIENTE`.
 
 ---
@@ -104,8 +108,10 @@ stub local y completarse en la fase de microservicios si aporta valor.
 >
 > **Segundo corrimiento (2026-07-28).** Confirmado lo anterior: el 28/07 no hubo sesión de proyecto (entrevista
 > técnica + preparación de la reunión) y el fin pasa de 11/08 a **12/08**. Este no es un desbordamiento de
-> alcance sino un día de calendario perdido; el trabajo restante sigue siendo el mismo (11 sesiones). Riesgo
-> a vigilar: las agendas externas son ahora la principal fuente de retraso, no la estimación de las fases.
+> alcance sino un día de calendario perdido; el trabajo restante sigue siendo el mismo (11 sesiones).
+>
+> **Criterio del usuario (2026-07-28):** si hace falta ampliar la fecha de cierre, se amplía. Los corrimientos
+> se anotan para saber dónde estamos, no para forzar el ritmo: prevalece completar bien cada fase.
 
 ---
 

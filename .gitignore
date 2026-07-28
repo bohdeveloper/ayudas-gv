@@ -52,3 +52,12 @@ htmlcov/
 # Documentos Word originales (no necesarios en el repo)
 *.docx
 *.doc
+
+# Grafo de codigo (codebase-memory-mcp) — indice local, NO versionado.
+# Motivo (2026-07-28): artifact.json guarda el hash de HEAD, asi que cada commit
+# dispara un reindexado que vuelve a ensuciar ambos ficheros -> nunca se vacia la
+# cola de git. Ademas eran ~880 kB de binario por commit (6,5 MB de 10,58 MB del
+# repo). El grafo se reconstruye solo con el watcher; no se pierde memoria.
+# Se sigue versionando graph.html (grafo visual, entregable de cierre de fase).
+.codebase-memory/graph.db.zst
+.codebase-memory/artifact.json

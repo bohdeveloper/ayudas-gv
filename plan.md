@@ -108,6 +108,21 @@ Ingress/ConfigMap/Secret/Namespace. Entregable físico: carpeta `k8s/` versionad
 
 ---
 
+## Higiene del repositorio (transversal) — COMPLETADA (2026-07-28)
+
+- [x] **Cortar el bucle del snapshot del grafo** — 2026-07-28: `artifact.json` guardaba el hash de HEAD, así
+  que cada commit disparaba un reindexado que volvía a ensuciar los dos ficheros: la cola de git nunca podía
+  quedar vacía. Además pesaban 6,5 MB de los 10,58 MB del repo (8 copias de ~880 kB de binario sin diff).
+  `git rm --cached` + `.gitignore` con el motivo documentado. Se conservan `graph.html` y `.gitattributes`;
+  el grafo sigue en local y el watcher lo mantiene. Decisión razonada en `spec.md` §6
+- [x] **Política "cola de git limpia"** en `CLAUDE.md` — 2026-07-28: al cerrar sesión, cada fichero pendiente
+  se commitea, se ignora (documentando el motivo) o se borra. Ninguno se queda indefinidamente
+- [x] **Hook `Stop` que la vigila** — 2026-07-28: `.claude/hooks/git-cola-limpia.sh` (+ `.claude/settings.json`).
+  Avisa solo de los **rezagados** (sin tocar en 45 min) para no generar ruido con el trabajo en curso; los
+  borrados sin commit se reportan siempre. Probado en crudo: JSON válido y filtro por antigüedad correcto
+
+---
+
 ## Fase 1 — Tramitación — PENDIENTE (tras K8s)
 
 > **Objetivo:** el personal instructor puede hacer avanzar los expedientes.

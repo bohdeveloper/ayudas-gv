@@ -1,3 +1,16 @@
 {
-  "hooks": {}
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/git-cola-limpia.sh\"",
+            "timeout": 15,
+            "statusMessage": "Revisando la cola de git..."
+          }
+        ]
+      }
+    ]
+  }
 }

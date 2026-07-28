@@ -72,7 +72,7 @@ ayudas-gv/
 ├── docker-compose.yml
 ├── spec.md · plan.md · README.md · CLAUDE.md
 ├── .mcp.json                   # Config del grafo de código (codebase-memory-mcp)
-└── .codebase-memory/           # Snapshot committeable del grafo + graph.html
+└── .codebase-memory/           # Índice local del grafo (no versionado) + graph.html (sí versionado)
 ```
 
 ### Patrones de arquitectura establecidos
@@ -214,6 +214,16 @@ reutilizar servicios y repositorios existentes, SQL parametrizado siempre.
 7. `/simplify` opcional al cerrar una fase.
 8. El grafo (codebase-memory-mcp) se refresca solo tras editar (watcher incremental); reindexar solo tras un
    `git pull` grande. Regenerar `.codebase-memory/graph.html` al cerrar cada fase.
+9. **Cola de git limpia al cerrar sesión**: ningún fichero se queda indefinidamente pendiente. Cada cambio se
+   commitea, se ignora (documentando el motivo) o se borra. Criterio y pasos en `CLAUDE.md`.
+
+> **Decisión (2026-07-28) — el snapshot del grafo deja de versionarse.** `.codebase-memory/graph.db.zst` y
+> `artifact.json` pasan a `.gitignore`. Motivo: `artifact.json` guarda el hash de HEAD, así que **cada commit
+> disparaba un reindexado que volvía a ensuciar ambos ficheros** — era imposible dejar la cola de git vacía, y
+> cada vuelta añadía ~880 kB de binario sin diff (6,5 MB de los 10,58 MB que pesaba el repo). El grafo **no se
+> pierde**: vive en local y el watcher lo mantiene; un clon nuevo lo reconstruye indexando. Se siguen
+> versionando `graph.html` (entregable visual de cierre de fase) y `.gitattributes`. Revierte la decisión de la
+> migración desde graphify (2026-07-23), que lo hacía committeable.
 
 ### Skills del proyecto y cuándo usarlas
 

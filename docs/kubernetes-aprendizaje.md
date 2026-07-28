@@ -8,6 +8,15 @@
 > y **(3) ejercicios** con su verificación. No copies y pegues sin leer: el objetivo es interiorizar, no
 > tener YAML que funcione. El checklist de progreso vive en [../plan.md](../plan.md) (fase "K8s").
 
+**Cómo leer las analogías.** Cada concepto técnico lleva debajo un recuadro `> **Imagínalo así.**` con una
+comparación de andar por casa. No son adornos: están pensadas para que puedas **explicar el concepto en voz
+alta** sin recitar la definición. Si en una entrevista te bloqueas con el término, tira de la imagen y
+reconstruye la idea desde ahí. La palabra técnica (Pod, Service, Namespace) se mantiene siempre — lo que
+cambia es cómo se explica.
+
+Si vienes de cero y quieres el recorrido contado como una historia antes de entrar aquí, empieza por
+[kubernetes-desde-0.md](kubernetes-desde-0.md).
+
 **Marcadores:** `[ ]` pendiente · `[x]` hecho. Sin emojis (convención del proyecto).
 
 ---
@@ -36,10 +45,23 @@ Una frase para no perderte nunca:
 > varias máquinas, los reinicia si mueren, los escala, y actualiza versiones sin cortar el servicio.**
 
 Con `docker compose up` tú levantas los contenedores en *tu* máquina y, si uno se cae, se queda caído
-(salvo `restart: unless-stopped`, que es un parche local). Kubernetes convierte eso en un sistema
-declarativo: tú describes **el estado deseado** ("quiero 3 copias del backend, siempre") y el clúster
-trabaja continuamente para que la realidad coincida con esa descripción. Eso es lo que en las entrevistas
-llaman *self-healing*, *rolling updates* y *desired state*.
+(salvo `restart: unless-stopped`, que es un parche local). Kubernetes cambia la forma de pedir las cosas:
+en vez de dar **órdenes** ("arranca esto, para aquello"), tú describes **cómo quieres que estén las cosas**
+("quiero 3 copias del backend, siempre") y el clúster se pasa el día comparando la realidad con esa
+descripción y corrigiéndola. A eso se le llama **estado deseado** (*desired state*), y de ahí salen las
+otras dos palabras de moda: *self-healing* (se recupera solo) y *rolling updates* (cambia de versión sin
+cortar el servicio).
+
+> **Imagínalo así.** Un **mando de la tele** frente a un **termostato**. Con el mando das órdenes sueltas:
+> sube, baja, apaga. Si la tele se apaga sola, ahí se queda hasta que tú hagas algo — eso es Docker Compose.
+> El termostato funciona al revés: le dices "21 grados" y ya está. No le mandas encender ni apagar; él mide
+> la temperatura una y otra vez y hace lo que haga falta para que sean 21, aunque abras una ventana. Eso es
+> Kubernetes: tú fijas el número, él se encarga del resto **para siempre**.
+
+> **Y la versión más doméstica todavía:** la **cisterna del váter**. Tiras de la cadena y el depósito se
+> vacía; nadie corre a rellenarlo, el flotador lo hace solo hasta la marca. Ese flotador — mirar el nivel,
+> compararlo con la marca, abrir el agua si falta — es literalmente lo que Kubernetes hace con tus copias
+> de la aplicación, y tiene nombre técnico: **bucle de reconciliación**.
 
 **Analogía con lo que ya sabes (Compose → Kubernetes):**
 
@@ -63,22 +85,50 @@ Si retienes esta tabla, el resto es vocabulario.
 Antes de orquestar hay que dominar la unidad que se orquesta. Repaso ordenado (esto ya lo tocaste en
 `ayudas_gv`, aquí queda consolidado):
 
-- **Imagen** — plantilla **inmutable** definida en un `Dockerfile` (SO base + dependencias + tu app).
-  Se construye una vez y no cambia. En este proyecto hay dos: `backend/Dockerfile` y `frontend/Dockerfile`.
-- **Contenedor** — instancia en ejecución de una imagen. **Efímero**: si lo borras, se pierde todo lo que
-  no esté en un volumen. Por eso la BD necesita volumen y el backend no.
-- **Volumen** — persistencia de datos **fuera** del contenedor. Imprescindible para PostgreSQL
-  (en Compose: `postgres_data:/var/lib/postgresql/data`).
-- **Red** — los contenedores de un mismo Compose se ven **por el nombre del servicio**, no por `localhost`.
-  Fíjate en `docker-compose.yml`: el backend conecta a `jdbc:postgresql://postgres:5432/...`, usa `postgres`
-  (nombre del servicio), no `localhost`. **Este concepto es idéntico en Kubernetes** (te ves por el nombre
-  del Service). Interiorizarlo ahora te ahorra el error más común de K8s.
-- **Docker Compose** — describe varios servicios en un YAML. Los entornos se separan con
-  `docker-compose.override.yml` o `--env-file`.
-- **Multi-stage build** — compilas en una imagen pesada (Maven/Node) y copias **solo el artefacto** a una
-  imagen ligera final. Los dos Dockerfiles del proyecto ya lo hacen (Maven→JRE, Node→Nginx). Pregunta
-  típica de entrevista: *"¿por qué multi-stage?"* → imagen final pequeña, sin herramientas de build,
-  menor superficie de ataque.
+- **Imagen** — la **receta** de tu aplicación, escrita en un `Dockerfile`: el sistema base, las librerías y
+  tu código, todo junto. Se construye una vez y ya **no cambia nunca** (por eso se dice *inmutable*). En este
+  proyecto hay dos: `backend/Dockerfile` y `frontend/Dockerfile`.
+
+  > **Imagínalo así.** La imagen es la **receta del bizcocho**, no el bizcocho. Está escrita en un papel y
+  > sirve para hacer uno o cien, todos idénticos. Y como cualquier receta: si quieres cambiar algo, no tachas
+  > el papel a medias — escribes una versión nueva.
+
+- **Contenedor** — la receta ya **ejecutándose**: el bizcocho hecho. Es **efímero**: si lo borras, se pierde
+  todo lo que no hayas guardado aparte. Por eso la base de datos necesita un volumen y el backend no.
+
+  > **Imagínalo así.** De una misma receta salen cinco bizcochos y **cada uno es independiente**: puedes
+  > tirar uno a la basura y los otros cuatro siguen en la mesa. Lo que le hagas a uno no afecta a los demás.
+
+- **Volumen** — un sitio para guardar datos **fuera** del contenedor, que sobrevive aunque el contenedor
+  desaparezca. Imprescindible para PostgreSQL (en Compose: `postgres_data:/var/lib/postgresql/data`).
+
+  > **Imagínalo así.** El **táper de la nevera**. Puedes tirar la sartén, cambiarla por otra o quemarla; lo
+  > que metiste en el táper sigue ahí. Sin táper, cada vez que cambias de sartén te quedas sin cena.
+
+- **Red por nombre** — los contenedores de un mismo Compose se localizan **por el nombre del servicio**, no
+  por `localhost` ni por una IP. Mira el `docker-compose.yml`: el backend conecta a
+  `jdbc:postgresql://postgres:5432/...` — usa `postgres`, el nombre del servicio. **En Kubernetes funciona
+  exactamente igual** (te encuentran por el nombre del Service). Entenderlo aquí te ahorra el error más
+  común al dar el salto.
+
+  > **Imagínalo así.** En la agenda del móvil no te aprendes el número de tu madre: pulsas **"Mamá"**. Si
+  > mañana cambia de compañía y de número, tú sigues pulsando "Mamá" y la llamada llega igual. Eso es un
+  > nombre de servicio: el número (la IP) puede cambiar cuando quiera; el nombre, no.
+
+- **Docker Compose** — un único fichero YAML que describe varios servicios a la vez, para no arrancarlos uno
+  por uno a mano. Los entornos se separan con `docker-compose.override.yml` o `--env-file`.
+
+  > **Imagínalo así.** La **lista de la compra**. En vez de acordarte de cada producto según paseas por el
+  > súper, lo llevas todo escrito y en orden.
+
+- **Multi-stage build** — construyes en una imagen grande, con todas las herramientas (Maven, Node), y luego
+  copias **solo el resultado** a una imagen final pequeña. Los dos Dockerfiles del proyecto ya lo hacen
+  (Maven→JRE, Node→Nginx).
+
+  > **Imagínalo así.** Montas el mueble en el **garaje**, con el taladro, el destornillador, las cajas y el
+  > serrín por el suelo. Al salón subes **solo el mueble montado**: ni las herramientas, ni el embalaje. La
+  > imagen final pesa mucho menos, arranca antes y — detalle que gusta en las entrevistas — **si no llevas
+  > herramientas dentro, un atacante tampoco las encuentra**.
 
 ### Manos a la obra (repaso Docker)
 
@@ -116,71 +166,152 @@ docker compose down -v         # borra también el volumen (BD desde cero)
 <a name="parte-2"></a>
 ## Parte 2 — Los objetos de Kubernetes, uno a uno
 
-Kubernetes es declarativo: describes objetos en YAML y `kubectl apply` los crea/actualiza. Estos son los
-que necesitas para esta app (de menor a mayor).
+Kubernetes funciona por descripciones: escribes en un fichero YAML **cómo quieres que sea cada pieza** y con
+`kubectl apply` se la entregas al clúster, que se encarga de construirla y mantenerla así. Estas son las
+piezas que necesitas para esta app, de la más pequeña a la más grande.
 
 ### Pod
-Unidad mínima. Envuelve **1 (o pocos) contenedores** que comparten red y almacenamiento. **Nunca
-despliegas Pods sueltos** en producción: son ganado, no mascotas — nacen y mueren. Un Pod que muere no
-"revive"; alguien de nivel superior (el Deployment) crea uno nuevo.
+La pieza **más pequeña** que Kubernetes sabe manejar. Es una envoltura alrededor de **uno (o unos pocos)
+contenedores** que van siempre juntos: comparten la misma dirección de red y el mismo almacenamiento.
+Kubernetes nunca mueve contenedores sueltos; mueve Pods.
+
+Regla de oro: **nunca crees Pods a mano** para algo serio. Nacen y mueren constantemente, y un Pod que muere
+**no resucita** — es alguien de más arriba (el Deployment) quien crea uno nuevo en su lugar.
+
+> **Imagínalo así.** Un Pod es un **camarote de tren compartido**. Dentro pueden viajar dos pasajeros (dos
+> contenedores), y mientras dure el viaje comparten **el mismo número de camarote** (la dirección de red) y
+> **el mismo armario** (el almacenamiento). Si uno guarda algo en ese armario, el otro lo alcanza sin
+> pedírselo a nadie — igual que si llenas un vaso y le das un sorbo tu compañero de mesa: es el mismo líquido.
+> Lo que no puede pasar es que los pasajeros de camarotes distintos rebusquen en el armario ajeno.
+
+> **Y lo de "no les cojas cariño":** las **bombillas de casa**. Cuando se funde una no le pones nombre ni la
+> intentas revivir: la tiras y pones otra igual. En la jerga se dice que los Pods son *ganado, no mascotas*.
+> Las cosas a las que sí les pones nombre y cuidas son otras (los datos, por ejemplo).
 
 ### Deployment
-Dice *"quiero **N réplicas** de este Pod, con esta imagen"* y se encarga de:
-- **self-healing**: si un Pod muere, crea otro para mantener N.
-- **rolling updates**: al cambiar la imagen, sustituye los Pods poco a poco, sin downtime.
-- **rollback**: puede volver a la versión anterior.
+El que dice *"quiero **N copias** de este Pod, con esta imagen, siempre"*. Es el termostato de la Parte 0, y
+hace tres cosas por ti:
 
-Es el objeto que usarás para backend y frontend. Para la BD se suele usar un **StatefulSet** (identidad
-estable y almacenamiento por réplica), pero para aprender con **una** réplica de postgres, un Deployment +
-PVC es suficiente y más simple.
+- **Se recupera solo** (*self-healing*): si un Pod muere, crea otro para volver a N.
+- **Actualiza sin cortar** (*rolling update*): al cambiar la imagen, va sustituyendo Pods poco a poco.
+- **Da marcha atrás** (*rollback*): puede volver a la versión anterior en segundos.
+
+Es lo que usarás para el backend y el frontend. Para la base de datos lo normal es un **StatefulSet**
+(identidad fija y disco propio por copia), pero con **una sola** réplica de postgres, un Deployment + PVC es
+suficiente y mucho más simple de entender.
+
+> **Imagínalo así.** El **dispensador de servilletas** del bar: siempre hay servilletas asomando. Nadie
+> vigila el dispensador; el propio mecanismo empuja una nueva cuando coges la anterior. Tú no pides
+> "pon una servilleta", pides "que nunca falten".
+
+> **La pieza oculta: el ReplicaSet.** Por debajo, cada Deployment tiene un **cortapastas de galletas**, que
+> es el molde exacto con el que salen todos los Pods. Si cambias la imagen, cambias de molde: se estrena un
+> cortapastas nuevo y el viejo **no se tira, se guarda en el cajón**. Por eso puedes volver atrás cuando
+> quieras — el molde de antes sigue ahí, listo para usarse.
 
 ### Service
-IP y **nombre DNS estables** delante de un conjunto de Pods (que cambian de IP al morir/nacer). Los Pods se
-seleccionan por *labels*. Tipos:
-- **ClusterIP** (por defecto): solo accesible **dentro** del clúster. Es lo que usarás para postgres y
-  para la comunicación frontend→backend interna.
-- **NodePort**: abre un puerto en cada nodo. Útil para pruebas locales rápidas.
-- **LoadBalancer**: pide un balanceador externo (en la nube). En minikube se simula.
+Un **nombre y una dirección fijos** delante de un grupo de Pods que van cambiando. Hace falta porque los
+Pods estrenan dirección cada vez que nacen, y nadie puede perseguir esa dirección. El Service sabe a quién
+tiene detrás gracias a las **etiquetas** (*labels*) de los Pods.
 
-El nombre del Service **es** el DNS: el backend hablará a la BD por `postgres:5432`, igual que en Compose.
+Hay tres tipos, y la diferencia es simplemente **quién puede llamar**:
+
+- **ClusterIP** (el de por defecto): solo se puede llamar **desde dentro** del clúster. Es el que usas para
+  postgres y para que el frontend hable con el backend.
+- **NodePort**: abre además un puerto hacia fuera en la máquina. Práctico para pruebas rápidas.
+- **LoadBalancer**: pide un balanceador de verdad al proveedor de nube. En minikube se simula.
+
+El nombre del Service **es** la dirección: el backend llama a la base de datos escribiendo `postgres:5432`,
+igual que hacía en Compose.
+
+> **Imagínalo así.** El **teléfono de la pizzería**. Marcas siempre el mismo número y te atiende quien esté
+> libre en ese momento. La pizzería puede contratar gente, despedirla o cambiar todo el turno: **el número no
+> cambia nunca**, y a ti te da igual quién descuelgue. Eso es un Service: un número fijo y una lista, por
+> detrás, de quién está disponible para atender.
+
+> **Y los tres tipos, en el mismo edificio:** el **telefonillo interno** solo funciona entre vecinos
+> (ClusterIP). Abrir una **ventana a la calle** deja que te griten desde fuera (NodePort). Contratar a un
+> **recepcionista en la puerta** es lo caro y lo serio, y solo existe si el edificio lo ofrece (LoadBalancer).
 
 ### Ingress
-Entrada **HTTP/HTTPS** al clúster con **rutas y dominios** (el "Nginx del clúster"). En vez de exponer cada
-Service, defines reglas: `/` → frontend, `/api` → backend. Necesita un *Ingress Controller* instalado
-(en minikube: `minikube addons enable ingress`).
+La **puerta de entrada HTTP única** al clúster, que reparte según la dirección pedida. En vez de abrir un
+acceso por cada Service, escribes reglas: `/` → frontend, `/api` → backend. Necesita que haya un *Ingress
+Controller* instalado, que es quien hace el trabajo de verdad (en minikube: `minikube addons enable ingress`).
+
+> **Imagínalo así.** El **conserje del edificio**. Hay una sola puerta a la calle y él pregunta a dónde vas:
+> "¿A la peluquería? Tercero. ¿Al dentista? Quinto". Sin conserje tendrías que abrir una puerta a la calle
+> por cada negocio del edificio, que es justo lo que quieres evitar. Y ojo al matiz: el Ingress es **la lista
+> de instrucciones** que le das al conserje; el conserje (el *controller*) hay que contratarlo aparte.
 
 ### ConfigMap / Secret
-El equivalente K8s a tu bloque `environment:` de Compose, separando:
-- **ConfigMap**: configuración **no sensible** (URL de la BD, puerto, tiempo de expiración del token).
-- **Secret**: credenciales (usuario/contraseña de BD, `JWT_SECRET`). Se guardan en base64 (no es cifrado;
-  en producción se protege con RBAC y/o un gestor externo — se menciona pero no es alcance del ejercicio).
+Los dos sitios donde vive la configuración, separada del código. Es el equivalente al bloque `environment:`
+de Compose, partido en dos según el peligro:
+
+- **ConfigMap**: ajustes **que no pasa nada si alguien lee** — la dirección de la base de datos, el puerto,
+  cuánto dura un token.
+- **Secret**: **credenciales** — usuario y contraseña de la BD, `JWT_SECRET`. Se guardan en base64, que
+  **no es cifrado**: es solo texto disfrazado. En producción lo que de verdad los protege es limitar quién
+  puede leerlos (RBAC) o usar un gestor externo.
+
+> **Imagínalo así.** El ConfigMap es la **nota pegada en la nevera** con el horario del gimnasio: está a la
+> vista y no importa. El Secret es el **PIN de la tarjeta** — lo guardas en un cajón, no en la nevera.
+> Y el detalle de base64 merece que lo digas tal cual en una entrevista: es como escribir el PIN **del
+> revés**. Cualquiera que abra el cajón lo lee igual. Lo que protege el PIN no es el disfraz, es **quién
+> tiene llave del cajón**.
 
 ### Namespace
-Separación **lógica** dentro de un mismo clúster. Perfecto para tus tres entornos:
-`ayudas-dev`, `ayudas-staging`, `ayudas-prod`. Los objetos de un namespace no colisionan con los de otro,
-y el DNS se resuelve dentro del namespace (`postgres` desde `ayudas-dev` es el postgres de `ayudas-dev`).
-Conecta directo con lo que ya hiciste con `--env-file`/overrides en Compose.
+Una división **lógica** dentro del mismo clúster, para que convivan varios entornos sin pisarse:
+`ayudas-dev`, `ayudas-staging`, `ayudas-prod`. Los objetos de uno no chocan con los del otro, y los nombres
+se resuelven **dentro de tu propio namespace**: si desde `ayudas-dev` pides `postgres`, te dan el postgres de
+`ayudas-dev`, no el de staging.
+
+> **Imagínalo así.** Los **pisos de un mismo edificio**. En el 2.ºA vive un Juan y en el 3.ºA vive otro Juan,
+> y nadie se confunde. Cuando en el 2.ºA dicen "avisa a Juan", se refieren al suyo, sin necesidad de apellido.
+> Solo si quieres llamar al Juan del tercero tienes que decirlo entero — y en Kubernetes también existe ese
+> "nombre completo": `postgres.ayudas-staging`.
 
 ### PersistentVolume (PV) / PersistentVolumeClaim (PVC)
-El volumen de Docker, en versión K8s. El **PVC** es la *petición* ("quiero 1Gi de disco"); el clúster la
-satisface con un **PV** real. Postgres montará un PVC para no perder los datos cuando su Pod se recree.
+El volumen de Docker, en versión Kubernetes, y viene en dos piezas que confunden hasta que ves la diferencia:
+el **PVC** es la **petición** ("necesito 1 Gi de disco") y el **PV** es **el disco concreto** que el clúster
+te acaba asignando. Postgres monta un PVC para que sus datos sobrevivan cuando su Pod se recree.
 
-### Probes (liveness / readiness) — clave para el self-healing
-Kubernetes necesita saber si un contenedor está **vivo** y **listo**:
-- **livenessProbe**: si falla repetidamente, K8s **reinicia** el contenedor.
-- **readinessProbe**: si falla, el Service **deja de enviarle tráfico** (pero no lo reinicia).
+> **Imagínalo así.** Alquilar un **trastero**. El PVC es el formulario que rellenas: "quiero 5 metros
+> cuadrados". El PV es el trastero real que te asignan, con su número y su llave. Tú nunca eliges cuál te
+> toca — pides las medidas y te lo dan. Y lo importante: **puedes cambiarte de casa (el Pod muere y nace
+> otro) y el trastero sigue siendo tuyo, con todo dentro**.
 
-El backend Spring Boot tarda en arrancar (JVM + Flyway), así que las probes evitan mandarle tráfico antes
-de tiempo. Como el proyecto aún no expone `/actuator/health`, empezaremos con probes TCP al puerto 8080 y
-dejaremos como ejercicio añadir actuator para probes HTTP "de verdad".
+### Probes (liveness / readiness) — la clave del self-healing
+Kubernetes necesita saber dos cosas distintas sobre cada contenedor, y las pregunta por separado:
+
+- **livenessProbe** — *"¿sigues vivo?"*. Si falla varias veces seguidas, K8s **reinicia** el contenedor.
+- **readinessProbe** — *"¿puedes atender ya?"*. Si falla, el Service **deja de mandarle trabajo**, pero
+  **no** lo reinicia: le da tiempo.
+
+Distinguirlas importa mucho aquí, porque el backend Spring Boot tarda en arrancar (la JVM más las migraciones
+de Flyway). Sin readiness, el Service le mandaría peticiones nada más nacer y los usuarios verían errores.
+Como el proyecto todavía no expone `/actuator/health`, empezamos con probes TCP al puerto 8080 y queda como
+ejercicio pasarlas a HTTP "de verdad".
+
+> **Imagínalo así.** Un compañero acaba de llegar a la oficina: aún con el abrigo puesto y el ordenador
+> arrancando. **¿Está vivo?** Sí, evidentemente — no llames a la ambulancia. **¿Está listo para que le pases
+> llamadas?** No, dale cinco minutos. Son dos preguntas distintas y confundirlas se paga: si tratas
+> "todavía no está listo" como "está muerto", **reinicias a alguien que solo necesitaba tiempo** — y como
+> tarda lo mismo en arrancar la siguiente vez, entra en un bucle de reinicios infinito. Ese error tiene
+> nombre propio en producción: `CrashLoopBackOff` por una liveness demasiado impaciente.
 
 ---
 
 <a name="parte-3"></a>
 ## Parte 3 — Montar el clúster local (minikube)
 
-`minikube` levanta un clúster de Kubernetes de **un nodo** dentro de una VM/contenedor en tu máquina.
-Es el entorno ideal para aprender sin coste.
+`minikube` levanta un clúster de Kubernetes **de una sola máquina** dentro de tu ordenador (en un contenedor
+o una VM). Es el entorno ideal para aprender sin gastar un euro.
+
+> **Imagínalo así.** Un **piso piloto**. Tiene cocina, baño y salón de verdad, funciona todo, y sirve
+> perfectamente para aprender a moverte por la casa — pero está montado dentro de una nave. Casi todo lo que
+> practiques aquí vale igual en un clúster real; lo que no se puede ensayar en el piso piloto es **lo que
+> pasa entre varias casas**, porque solo hay una. Guárdate ese matiz: varias cosas que en minikube "funcionan"
+> es simplemente porque **todo cae en la misma máquina**.
 
 ### Instalación (Windows)
 
@@ -207,8 +338,17 @@ minikube dashboard           # (opcional) panel web del clúster
 
 ### Cómo hará tu clúster para ver tus imágenes locales
 
-Este es **el punto que más confunde** al empezar. Tu imagen `ayudas-gv-backend` la construye tu Docker,
-pero el clúster corre en otra "máquina" (la VM de minikube) y no la ve. Tres opciones (usaremos la 1):
+Este es **el punto que más confunde** al empezar. Tu imagen `ayudas-gv-backend` la ha construido el Docker de
+tu Windows, pero el clúster vive en otra máquina distinta (la de minikube), **con su propio Docker**. Y no
+comparten nada.
+
+> **Imagínalo así.** Has hecho una tarta y la has metido en **tu nevera**. Tu vecino no la tiene en la suya,
+> por mucho que viváis en el mismo edificio. Solo hay dos salidas: **llevársela** (`minikube image load`) o
+> **ir a cocinarla a su casa** (construir dentro del Docker de minikube). Si no haces ninguna de las dos y le
+> pides al clúster que sirva la tarta, se queda mirando la nevera vacía una y otra vez — y eso, en pantalla,
+> se llama `ImagePullBackOff`.
+
+Tres opciones (usaremos la 1):
 
 1. **Construir dentro del Docker de minikube** — apuntas tu CLI de Docker al demonio de minikube y
    construyes ahí. Entonces el clúster ya tiene la imagen:
@@ -246,9 +386,15 @@ pero el clúster corre en otra "máquina" (la VM de minikube) y no la ve. Tres o
 <a name="parte-4"></a>
 ## Parte 4 — Desplegar Ayudas GV en Kubernetes, servicio a servicio
 
-Crea una carpeta `k8s/` en la raíz del repo. Iremos añadiendo manifiestos y aplicándolos **en orden de
-dependencia**: namespace → config/secretos → postgres → backend → frontend → ingress. Los manifiestos
-completos están en el [Apéndice B](#apendice-b); aquí va el hilo conductor y el porqué de cada uno.
+Crea una carpeta `k8s/` en la raíz del repo. Iremos añadiendo ficheros y aplicándolos **en el orden en que
+se necesitan unos a otros**: namespace → config y secretos → postgres → backend → frontend → ingress. Los
+ficheros completos están en el [Apéndice B](#apendice-b); aquí va el hilo y el porqué de cada uno.
+
+> **Imagínalo así.** Es **mudarse a un piso**. Primero la llave y el piso vacío (namespace), luego das de alta
+> la luz y el agua (config y secretos), después metes la nevera con la comida (la base de datos, que es lo que
+> guarda cosas), luego la cocina (el backend), después el comedor donde se sirve (el frontend) y al final
+> pones el timbre y el buzón para que te encuentren desde la calle (el ingress). Hacerlo al revés no funciona:
+> no puedes enchufar la nevera antes de dar de alta la luz.
 
 ### Paso 4.1 — Namespace
 
@@ -386,8 +532,13 @@ kubectl scale deployment/backend --replicas=3
 kubectl get pods -l app=backend        # ahora hay 3 Pods; el Service reparte entre ellos
 ```
 
-El Service `backend` balancea automáticamente entre las 3 réplicas. No has tocado el frontend ni el DNS:
-sigue hablando a `backend:8080` y K8s reparte.
+El Service `backend` reparte solo entre las 3 copias. No has tocado el frontend ni la configuración de red:
+sigue llamando a `backend:8080` y Kubernetes decide a quién le toca cada petición.
+
+> **Imagínalo así.** Abres **dos cajas más** en el supermercado. Nadie avisa a los clientes ni cambia la
+> cartelería: la cola simplemente empieza a repartirse. Y como en el súper de verdad, **el reparto no sale
+> exacto** — puede que una caja atienda a tres clientes y otra a uno. Kubernetes elige por cada conexión, no
+> va turnándose con precisión de reloj.
 
 ### Self-healing (el ejercicio estrella)
 
@@ -398,8 +549,18 @@ kubectl delete pod <nombre-de-un-pod-backend>
 kubectl get pods -l app=backend -w
 ```
 
-Nunca bajas de las réplicas deseadas: eso es *desired state* en acción. Compáralo mentalmente con Compose,
-donde matar el contenedor lo deja caído.
+Nunca te quedas por debajo de las copias que pediste: eso es el **estado deseado** funcionando delante de tus
+ojos. Compáralo con Compose, donde matar el contenedor lo deja muerto y ahí se queda.
+
+> **Imagínalo así.** Vuelve la **cisterna del váter** de la Parte 0. Tiras de la cadena (borras el Pod) y el
+> depósito se vacía, pero el flotador ya está abriendo el agua antes de que te dé tiempo a mirar. Tú no has
+> pedido que se rellene; **es que la marca del depósito no ha cambiado**.
+
+> **Un matiz que distingue a quien lo ha practicado.** Hay **dos** formas de que un Pod "se recupere" y no
+> son la misma: si el programa de dentro casca, el vigilante de la máquina lo **reinicia en el sitio** (mismo
+> Pod, mismo nombre, y sube el contador `RESTARTS`) — como rearmar el diferencial de la luz. Si el Pod entero
+> desaparece, el Deployment **crea uno nuevo** con otro nombre y otra dirección — como poner una bombilla
+> nueva. Míralo en la columna `RESTARTS` de `kubectl get pods` y sabrás cuál de las dos ocurrió.
 
 ### Rolling update (actualizar sin downtime)
 
@@ -412,13 +573,29 @@ kubectl set image deployment/backend backend=ayudas-gv-backend:1.1
 kubectl rollout status deployment/backend
 ```
 
-Kubernetes levanta Pods `:1.1`, espera a que pasen la readinessProbe, y solo entonces retira los `:1.0`.
+Kubernetes levanta Pods `:1.1`, **espera a que digan que están listos** (la readinessProbe) y solo entonces
+retira los `:1.0`. Uno por uno, sin que ningún usuario se entere.
+
+> **Imagínalo así.** El **relevo de turno en una tienda**. El cajero nuevo llega, se pone el uniforme, cuenta
+> su caja y **solo cuando está listo** el anterior cierra la suya y se va a casa. En ningún momento hay menos
+> mostradores abiertos de los necesarios. Lo contrario — que el primero se marche y luego llegue el
+> siguiente — dejaría a la gente esperando, y es exactamente lo que estos ajustes evitan: `maxSurge` es
+> "cuántos de más puedo tener a la vez" y `maxUnavailable` "cuántos de menos me puedo permitir".
+
 Si algo va mal:
 
 ```bash
-kubectl rollout undo deployment/backend      # rollback a la versión anterior
+kubectl rollout undo deployment/backend      # vuelve a la versión anterior
 kubectl rollout history deployment/backend
 ```
+
+> **Imagínalo así.** Aquí se entiende el **cortapastas guardado en el cajón**: volver atrás no reconstruye
+> nada ni recompila la versión vieja — **saca el molde de antes y vuelve a usarlo**. Por eso un rollback
+> tarda segundos y es de lo más fiable que tiene Kubernetes.
+
+> **Detalle contraintuitivo:** deshacer **no borra** el paso en falso del historial, **añade uno nuevo**.
+> Como en la contabilidad de una tienda: un error no se tacha, se corrige con un apunte nuevo que deja
+> constancia. Por eso siempre puedes deshacer el deshacer.
 
 ### Ejercicios Parte 5
 
@@ -430,6 +607,22 @@ kubectl rollout history deployment/backend
   `kubectl rollout status` que no hubo caída. Luego haz `rollout undo` y confirma que vuelve a `:1.0`.
 - [ ] **5.4** (Reto) Escala postgres a 2 réplicas. ¿Qué pasa? Razona por qué una BD con un PVC
   `ReadWriteOnce` **no** se replica como el backend, y por eso las BBDD usan StatefulSet, no Deployment.
+
+  > **Aviso, porque este ejercicio engaña** (comprobado en vivo el 27/07/2026): lo intuitivo es esperar que
+  > el segundo Pod falle limpiamente. **No falla: arranca.** En un clúster de una sola máquina el disco se
+  > deja montar dos veces, y el propio candado de Postgres se despista porque cada contenedor cuenta sus
+  > procesos por separado. Resultado: **dos bases de datos escribiendo en el mismo disco a la vez**. Aquí no
+  > hubo daños (los datos aguantaron), pero es la receta exacta de una corrupción. Vuelve a 1 réplica en
+  > cuanto lo veas. El relato completo, en [kubernetes-desde-0.md](kubernetes-desde-0.md) § Bloque 3.
+
+  > **Imagínalo así.** El backend son los **taquilleros del cine**: pon los que quieras, cualquiera te vende
+  > la entrada igual. La base de datos es el **cuaderno de contabilidad**: si dos personas escriben en él a
+  > la vez, se pisan los renglones y acabas sin saber qué se apuntó. No es que "no se pueda escalar" — es que
+  > **el trabajo no es repartible**, porque el cuaderno es uno solo.
+
+  > **Y `ReadWriteOnce` no significa lo que parece:** es la **llave del trastero**, y la llave la tiene *la
+  > casa*, no *una persona*. Todos los que viven en esa casa (todos los Pods de la misma máquina) pueden
+  > entrar. Si de verdad quieres que entre uno y solo uno, lo que pides es `ReadWriteOncePod`.
 
 ---
 
@@ -474,9 +667,15 @@ Ingress ──▶ Service gateway ──▶ (enruta por path) ──▶ Service 
                                                    Service postgres (o una BD por servicio)
 ```
 
-Cuando llegues a la Fase 1 y empieces a extraer `ms-tramitacion`, ya sabrás darle su Deployment/Service y
-enchufarlo al gateway sin tocar los demás. **Ese es el pago del aprendizaje de esta guía**: la app está
-diseñada con fronteras limpias justamente para esto.
+Cuando llegues a la Fase 1 y empieces a separar `ms-tramitacion`, ya sabrás darle su Deployment y su Service
+y enchufarlo al gateway **sin tocar los demás**. Ese es el pago de esta guía: la app está diseñada con
+fronteras limpias justamente para esto.
+
+> **Imagínalo así.** Pasas de un **restaurante con una única cocina enorme** a un **patio de comidas**: un
+> puesto de pizzas, otro de sushi, otro de postres. Cada puesto abre, cierra o se amplía sin molestar a los
+> vecinos, y a la entrada hay un **panel indicador** que manda a cada cliente al puesto que busca — ese panel
+> es el gateway. Lo que ganas es poder reformar un puesto sin cerrar el patio; lo que pagas es que ahora hay
+> que coordinar varios puestos en vez de mandar en una sola cocina.
 
 No hay que implementarlo ahora (es Fase 1+), pero deja el modelo mental hecho:
 - [ ] **7.1** Dibuja (en papel o en un `.md`) el diagrama de los 4 servicios como Deployments+Services en

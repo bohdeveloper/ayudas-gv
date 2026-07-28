@@ -89,9 +89,22 @@ Calendario completo de lo que queda (fin proyectado 10/08/2026): [docs/reportes/
 - [ ] Anotar `kubernetes.io/change-cause` en los Deployments para que `rollout history` sea legible
   (hoy las 5 revisiones salen con `CHANGE-CAUSE: <none>`)
 
+### Material didáctico (divulgación de la Fase K8s) — COMPLETADA (2026-07-28)
+
+- [x] Reescribir [docs/kubernetes-aprendizaje.md](docs/kubernetes-aprendizaje.md) en lenguaje llano: mantener
+  el vocabulario técnico (Pod, Namespace, Service...) pero explicar cada concepto con una **analogía cotidiana**
+  y prosa sencilla. No tocar el Apéndice B (manifiestos de referencia) — 2026-07-28: **25 analogías** en
+  recuadros `> **Imagínalo así.**` (Partes 0–5 y 7); corregido además el ejercicio 5.4, que daba por hecho un
+  resultado que el Bloque 3 demostró falso
+- [x] Crear [docs/kubernetes-desde-0.md](docs/kubernetes-desde-0.md): resumen de los Bloques 1–4 contado desde
+  cero, sin dar por sabido nada, con las mismas analogías y con lo que realmente pasó en cada sesión (incluido
+  el incidente de postgres del 27/07). Público: alguien que no ha tocado Kubernetes nunca — 2026-07-28:
+  343 líneas, 13 analogías, cierra con las 6 preguntas de entrevista respondidas en 30 segundos
+
 **Hecho cuando:** el usuario puede, de memoria, desplegar el stack en minikube, escalarlo, matar un Pod
 y verlo recuperarse, y hacer un rolling update con rollback; y explica con soltura Pod/Deployment/Service/
-Ingress/ConfigMap/Secret/Namespace. Entregable físico: carpeta `k8s/` versionada + ejercicios marcados.
+Ingress/ConfigMap/Secret/Namespace. Entregable físico: carpeta `k8s/` versionada + ejercicios marcados
++ los dos documentos divulgativos.
 
 ---
 

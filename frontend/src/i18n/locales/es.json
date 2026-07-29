@@ -112,6 +112,35 @@
       "numeroHijosCargo": "Nº de hijos a cargo",
       "numeroNacidos": "Nº de nacidos",
       "errorCargaSeccion": "No se pudo cargar esta sección"
+    },
+    "tramitacion": {
+      "historico": "Histórico de trámites",
+      "sinTramites": "Todavía no se ha registrado ningún trámite",
+      "sinInstructor": "Sin asignar",
+      "numeroTramites": "Trámites registrados",
+      "asignarInstructor": "Asignar instructor",
+      "elegirInstructor": "Elija un instructor",
+      "asignar": "Asignar",
+      "nuevoTramite": "Registrar trámite",
+      "tipo": "Tipo de trámite",
+      "resultado": "Resultado",
+      "sinResultado": "No aplica",
+      "registrar": "Registrar",
+      "expedienteCerrado": "El expediente está resuelto: solo admite la notificación al interesado",
+      "errorRegistrar": "No se pudo registrar el trámite",
+      "errorAsignar": "No se pudo asignar el instructor",
+      "tipos": {
+        "REGISTRO": "Registro de entrada",
+        "ASIGNACION": "Asignación de instructor",
+        "REVISION": "Revisión / subsanación",
+        "PROPUESTA": "Propuesta de resolución",
+        "RESOLUCION": "Resolución",
+        "NOTIFICACION": "Notificación"
+      },
+      "resultados": {
+        "FAVORABLE": "Favorable",
+        "DESFAVORABLE": "Desfavorable"
+      }
     }
   },
   "roles": {

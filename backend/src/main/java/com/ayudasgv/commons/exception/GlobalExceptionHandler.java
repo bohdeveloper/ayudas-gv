@@ -65,6 +65,31 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * Captura una regla de negocio que depende de QUÉ recurso se toca, no solo del rol
+     * del usuario → 403 Forbidden con el motivo concreto.
+     *
+     * Se diferencia de {@link #handleAccessDenied} (que responde el genérico
+     * "no tiene permisos"): aquí sí se explica por qué, porque el motivo no revela
+     * nada que el usuario no supiera ya — p.ej. "solo puede tramitar los expedientes
+     * que tiene asignados".
+     */
+    @ExceptionHandler(OperacionNoPermitidaException.class)
+    public ResponseEntity<ErrorResponse> handleOperacionNoPermitida(OperacionNoPermitidaException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(new ErrorResponse(403, "Forbidden", resolve(ex.getMessageKey(), ex.getArgs())));
+    }
+
+    /**
+     * Captura un choque con el estado actual del recurso → 409 Conflict.
+     * P.ej. registrar un trámite sobre un expediente ya resuelto.
+     */
+    @ExceptionHandler(ReglaNegocioException.class)
+    public ResponseEntity<ErrorResponse> handleReglaNegocio(ReglaNegocioException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(new ErrorResponse(409, "Conflict", resolve(ex.getMessageKey(), ex.getArgs())));
+    }
+
+    /**
      * Captura errores de validación de @NotBlank, @NotNull, etc. → 400 Bad Request.
      *
      * MethodArgumentNotValidException se lanza cuando @Valid falla en el controlador.

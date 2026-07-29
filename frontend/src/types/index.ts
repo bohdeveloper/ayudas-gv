@@ -24,6 +24,16 @@ export type CanalAviso = 'EMAIL' | 'SMS' | 'POSTAL'
 
 export type TipoDocumento = 'DNI' | 'NIE' | 'PAS'
 
+export type TipoTramite =
+  | 'REGISTRO'
+  | 'ASIGNACION'
+  | 'REVISION'
+  | 'PROPUESTA'
+  | 'RESOLUCION'
+  | 'NOTIFICACION'
+
+export type ResultadoTramite = 'FAVORABLE' | 'DESFAVORABLE'
+
 // ─── Auth ────────────────────────────────────────────────────────────────────
 
 export interface LoginRequest {
@@ -145,4 +155,37 @@ export interface DetallePartoMultiple {
   tipo: 'PARTO_MULT'
   numeroNacidos: number
   fechaHecho: string
+}
+
+// ─── Tramitación (Fase 1) ─────────────────────────────────────────────────────
+
+/** Un paso ya dado en el expediente: quién lo hizo, cuándo y con qué resultado. */
+export interface Tramite {
+  id: number
+  tipoTramite: { codigo: TipoTramite; descripcion: string }
+  fecha: string
+  username: string
+  usuarioNombre: string
+  resultado?: ResultadoTramite
+  observaciones?: string
+}
+
+export interface SeccionTramitacion {
+  estado: { codigo: EstadoExpediente; descripcion: string }
+  instructorId?: number
+  instructorNombre?: string
+  tramites: Tramite[]
+}
+
+/** El autor y la fecha los pone el servidor a partir del JWT: no se envían. */
+export interface NuevoTramiteRequest {
+  tipoTramite: TipoTramite
+  resultado?: ResultadoTramite
+  observaciones?: string
+}
+
+export interface InstructorAsignable {
+  id: number
+  username: string
+  nombreCompleto: string
 }

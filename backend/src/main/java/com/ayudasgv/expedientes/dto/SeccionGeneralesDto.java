@@ -1,5 +1,6 @@
 package com.ayudasgv.expedientes.dto;
 
+import com.ayudasgv.commons.dto.CatalogoDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDate;

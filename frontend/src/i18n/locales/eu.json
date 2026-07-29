@@ -112,6 +112,35 @@
       "numeroHijosCargo": "Ardurapeko seme-alaba kop.",
       "numeroNacidos": "Jaiotako kopurua",
       "errorCargaSeccion": "Ezin izan da atal hau kargatu"
+    },
+    "tramitacion": {
+      "historico": "Izapideen historia",
+      "sinTramites": "Oraindik ez da izapiderik erregistratu",
+      "sinInstructor": "Esleitu gabe",
+      "numeroTramites": "Erregistratutako izapideak",
+      "asignarInstructor": "Instruktorea esleitu",
+      "elegirInstructor": "Aukeratu instruktore bat",
+      "asignar": "Esleitu",
+      "nuevoTramite": "Izapidea erregistratu",
+      "tipo": "Izapide mota",
+      "resultado": "Emaitza",
+      "sinResultado": "Ez dagokio",
+      "registrar": "Erregistratu",
+      "expedienteCerrado": "Espedientea ebatzita dago: interesdunari jakinaraztea besterik ez du onartzen",
+      "errorRegistrar": "Ezin izan da izapidea erregistratu",
+      "errorAsignar": "Ezin izan da instruktorea esleitu",
+      "tipos": {
+        "REGISTRO": "Sarrera-erregistroa",
+        "ASIGNACION": "Instruktorea esleitzea",
+        "REVISION": "Berrikuspena / zuzenketa",
+        "PROPUESTA": "Ebazpen-proposamena",
+        "RESOLUCION": "Ebazpena",
+        "NOTIFICACION": "Jakinarazpena"
+      },
+      "resultados": {
+        "FAVORABLE": "Aldekoa",
+        "DESFAVORABLE": "Aurkakoa"
+      }
     }
   },
   "roles": {

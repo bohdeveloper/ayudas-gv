@@ -12,18 +12,27 @@ import SeccionGeneralesPanel from '../../components/expedientes/detalle/SeccionG
 import SeccionInteresadosPanel from '../../components/expedientes/detalle/SeccionInteresadosPanel'
 import SeccionContactoPanel from '../../components/expedientes/detalle/SeccionContactoPanel'
 import SeccionAyudaPanel from '../../components/expedientes/detalle/SeccionAyudaPanel'
+import SeccionTramitacionPanel from '../../components/expedientes/detalle/SeccionTramitacionPanel'
+import { obtenerTramitacion } from '../../api/tramitacionApi'
 import { IconAlertCircle, IconChevronLeft } from '../../components/icons/Icon'
-import type { SeccionAyuda, SeccionContacto, SeccionGenerales, SeccionInteresados } from '../../types'
+import type {
+  SeccionAyuda,
+  SeccionContacto,
+  SeccionGenerales,
+  SeccionInteresados,
+  SeccionTramitacion,
+} from '../../types'
 
-type TabKey = 'generales' | 'interesados' | 'contacto' | 'ayuda'
+type TabKey = 'generales' | 'interesados' | 'contacto' | 'ayuda' | 'tramitacion'
 
-const TABS: TabKey[] = ['generales', 'interesados', 'contacto', 'ayuda']
+const TABS: TabKey[] = ['generales', 'interesados', 'contacto', 'ayuda', 'tramitacion']
 
 interface SeccionData {
   generales?: SeccionGenerales
   interesados?: SeccionInteresados
   contacto?: SeccionContacto
   ayuda?: SeccionAyuda
+  tramitacion?: SeccionTramitacion
 }
 
 interface EstadoSeccion {
@@ -35,6 +44,7 @@ const CARGADORES: Record<TabKey, (id: number) => Promise<unknown>> = {
   interesados: obtenerInteresados,
   contacto: obtenerContacto,
   ayuda: obtenerAyuda,
+  tramitacion: obtenerTramitacion,
 }
 
 export default function ExpedienteDetalle() {
@@ -49,6 +59,7 @@ export default function ExpedienteDetalle() {
     interesados: { status: 'idle' },
     contacto: { status: 'idle' },
     ayuda: { status: 'idle' },
+    tramitacion: { status: 'idle' },
   })
 
   const cargarSeccion = useCallback(
@@ -71,6 +82,14 @@ export default function ExpedienteDetalle() {
     cargarSeccion(activeTab)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, i18n.language])
+
+  // Un trámite cambia el estado del expediente, y el estado se muestra en dos sitios:
+  // la propia sección y el badge de la cabecera (que sale de "generales"). Por eso se
+  // recargan las dos, o la cabecera se quedaría mostrando el estado anterior.
+  const recargarTrasTramitar = useCallback(() => {
+    cargarSeccion('tramitacion')
+    cargarSeccion('generales')
+  }, [cargarSeccion])
 
   const generales = datos.generales
 
@@ -134,6 +153,13 @@ export default function ExpedienteDetalle() {
             )}
             {estados[tab].status === 'success' && tab === 'ayuda' && datos.ayuda && (
               <SeccionAyudaPanel data={datos.ayuda} />
+            )}
+            {estados[tab].status === 'success' && tab === 'tramitacion' && datos.tramitacion && (
+              <SeccionTramitacionPanel
+                expedienteId={expedienteId}
+                data={datos.tramitacion}
+                onCambio={recargarTrasTramitar}
+              />
             )}
           </div>
         ))}

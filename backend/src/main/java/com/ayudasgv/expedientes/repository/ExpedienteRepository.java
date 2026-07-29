@@ -1,6 +1,6 @@
 package com.ayudasgv.expedientes.repository;
 
-import com.ayudasgv.expedientes.dto.CatalogoDto;
+import com.ayudasgv.commons.dto.CatalogoDto;
 import com.ayudasgv.expedientes.dto.DetalleAsignacionDiscapacidadDto;
 import com.ayudasgv.expedientes.dto.DetalleAyudaDto;
 import com.ayudasgv.expedientes.dto.DetalleNacimientoAdopcionDto;

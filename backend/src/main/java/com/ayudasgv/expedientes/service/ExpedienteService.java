@@ -1,5 +1,6 @@
 package com.ayudasgv.expedientes.service;
 
+import com.ayudasgv.commons.dto.ColumnaCatalogo;
 import com.ayudasgv.commons.exception.RecursoNoEncontradoException;
 import com.ayudasgv.expedientes.dto.ExpedienteBusquedaCriteria;
 import com.ayudasgv.expedientes.dto.ExpedienteResumenDto;
@@ -56,7 +57,7 @@ public class ExpedienteService {
                 fechaDesde, fechaHasta, normalizedPage, normalizedSize, sort
         );
 
-        String descColumn = "eu".equalsIgnoreCase(locale.getLanguage()) ? "descripcion_eu" : "descripcion_es";
+        String descColumn = ColumnaCatalogo.segunIdioma(locale);
 
         List<ExpedienteResumenDto> content = expedienteRepository.buscar(criteria, descColumn);
         long total = expedienteRepository.contar(criteria);
@@ -66,7 +67,7 @@ public class ExpedienteService {
 
     /** Sección "Datos generales" — 404 si el expediente no existe. */
     public SeccionGeneralesDto obtenerGenerales(Long id, Locale locale) {
-        String descColumn = "eu".equalsIgnoreCase(locale.getLanguage()) ? "descripcion_eu" : "descripcion_es";
+        String descColumn = ColumnaCatalogo.segunIdioma(locale);
 
         return expedienteRepository.buscarGenerales(id, descColumn)
                 .orElseThrow(() -> expedienteNoEncontrado(id));

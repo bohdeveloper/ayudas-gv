@@ -27,8 +27,8 @@ dominando este stack; parte del valor del repo es didáctico.
   | `PAGO_NAC` | Pago único por nacimiento o adopción (supuestos específicos) | Pago único | Arts. 351.b, 357–358 |
   | `PARTO_MULT` | Pago único por parto o adopción múltiples | Pago único | Arts. 351.c, 359–360 |
 
-- **Fase actual:** Fase 0 (MVP) **completada** (semanas S1–S6). Próximo foco decidido con el usuario:
-  **aprender Docker + Kubernetes** sobre este proyecto antes de abordar la Fase 1 (ver plan.md).
+- **Fase actual:** Fase 0 (MVP), **Fase K8s** y **Fase 1 (Tramitación)** completadas (2026-07-29).
+  Siguiente: Fase 2 — alta y registro de solicitudes (ver plan.md).
 - **Repo:** monorepo local `c:\aplic\ayudas_gv` (Git, rama principal `main`).
 
 ---
@@ -45,6 +45,8 @@ dominando este stack; parte del valor del repo es didáctico.
 | Base de datos | PostgreSQL 15 + Flyway (migraciones versionadas) |
 | API docs | Swagger UI (springdoc-openapi 2.7.0) |
 | Infra local | Docker + Docker Compose (postgres + backend + frontend) |
+| Orquestación | Kubernetes (minikube) — manifiestos en `k8s/`, segundo entorno en `k8s/staging/` |
+| Salud / probes | Spring Boot Actuator — `health/liveness` y `health/readiness` (públicos, sin detalle) |
 | Pruebas | Backend: JUnit 5 + Mockito + `@WebMvcTest` + `@JdbcTest`(H2). Frontend: Vitest + Testing Library |
 
 ### Estructura del repo
@@ -58,17 +60,18 @@ ayudas-gv/
 │       │   ├── config/         # SecurityConfig, OpenApiConfig
 │       │   ├── auth/           # JWT, login (Fase 0)
 │       │   ├── expedientes/    # Búsqueda y consulta por secciones (Fase 0)
-│       │   ├── tramitacion/    # Trámites (Fase 1, pendiente)
-│       │   └── commons/        # GlobalExceptionHandler + auditoría AOP + correlation-id
+│       │   ├── tramitacion/    # Trámites, asignación de instructor (Fase 1)
+│       │   └── commons/        # dto/ compartidos + excepciones + auditoría AOP + correlation-id
 │       └── resources/
 │           ├── application.yml / application-dev.yml
-│           ├── db/migration/   # V1…V4 — Flyway
+│           ├── db/migration/   # V1…V6 — Flyway
 │           └── i18n/           # messages_es / messages_eu
 ├── frontend/                   # React + Vite + TS
 │   ├── Dockerfile              # Multi-stage: Node build → Nginx
 │   ├── nginx.conf              # Sirve la SPA y proxea /api → backend
 │   └── src/{api,components,i18n,pages,router,store,types}/
 ├── docs/                       # Documentación (ver §7)
+├── k8s/                        # Manifiestos de Kubernetes (ayudas-dev) + staging/ (ayudas-staging)
 ├── docker-compose.yml
 ├── spec.md · plan.md · README.md · CLAUDE.md
 ├── .mcp.json                   # Config del grafo de código (codebase-memory-mcp)
@@ -85,6 +88,14 @@ ayudas-gv/
 - **DTO + Mapper:** nunca se exponen entidades de BD en la API.
 - **Auth:** login público emite JWT (HS, 24h); `JwtAuthFilter` valida el token en cada petición protegida;
   autorización por rol en backend (no basta ocultar botones en el frontend).
+- **Doble capa de autorización (Fase 1).** `@PreAuthorize` en el controlador filtra por **rol** (barato, corta
+  antes de tocar la BD); el servicio filtra por **dato** cuando el permiso depende del recurso concreto — p.ej.
+  *un INSTRUCTOR solo tramita lo que tiene asignado*. Las dos hacen falta: el rol no sabe de quién es el
+  expediente.
+- **DTOs compartidos en `commons/dto`.** Lo que usan varios módulos (`CatalogoDto`, `ColumnaCatalogo`) vive en
+  `commons`, no en el módulo que lo creó primero. Así `tramitacion` no depende del paquete de DTOs de
+  `expedientes` y la frontera se mantiene limpia de cara a extraer microservicios (invariante 6): en ese
+  momento `commons` se convierte en la librería compartida.
 - **Auditoría transversal:** vía `@Aspect` (AOP) → tabla `auditoria`; correlation-id propagado por petición.
 - **Errores homogéneos:** `@ControllerAdvice` / `GlobalExceptionHandler`.
 - **i18n:** sin literales hardcoded; frontend por `t('clave')`, backend por `MessageSource` + `Accept-Language`.
@@ -183,10 +194,29 @@ En Compose están en `docker-compose.yml`; en Kubernetes irán a ConfigMap/Secre
 | `instructor1` | `admin123` | INSTRUCTOR |
 | `consultor1` | `admin123` | CONSULTOR |
 
+### Arranque en Kubernetes (minikube)
+
+```bash
+minikube start --driver=docker
+& minikube -p minikube docker-env --shell powershell | Invoke-Expression   # usar el Docker del clúster
+docker build -t ayudas-gv-backend:2.2 ./backend
+docker build -t ayudas-gv-frontend:2.0 ./frontend
+kubectl apply -f k8s/            # entorno ayudas-dev
+kubectl apply -f k8s/staging/    # entorno ayudas-staging (opcional)
+kubectl -n ayudas-dev port-forward svc/frontend 18080:80
+```
+
+Las imágenes se construyen **dentro** del Docker del clúster: minikube tiene su propio demonio y no ve las
+imágenes de Windows (si no, el Pod se queda en `ImagePullBackOff`).
+
 ### Deuda aceptada deliberadamente
 
-- `JWT_SECRET` de ejemplo en `docker-compose.yml` (proyecto formativo; en prod → Secret).
-- Sin actuator/health endpoints todavía: relevante para las *probes* de Kubernetes (ver la guía de K8s).
+- `JWT_SECRET` de ejemplo en `docker-compose.yml` y en los manifiestos de `k8s/` (proyecto formativo;
+  en producción → Secret gestionado externamente, tipo Vault o Sealed Secrets).
+- `k8s/staging/` duplica los manifiestos de `k8s/` en vez de parchearlos. Deliberado por didáctica: en un
+  proyecto real sería Kustomize (base + overlays) o Helm. Documentado en la cabecera del propio fichero.
+- No hay módulo de administración de usuarios: `GET /v1/instructores` cubre lo mínimo que la tramitación
+  necesita y vive dentro de `tramitacion`, no en un módulo `usuarios` que aún no existe.
 
 ---
 
@@ -247,7 +277,7 @@ reutilizar servicios y repositorios existentes, SQL parametrizado siempre.
 | [plan.md](plan.md) | Plan de trabajo vivo: fases, checkboxes y histórico condensado |
 | [README.md](README.md) | Escaparate público del repo: qué es, features, stack, arranque |
 | [docs/README.md](docs/README.md) | **Índice de la documentación**: mapa de `docs/` y por dónde empezar |
-| [docs/docker-k8s/kubernetes-aprendizaje.md](docs/docker-k8s/kubernetes-aprendizaje.md) | **Guía paso a paso de Docker + Kubernetes con ejercicios** (learning track actual) |
+| [docs/docker-k8s/kubernetes-aprendizaje.md](docs/docker-k8s/kubernetes-aprendizaje.md) | **Guía paso a paso de Docker + Kubernetes con ejercicios**, con lo observado en cada uno |
 | [docs/docker-k8s/kubernetes-desde-0.md](docs/docker-k8s/kubernetes-desde-0.md) | Relato divulgativo de la Fase K8s: qué se hizo, por qué y qué se aprendió, sin dar nada por sabido |
 | [docs/docker-k8s/docker-guia.md](docs/docker-k8s/docker-guia.md) | Referencia de Docker: instalación, cada archivo Docker y comunicación entre contenedores (Bloque 0) |
 | [docs/docker-k8s/entrevista-docker-k8s.md](docs/docker-k8s/entrevista-docker-k8s.md) | Modelo visual (diagramas Mermaid) + 30 preguntas con respuesta modelo + chuleta de comandos |

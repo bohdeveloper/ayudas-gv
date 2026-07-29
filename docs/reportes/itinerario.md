@@ -22,14 +22,14 @@
 ## Resumen ejecutivo
 
 - **Punto de partida:** jueves 23/07/2026 (Fase 0 MVP cerrada; Fase K8s Bloque 0 cerrado el 22/07).
-- **Trabajo restante (desde el 29/07):** 11 sesiones de ~4h ≈ **~44 horas**.
+- **Trabajo restante (desde el 30/07):** 10 sesiones de ~4h ≈ **~40 horas**. La Fase 1 se cerró en una sesión en vez de dos, así que se recupera el día perdido el 28/07.
 - **Fin proyectado:** **miércoles 12/08/2026** (demo final y cierre) — corrido 1 día tras el reslot del 28/07.
 - **Duración natural:** ~3 semanas laborables (23/07 → 12/08), fines de semana excluidos.
 
 | Fase restante | Sesiones (~4h) | Ventana de fechas |
 |---------------|:--------------:|-------------------|
-| Fase K8s — Bloques 1–4 | 3 | jue 23/07 – mié 29/07 (Bloque 4 el 29) |
-| Fase 1 — Tramitación | 2 | mié 29/07 – jue 30/07 (arranca la tarde del 29) |
+| Fase K8s — Bloques 1–4 | 3 | jue 23/07 – mié 29/07 — **COMPLETADA** |
+| Fase 1 — Tramitación | 1 (previstas 2) | mié 29/07 — **COMPLETADA** en la misma sesión que el Bloque 4 |
 | Fase 2 — Alta y registro | 2 | vie 31/07 – lun 03/08 |
 | Fase 3 — Resolución y notificaciones | 2 | mar 04/08 – mié 05/08 |
 | Fase 4 — Reglas de negocio y cuantías | 2 | jue 06/08 – vie 07/08 |
@@ -62,8 +62,8 @@ La demo/cierre semanal cae el viernes (o último día laborable de la ventana).
 |-----|--------|--------------------|
 | **lun 27/07** | **Bloque 3** (completo) — escalar a 3 réplicas con balanceo verificado (3/1/2) · self-healing con cero caídas · rolling update `:1.0`→`:1.1` + `rollout undo` · limitación de postgres **demostrada rompiéndola en vivo** (dos postmasters sobre el mismo PVC; BD recuperada íntegra). Trabajado paso a paso en modo aprendizaje; el Bloque 4 se resloteó a mañana | COMPLETADA (parcial) |
 | **mar 28/07** | **Día sin sesión de proyecto** — entrevista técnica y preparación de la reunión. Lo único desarrollado (mañana, no previsto): material divulgativo de la Fase K8s (`kubernetes-aprendizaje.md` reescrita con 25 analogías + `kubernetes-desde-0.md` + 2 diagramas del entorno) e higiene del repositorio (snapshot del grafo fuera del control de versiones + política de cola limpia + hook `Stop`) + reorganización de `docs/` (carpetas `docker-k8s/` y `diagramas/`, dos documentos fusionados en uno e índice `docs/README.md`). El Bloque 4 y el arranque de la Fase 1 se reslotean a mañana | SIN SESIÓN |
-| mié 29/07 | **Fase K8s — Bloque 4** (cierre): namespace `ayudas-staging` · probes con actuator · resiliencia JWT · `resources.requests/limits` · endurecer `20-postgres.yaml` (`Recreate` + `ReadWriteOncePod`) · `change-cause` · respuestas orales → **cierre Fase K8s**. Luego **Fase 1 (1/2, arranque)** — asignación de instructor (rol RESPONSABLE) · registro de trámites por flujo · regla "instructor solo tramita lo asignado" (TDD) | PENDIENTE |
-| jue 30/07 | **Fase 1 (2/2)** — sección Tramitación en el detalle (histórico + instructor) · notificación en idioma del interesado · endpoints REST en Swagger · pruebas en verde → **cierre Fase 1** | PENDIENTE |
+| **mié 29/07** | **Bloque 4 + Fase 1 completos, los dos en la misma sesión** (se recupera el retraso del 28/07). Bloque 4: namespace `ayudas-staging` con aislamiento demostrado (dos IPs, dos BD) · probes de Actuator (startup/readiness con BD/liveness sin BD) · resiliencia JWT verificada (40/40 peticiones con un Pod borrado) · `resources.requests/limits` · `Recreate` + `ReadWriteOncePod` · `change-cause` · respuestas orales → **cierre Fase K8s**. Fase 1: módulo `tramitacion` entero (4 endpoints), regla "instructor solo tramita lo asignado" en doble capa, migración V6, 5.ª pestaña del detalle en es/eu, **107 pruebas backend + 26 frontend**, verificación end-to-end en el clúster. Hallazgo: bug de i18n en el bundle raíz, corregido + prueba de paridad. **Aprendizaje extra:** el `spec` de un PVC es inmutable → cambiar el accessMode obliga a recrear el disco | COMPLETADA |
+| jue 30/07 | **Fase 2 (1/2)** — formulario de alta de expediente con validación cliente + servidor · gestión de interesados (SOLICITANTE / REPRESENTANTE / CAUSANTE) · datos de contacto y aviso. **Decidir primero con el usuario qué roles pueden dar de alta** | PENDIENTE |
 | vie 31/07 | **Fase 2 (1/2)** — formulario de alta de expediente (validación cliente + servidor) · gestión de interesados (SOLICITANTE / REPRESENTANTE / CAUSANTE) · datos de contacto y aviso + **demo semanal** | PENDIENTE |
 
 ### Semana 9 (03–07 ago) — Alta, Resolución y Reglas de negocio

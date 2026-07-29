@@ -275,26 +275,63 @@ gestionada por el proveedor.
 ---
 
 <a name="bloque-4"></a>
-## Bloque 4 — Lo que queda (28/07)
+## Bloque 4 — Cerrar la Fase K8s (29/07)
 
-El último bloque cierra la Fase K8s. Son ejercicios que combinan lo anterior:
+El último bloque combina todo lo anterior. Esto es lo que se hizo y lo que salió.
 
-- **Un segundo entorno** (`ayudas-staging`) con el mismo montaje pero configuración distinta, para ver que no
-  se pisan. Es el edificio con dos pisos: un Juan en el 2.ºA y otro en el 3.ºA.
-- **Preguntas de salud "de verdad"**: hoy Kubernetes comprueba si el backend está listo llamando a su puerta y
-  viendo si alguien abre. Pasaremos a **preguntarle cómo se encuentra** — la diferencia entre ver luz en la
-  ventana y que el vecino te diga que está bien.
-- **Escribir de memoria** el Deployment y el Service del backend, y luego comparar. Duele, y por eso funciona.
-- **Resiliencia con sesión**: borrar un Pod mientras navegas y comprobar que **no te echa de la sesión**.
-  Funciona porque el proyecto no guarda la sesión en el servidor: el propio usuario lleva su credencial encima
-  (JWT). Es la diferencia entre **una pulsera de festival** (te la miran y entras, da igual quién esté en la
-  puerta) y **una lista de invitados** que solo tiene un portero concreto.
-- **Poner límites de consumo** a cada Pod y entender qué pasa al pasarse: si te pasas de **memoria**, te matan
-  en el acto; si te pasas de **CPU**, solo te frenan. Como pasarse de peso en el ascensor (no arranca) frente a
-  ir en hora punta por la autopista (llegas, pero despacio).
-- **Dos arreglos detectados el 27/07**: proteger la base de datos para que un cambio de versión no repita el
-  accidente del doble arranque, y dejar anotado **por qué** se hizo cada despliegue, que ahora el historial es
-  una lista de números sin explicación.
+**Un segundo entorno.** Se montó `ayudas-staging` con el mismo montaje y distinta configuración. Es el
+edificio con dos pisos: un "Juan" en el 2.ºA y otro en el 3.ºA. Lo bonito es que **los objetos se llaman
+igual** en los dos sitios — hay un `postgres` en cada uno — y no se pisan: desde dentro de cada piso, "Juan"
+es el tuyo. Se comprobó de dos maneras: el mismo nombre resuelve a IPs distintas, y tras las pruebas del día
+la base de datos de dev tenía 19 trámites mientras la de staging seguía con los 11 de fábrica.
+
+**Preguntas de salud de verdad.** Antes Kubernetes comprobaba si el backend estaba listo **llamando a la
+puerta y viendo si alguien abría**. El problema es que la puerta se abre antes de que la tienda esté montada.
+Ahora se le **pregunta cómo se encuentra**, y hay tres preguntas distintas:
+
+- *¿Ya has abierto?* (arranque) — mientras no conteste, no se le hacen las otras dos.
+- *¿Puedo entrar?* (readiness) — si dice que no, deja de mandarle clientes, pero **no** se le echa abajo la
+  tienda. Y esta pregunta **sí** incluye "¿tienes género?" (la base de datos).
+- *¿Sigues vivo?* (liveness) — si no contesta, se derriba y se levanta de nuevo. Y esta **no** pregunta por el
+  género: si el proveedor no ha traído nada, derribar la tienda no lo arregla; solo te quedas sin tienda.
+
+Esa última distinción es la que más se pregunta en una entrevista, y el motivo es muy concreto: si metieras la
+base de datos en la pregunta "¿sigues vivo?", una caída de la base de datos haría que Kubernetes reiniciara
+**todos** los backends una y otra vez. Un problema mediano convertido en uno grande.
+
+**Escribir de memoria** el Deployment y el Service del backend, y luego comparar. Duele, y por eso funciona.
+Lo que más se olvida: que las etiquetas del Deployment y las del Service tienen que **coincidir**; si no, cada
+uno va por su lado y nada funciona sin decirte por qué.
+
+**Resiliencia con sesión.** Se pusieron tres copias del backend, se entró una sola vez en la aplicación y se
+**borró una copia mientras se navegaba**: 40 peticiones seguidas, 40 correctas, cero fallos, sin volver a
+pedir la contraseña. Funciona porque el proyecto no guarda la sesión en el servidor: el usuario lleva su
+credencial encima (JWT). Es la diferencia entre **una pulsera de festival** —te la miran y entras, da igual
+quién esté en la puerta— y **una lista de invitados** que solo tiene un portero concreto: si ese portero se
+va, tú te quedas fuera aunque hubieras entrado ya.
+
+Y un detalle fino: la copia nueva que sustituyó a la borrada **no recibió ni una sola petición** hasta que
+dijo que estaba lista. Eso es exactamente para lo que sirve la pregunta "¿puedo entrar?".
+
+**Límites de consumo.** Se le puso a cada Pod un mínimo reservado y un techo. Lo que hay que saber es qué pasa
+al pasarse, porque **no es lo mismo según el recurso**: si te pasas de **memoria**, te matan en el acto (y el
+Pod se reinicia); si te pasas de **CPU**, solo te frenan. Pasarse de peso en el ascensor —no arranca— frente a
+ir en hora punta por la autopista —llegas, pero despacio—.
+
+**Los dos arreglos que dejó pendientes el 27/07**, ya hechos: la base de datos ahora se actualiza *apagando
+antes de encender* (para no repetir el accidente del doble arranque) y cada despliegue queda **anotado con su
+motivo**, así que el historial ya no es una lista de números sin explicación.
+
+### La piedra en el camino: un disco no se puede reconfigurar
+
+Al proteger la base de datos se quiso cambiar la etiqueta del disco de "lo usa una máquina" a "lo usa un solo
+Pod". Kubernetes se negó en seco: la definición de un disco **es inmutable una vez creado**. Lo único que
+admite es *crecer*.
+
+Así que hubo que borrarlo y volver a crearlo — y con él se fue el contenido. Aquí no pasó nada, porque la base
+de datos se reconstruye sola desde las migraciones. Pero la lección se queda: **eso hay que decidirlo antes de
+crear el disco, no después.** Es como el tamaño de la puerta de un garaje: se decide al construir; luego, para
+cambiarla, hay que picar pared.
 
 ---
 

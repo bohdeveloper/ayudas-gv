@@ -465,7 +465,9 @@ lo expone dentro del clúster en el puerto 8080.
 
 Detalles clave:
 - `imagePullPolicy: IfNotPresent` → usa la imagen local, no la busca en internet.
-- `readinessProbe` TCP a 8080 con `initialDelaySeconds` generoso: Spring Boot + Flyway tardan en arrancar.
+- Probes `httpGet` contra Actuator (Bloque 4, ejercicio 6.2): `startupProbe` da margen al arranque de
+  Spring Boot + Flyway, `readinessProbe` incluye la BD y `livenessProbe` solo el proceso. Antes eran TCP,
+  que solo comprobaban "el puerto está abierto" — y Tomcat abre el puerto antes de estar listo.
 - `envFrom` combina `configMapRef: backend-config` y `secretRef: backend-secret` en una sola inyección.
 
 ```bash
@@ -629,25 +631,171 @@ kubectl rollout history deployment/backend
 <a name="parte-6"></a>
 ## Parte 6 — Ejercicios integradores (los que te blindan para la entrevista)
 
-Cada uno combina varios conceptos. Escribe una respuesta corta además de ejecutarlo.
+> **Hechos el 2026-07-29.** Debajo de cada ejercicio queda **lo que realmente pasó**, no la teoría de lo que
+> debería pasar. Cuando algo salió distinto de lo esperado, está anotado: eso es lo que se recuerda.
 
-- [ ] **6.1 — Entornos con Namespaces.** Crea un segundo namespace `ayudas-staging` y despliega el mismo
-  stack ahí, cambiando solo el ConfigMap (por ejemplo, `JWT_EXPIRATION` distinto). Demuestra que
-  `postgres` en `ayudas-dev` y `postgres` en `ayudas-staging` son bases de datos independientes.
-- [ ] **6.2 — Probes de verdad.** Añade `spring-boot-starter-actuator` al backend y cambia las probes TCP
-  por `httpGet` a `/api/actuator/health/liveness` y `/readiness`. Explica la diferencia entre liveness y
-  readiness con lo que observas al arrancar.
-- [ ] **6.3 — De Compose a K8s tú solo.** Sin mirar el Apéndice B, coge el `docker-compose.yml` y escribe
-  de memoria el Deployment+Service del backend. Luego compáralo. Anota qué se te olvidó (suele ser el
-  `selector`/`labels` o el `imagePullPolicy`).
-- [ ] **6.4 — Resiliencia.** Con el backend a 3 réplicas y la app abierta, borra un Pod mientras navegas.
-  ¿Se cae la sesión? ¿Por qué el JWT lo hace *stateless* y ayuda aquí? (conecta con la decisión de
-  arquitectura del proyecto: no hay estado de sesión en el servidor).
-- [ ] **6.5 — Límites de recursos.** Añade `resources.requests`/`limits` (CPU/memoria) al backend y explica
-  qué pasa si un Pod supera su `limit` de memoria (OOMKilled) frente a superar el de CPU (throttling).
-- [ ] **6.6 — Preguntas orales.** Prepara respuesta de 30s a: *Pod vs Deployment vs Service*; *¿por qué
-  no despliego Pods sueltos?*; *¿ClusterIP vs NodePort vs LoadBalancer?*; *¿qué es un rolling update y cómo
-  hago rollback?*; *¿ConfigMap vs Secret?*; *¿por qué una BD no se escala como un backend stateless?*.
+### 6.1 — Entornos con Namespaces — HECHO
+
+Crea un segundo namespace `ayudas-staging` con el mismo stack, cambiando solo la configuración.
+Manifiesto: [`k8s/staging/ayudas-staging.yaml`](../../k8s/staging/ayudas-staging.yaml) ·
+`kubectl apply -f k8s/staging/`
+
+**Lo observado.** Los dos entornos tienen objetos con el **mismo nombre** (`postgres`, `backend`,
+`frontend`) y conviven sin chocar:
+
+```
+kubectl -n ayudas-dev     exec deploy/backend -- getent hosts postgres
+  10.111.20.147   postgres.ayudas-dev.svc.cluster.local
+kubectl -n ayudas-staging exec deploy/backend -- getent hosts postgres
+  10.109.85.152   postgres.ayudas-staging.svc.cluster.local
+```
+
+El mismo nombre `postgres` resuelve a **dos IPs distintas**, porque el DNS interno es
+`<servicio>.<namespace>.svc.cluster.local` y dentro de un namespace el sufijo se sobreentiende. Y son dos
+bases de datos de verdad separadas: tras las pruebas de la Fase 1, `dev` tenía 19 trámites y `staging`
+seguía con los 11 de la semilla. El `JWT_EXPIRATION` también difiere (24 h en dev, 1 h en staging) sin
+tocar una línea de código: solo cambia el ConfigMap.
+
+> **Imagínalo así.** Un namespace es una **planta de un edificio de oficinas**. En la 3.ª y en la 5.ª puede
+> haber un despacho llamado "Recepción"; si estás en la 3.ª y dices "voy a recepción", vas a la tuya. Para
+> ir a la otra tienes que decir el nombre completo: "recepción de la quinta".
+
+**Nota de oficio para la entrevista:** ese fichero está copiado y pegado *a propósito*, para verlo entero.
+En un proyecto real se usa **Kustomize** (base + overlays) o **Helm** (un chart con `values-dev.yaml` /
+`values-staging.yaml`) para que solo exista una definición y los entornos sean parches encima.
+
+### 6.2 — Probes de verdad — HECHO
+
+Se añadió `spring-boot-starter-actuator` y las probes TCP pasaron a `httpGet`. Hay **tres**, y cada una
+responde a una pregunta distinta:
+
+| Probe | Pregunta | Si falla |
+|-------|----------|----------|
+| `startupProbe` | ¿Ha terminado de arrancar? | Nada todavía; bloquea a las otras dos hasta que pase |
+| `readinessProbe` | ¿Puede atender peticiones? | El Pod **sale del Service** (deja de recibir tráfico), pero **no** se reinicia |
+| `livenessProbe` | ¿Sigue vivo el proceso? | K8s **mata y recrea** el contenedor |
+
+La decisión que más se pregunta: **`readiness` incluye la base de datos, `liveness` no.**
+
+```yaml
+readiness: { include: readinessState,db }   # sin BD no puedo responder → sácame del Service
+liveness:  { include: livenessState }       # sin BD reiniciarme no arregla nada → no me mates
+```
+
+Si metieras la BD en la liveness, una caída de PostgreSQL provocaría que K8s reiniciara todos los backends
+en bucle — más carga, ningún arreglo, y un incidente pequeño convertido en grande.
+
+La `startupProbe` sustituye al `initialDelaySeconds: 60` que había antes: en vez de adivinar un margen fijo,
+da hasta 30 intentos × 5 s **solo durante el arranque** y deja la liveness agresiva en régimen normal.
+
+> **Imagínalo así.** *Readiness* es el cartel de **ABIERTO/CERRADO** de una tienda: si está cerrado no entra
+> nadie, pero la tienda sigue en pie. *Liveness* es el **detector de humos**: si salta, se desaloja y se
+> vuelve a montar. Y *startup* es el **rato antes de abrir**: mientras estás colocando el género, ni el
+> cartel ni el detector cuentan.
+
+### 6.3 — De Compose a K8s tú solo — HECHO
+
+Coge `docker-compose.yml` y escribe de memoria el Deployment+Service del backend. Luego compara con
+[`k8s/30-backend.yaml`](../../k8s/30-backend.yaml). **Lo que más se olvida**, por orden:
+
+1. **`selector.matchLabels` ↔ `template.metadata.labels`.** Tienen que coincidir. Es el error nº 1: el
+   Deployment crea Pods que él mismo no reconoce como suyos.
+2. **El `selector` del Service.** Un Service sin `selector` correcto no tiene endpoints y devuelve
+   "connection refused" sin decirte por qué. `kubectl get endpointslice` es el diagnóstico.
+3. **`imagePullPolicy: IfNotPresent`.** Sin esto, con una imagen local de minikube el Pod se queda en
+   `ImagePullBackOff` intentando bajarla de Docker Hub.
+4. **`containerPort` ≠ `port` ≠ `targetPort`.** `port` es por dónde escucha el Service; `targetPort`, por
+   dónde escucha el contenedor.
+
+### 6.4 — Resiliencia con JWT stateless — HECHO
+
+Backend a 3 réplicas, sesión iniciada **una sola vez**, y se borra un Pod mientras se navega:
+
+```
+Pod borrado: backend-7cdc7b4c49-chr2f
+40 peticiones con el mismo token durante el borrado
+  → OK: 40   FALLOS: 0
+```
+
+**Por qué no se cae la sesión.** Porque no hay sesión *en el servidor*. El JWT viaja en cada petición y
+cualquiera de los tres Pods lo valida con la misma clave: no necesita recordar nada del usuario. Si hubiera
+`HttpSession`, la sesión viviría en la memoria de **un** Pod concreto y matarlo tiraría al usuario a la
+pantalla de login (o exigiría "sticky sessions" o un Redis compartido — complejidad que aquí no existe).
+
+Es la decisión de arquitectura de `SecurityConfig` (`SessionCreationPolicy.STATELESS`) pagando dividendos
+en infraestructura. Ese es el enlace que hay que saber contar: **una decisión de código habilita una
+propiedad de despliegue.**
+
+Detalle fino que se ve en la salida: el Pod nuevo aparece con `READY: false` y **no recibe ni una petición**
+hasta que su readinessProbe pasa. Ese es exactamente el trabajo de la readiness.
+
+### 6.5 — Límites de recursos — HECHO
+
+`resources.requests`/`limits` están ahora en los tres Deployments.
+
+- **`requests`** = lo que el planificador **reserva** para decidir en qué nodo cabe el Pod. Si pides más de
+  lo que hay libre, el Pod se queda `Pending` — y `kubectl describe` te dice "Insufficient cpu/memory".
+- **`limits`** = el techo duro. Y aquí está la pregunta de entrevista:
+
+| Recurso | Al superar el `limit` | Por qué |
+|---------|----------------------|---------|
+| **Memoria** | **OOMKilled**: el kernel mata el proceso y el Pod se reinicia | La memoria no es "compartible en el tiempo": o la tienes o no la tienes |
+| **CPU** | **Throttling**: el contenedor va lento, pero **nadie lo mata** | La CPU sí se reparte en el tiempo: se le dan menos ciclos y ya |
+
+Diagnóstico: `kubectl describe pod` muestra `Last State: Terminated, Reason: OOMKilled` y el contador de
+`RESTARTS` sube. Si un Pod se reinicia solo cada pocos minutos, ese es el primer sitio donde mirar.
+
+> **Imagínalo así.** El límite de CPU es un **carril lento**: llegas más tarde, pero llegas. El límite de
+> memoria es el **aforo de un ascensor**: pasado el peso, no arranca — te bajas.
+
+### 6.6 — Preguntas orales (respuesta de 30 segundos) — HECHO
+
+**Pod vs Deployment vs Service.** El *Pod* es la unidad que se ejecuta: uno o más contenedores que comparten
+red y disco. Es efímero y su IP cambia. El *Deployment* es quien se encarga de que haya siempre N Pods vivos
+de una versión concreta: si uno muere, lo repone; si cambias la imagen, los sustituye poco a poco. El
+*Service* es un nombre y una IP fijos que reparten tráfico entre los Pods que estén listos, así nadie
+depende de una IP que va a cambiar.
+
+**¿Por qué no despliego Pods sueltos?** Porque un Pod suelto no se recupera: si muere, muere. Nadie lo
+repone, no puedes escalarlo ni actualizarlo sin caída. El Deployment es lo que convierte "un proceso
+corriendo" en "un servicio que sigue estando".
+
+**ClusterIP vs NodePort vs LoadBalancer.** *ClusterIP* es solo interno: los demás Pods lo ven, el mundo no
+(es lo que usan aquí postgres y backend). *NodePort* abre un puerto alto en cada nodo — sirve para pruebas,
+es incómodo en producción. *LoadBalancer* pide un balanceador real al proveedor cloud. En este proyecto no
+hace falta ninguno de los dos últimos: la entrada es un **Ingress**, que enruta por host/path y deja todos
+los Services en ClusterIP.
+
+**¿Qué es un rolling update y cómo hago rollback?** Es actualizar sin cortar el servicio: el Deployment crea
+un ReplicaSet nuevo y va cambiando Pods poco a poco, respetando `maxSurge` y `maxUnavailable`, así que
+siempre hay capacidad atendiendo. Se lanza con `kubectl set image` y se sigue con `rollout status`. Si sale
+mal, `kubectl rollout undo` vuelve a inflar el ReplicaSet anterior — que sigue ahí, a 0 réplicas. Con
+`kubernetes.io/change-cause` anotado, `rollout history` te dice qué era cada revisión.
+
+**ConfigMap vs Secret.** Los dos inyectan configuración sin tocar la imagen. El *ConfigMap* es para lo no
+sensible (URL de la BD, puerto, timeouts). El *Secret* es para credenciales: se guarda en base64 —que **no
+es cifrado**— y su valor está en poder tratarlo distinto: RBAC más estricto, cifrado en reposo en etcd, no
+aparece en un `describe`. En la práctica, con un gestor externo (Vault, Sealed Secrets) en producción.
+
+**¿Por qué una BD no se escala como un backend stateless?** Porque el backend no guarda nada: da igual qué
+réplica te atienda. La BD **es** el estado. Dos Pods de PostgreSQL sobre el mismo disco no dan el doble de
+capacidad: corrompen los datos — lo comprobamos el 27/07, dos postmasters escribieron a la vez sobre el
+mismo directorio. Escalar una BD es replicación (primario/réplicas, con su propio protocolo), y en K8s eso
+es un **StatefulSet** —que da identidad y disco propio a cada Pod— más un operador (CloudNativePG) o
+directamente una BD gestionada.
+
+### Aprendizaje extra no previsto: el `spec` de un PVC es inmutable
+
+Al endurecer `20-postgres.yaml` cambiando `ReadWriteOnce` → `ReadWriteOncePod`, `kubectl apply` falló:
+
+```
+The PersistentVolumeClaim "postgres-pvc" is invalid: spec: Forbidden:
+spec is immutable after creation except resources.requests and volumeAttributesClassName
+```
+
+Un PVC ya creado solo admite **crecer** (`resources.requests`). Cambiar el modo de acceso exige **borrarlo
+y recrearlo**, y con él se va el disco. En dev da igual (Flyway reconstruye la BD desde las migraciones);
+en producción esto es exactamente el tipo de decisión que hay que tomar **antes** de crear el PVC.
 
 ---
 
@@ -759,7 +907,7 @@ metadata:
   name: postgres-pvc
   namespace: ayudas-dev
 spec:
-  accessModes: ["ReadWriteOnce"]
+  accessModes: ["ReadWriteOncePod"]   # Bloque 4: UN Pod, no un nodo (ver 6.1 y el incidente del 27/07)
   resources:
     requests:
       storage: 1Gi
@@ -769,8 +917,12 @@ kind: Deployment
 metadata:
   name: postgres
   namespace: ayudas-dev
+  annotations:
+    kubernetes.io/change-cause: "Bloque 4: strategy Recreate + PVC ReadWriteOncePod"
 spec:
   replicas: 1
+  strategy:
+    type: Recreate      # nunca dos postmasters sobre el mismo disco a la vez
   selector:
     matchLabels:
       app: postgres
@@ -839,21 +991,25 @@ spec:
     spec:
       containers:
         - name: backend
-          image: ayudas-gv-backend:1.0
+          image: ayudas-gv-backend:2.2
           imagePullPolicy: IfNotPresent      # usa la imagen local de minikube
           ports:
             - containerPort: 8080
           envFrom:
             - configMapRef: { name: backend-config }
             - secretRef: { name: backend-secret }
+          startupProbe:                      # hasta 30 x 5 s = 150 s para arrancar
+            httpGet: { path: /api/actuator/health/liveness, port: 8080 }
+            periodSeconds: 5
+            failureThreshold: 30
           readinessProbe:
-            tcpSocket: { port: 8080 }
-            initialDelaySeconds: 30           # Spring Boot + Flyway tardan en arrancar
+            httpGet: { path: /api/actuator/health/readiness, port: 8080 }
             periodSeconds: 10
+            failureThreshold: 3
           livenessProbe:
-            tcpSocket: { port: 8080 }
-            initialDelaySeconds: 60
+            httpGet: { path: /api/actuator/health/liveness, port: 8080 }
             periodSeconds: 15
+            failureThreshold: 3
           resources:
             requests: { cpu: "250m", memory: "384Mi" }
             limits:   { cpu: "1",    memory: "768Mi" }

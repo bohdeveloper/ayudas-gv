@@ -98,6 +98,49 @@ El MVP (Fase 0) se construye como un **monolito modular** con bounded contexts l
 
 Todas las rutas bajo `/api/v1/...` — versionado explícito para compatibilidad futura.
 
+## Endpoints Fase 1 (tramitación)
+
+| Método | Ruta | Auth requerida | Descripción |
+|--------|------|---------------|-------------|
+| `GET` | `/api/v1/expedientes/{id}/tramites` | Todos los roles | Estado, instructor asignado e histórico de trámites |
+| `POST` | `/api/v1/expedientes/{id}/tramites` | INSTRUCTOR · RESPONSABLE · ADMIN | Registrar un trámite y mover el estado |
+| `PUT` | `/api/v1/expedientes/{id}/instructor` | RESPONSABLE · ADMIN | Asignar instructor (estado → ASIGNADO + traza) |
+| `GET` | `/api/v1/instructores` | RESPONSABLE · ADMIN | Instructores asignables (alimenta el desplegable) |
+
+**Doble capa de autorización.** El rol se comprueba con `@PreAuthorize` en el controlador
+(barato, corta antes de tocar la BD); la pertenencia se comprueba en el servicio, que sí
+necesita mirar el dato: *un INSTRUCTOR solo puede tramitar los expedientes asignados a él*
+(spec.md §3, invariante 4). Un RESPONSABLE/ADMIN no tiene esa restricción.
+
+**Códigos de estado y qué significa cada uno:**
+
+| Código | Cuándo | Ejemplo |
+|--------|--------|---------|
+| `403` | El rol autoriza, pero no sobre ESTE expediente | Instructor no asignado (`OperacionNoPermitidaException`) |
+| `404` | El recurso referenciado no existe | Expediente o tipo de trámite inexistente |
+| `409` | La petición es correcta, el estado del recurso no la admite | Tramitar un expediente ya RESUELTO (`ReglaNegocioException`) |
+
+**Modelo de tramitación** — cada trámite deja traza y, salvo la notificación, mueve el estado:
+
+```
+REGISTRO      → REGISTRADO
+ASIGNACION    → ASIGNADO      (vía PUT /instructor, no como trámite suelto)
+REVISION      → EN_REVISION
+PROPUESTA     → EN_REVISION   (exige resultado FAVORABLE | DESFAVORABLE)
+RESOLUCION    → RESUELTO      (+ sella fecha_resolucion; solo RESPONSABLE)
+NOTIFICACION  → sin cambio de estado
+```
+
+## Endpoints de infraestructura
+
+| Método | Ruta | Auth requerida | Descripción |
+|--------|------|---------------|-------------|
+| `GET` | `/api/actuator/health/liveness` | Público | ¿El proceso sigue vivo? Lo consulta el kubelet |
+| `GET` | `/api/actuator/health/readiness` | Público | ¿Puede atender tráfico? Incluye el estado de la BD |
+
+Son públicos porque los lanza el kubelet del nodo, que no tiene ni puede tener un JWT.
+Devuelven solo `{"status":"UP"}` (`show-details: never`): no filtran configuración interna.
+
 ---
 
 ## Bilingüismo técnico

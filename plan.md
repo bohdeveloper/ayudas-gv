@@ -8,36 +8,34 @@
 
 ---
 
-## Estado actual (2026-07-21)
+## Estado actual (2026-07-29)
 
 | Fase / hito | Estado |
 |-------------|--------|
 | **Fase 0 — MVP** (S1–S6) | COMPLETADA (Hito M6, 2026-07-17) |
-| **Fase K8s — Docker + Kubernetes (learning track)** | EN CURSO — **prioridad actual** |
-| Fase 1 — Tramitación | PENDIENTE (tras K8s) |
-| Fase 2 — Alta y registro de solicitudes | PENDIENTE |
+| **Fase K8s — Docker + Kubernetes (learning track)** | COMPLETADA (2026-07-29, Bloques 0–4) |
+| **Fase 1 — Tramitación** | COMPLETADA (2026-07-29) |
+| Fase 2 — Alta y registro de solicitudes | PENDIENTE — **siguiente** |
 | Fase 3 — Resolución y notificaciones | PENDIENTE |
 | Fase 4 — Reglas de negocio y cálculo de cuantías | PENDIENTE |
 
-**Próxima sesión (viernes 24/07) — Bloque 2 de la Fase K8s** (desplegar en `k8s/`), y si da tiempo Bloques 3 y 4.
-Bloque 1 completado el 23/07 (clúster minikube + imágenes `:1.0` dentro del clúster). Ya existe `k8s/00-namespace.yaml`
-(pendiente de aplicar). Guía: [docs/kubernetes-aprendizaje.md](docs/docker-k8s/kubernetes-aprendizaje.md) → Parte 4.
-Calendario completo de lo que queda (fin proyectado 10/08/2026): [docs/reportes/itinerario.md](docs/reportes/itinerario.md).
+**Próxima sesión — Fase 2 (alta y registro de solicitudes).** Punto de entrada: formulario de alta con
+validación en cliente y servidor, reutilizando el sistema de diseño y los patrones de la sección Tramitación
+(formularios condicionados por rol, errores del backend ya traducidos). Antes de empezar, decidir con el
+usuario **qué roles pueden dar de alta** — es la única casilla de la Fase 2 sin respuesta.
 
-- **Punto de entrada exacto:** instalar `minikube` (`winget install Kubernetes.minikube`) y
-  `minikube start --driver=docker`; luego `kubectl get nodes`.
-- **Herramental (2026-07-22, PC nuevo `c:\aplic\ayudas_gv`):** Docker Desktop 29.6.2 + Compose v5.3.1
-  instalados y verificados (stack completo levantado y login OK). Java 21 + Maven 3.9 + Node presentes.
-  **Faltan `kubectl` y `minikube`** — se instalan al empezar el Bloque 1.
-- Estado del repo: clonado desde GitHub (`origin` → `github.com/bohdeveloper/ayudas-gv`), rama `main`
-  al día (GitHub ya contiene todo hasta commit `86cdfc9`; la nota previa de "push pendiente" queda resuelta).
+- **Estado del clúster (2026-07-29):** minikube con `ayudas-dev` desplegado a partir de las imágenes
+  `ayudas-gv-backend:2.2` / `ayudas-gv-frontend:2.0`, probes de Actuator y el segundo entorno
+  `ayudas-staging` en [k8s/staging/](k8s/staging/). Se levanta con `minikube start` + `kubectl apply -f k8s/`.
+- **Herramental:** Docker Desktop + Compose, minikube v1.38.1 / K8s v1.35.1, Java 21, Maven 3.9, Node.
+- Calendario de lo que queda: [docs/reportes/itinerario.md](docs/reportes/itinerario.md).
 
 > **Decisión de secuencia (usuario, 2026-07-21):** primero dominar Docker + Kubernetes sobre este
-> proyecto; la Fase 1 (Tramitación) se aborda **después**, cuando el clúster esté montado y entendido.
+> proyecto; la Fase 1 (Tramitación) después. Cumplido: ambas cerradas el 2026-07-29.
 
 ---
 
-## Fase K8s — Docker + Kubernetes (learning track) — EN CURSO
+## Fase K8s — Docker + Kubernetes (learning track) — COMPLETADA (2026-07-29)
 
 > **Objetivo:** llevar Ayudas GV de `docker compose` a un clúster de Kubernetes local (minikube) y
 > dominar las operaciones de orquestación (escalar, autocurar, actualizar sin caída), como preparación
@@ -76,18 +74,27 @@ Calendario completo de lo que queda (fin proyectado 10/08/2026): [docs/reportes/
 - [x] Rolling update `:1.0`→`:1.1` con `kubectl set image` y `rollout status`; luego `rollout undo` — 2026-07-27: imagen `:1.1` construida con `minikube image build` (derivada de `:1.0` + marca `APP_VERSION`); ReplicaSet nuevo `5b48dd7c5c`, surge de 1 Pod (maxSurge 25%→1, maxUnavailable 25%→0), cero caída; `undo` reinfló el RS viejo `fd8f6dd8b` y añadió la revisión 5
 - [x] Razonar por qué postgres (PVC ReadWriteOnce) no se replica como el backend → StatefulSet — 2026-07-27: probado en vivo escalando a 2 réplicas. **RWO limita por nodo, no por Pod**: en un solo nodo ambos Pods montaron el PVC; los namespaces de PID hicieron que el 2.º postmaster (también PID 1) tomara el `postmaster.pid` ajeno por un lock huérfano suyo, lo borrara y arrancara → dos postmasters ~76s sobre el mismo directorio. Al bajar a 1 réplica, el original hizo `immediate shutdown because data directory lock file is invalid` y reinició. BD íntegra (Flyway V1–V5 `success`, datos OK). Conclusiones: `ReadWriteOncePod` sí lo impediría; el StatefulSet resuelve identidad y disco por Pod (`volumeClaimTemplates`) pero **no** da replicación de Postgres (eso es un operador tipo CloudNativePG o BD gestionada)
 
-### Bloque 4 — Ejercicios integradores (blindaje entrevista)
-- [ ] Segundo entorno con namespace `ayudas-staging` (mismo stack, ConfigMap distinto)
-- [ ] Probes "de verdad": añadir `spring-boot-starter-actuator` y pasar a `httpGet /actuator/health`
-- [ ] Reescribir de memoria el Deployment+Service del backend y comparar
-- [ ] Resiliencia con JWT stateless: borrar un Pod mientras se navega, sin perder sesión
-- [ ] `resources.requests/limits` y diferencia OOMKilled (memoria) vs throttling (CPU)
-- [ ] Preparar respuestas orales de 30s a las preguntas típicas (lista en la guía, Parte 6)
-- [ ] **Endurecer `k8s/20-postgres.yaml`** (hallazgo del Bloque 3, 2026-07-27): `strategy: Recreate` — con
-  el `RollingUpdate` por defecto, cambiar la imagen de postgres provocaría el mismo doble montaje que
-  rompió el Pod hoy — y `accessModes: ["ReadWriteOncePod"]` como red de seguridad frente a un escalado accidental
-- [ ] Anotar `kubernetes.io/change-cause` en los Deployments para que `rollout history` sea legible
-  (hoy las 5 revisiones salen con `CHANGE-CAUSE: <none>`)
+### Bloque 4 — Ejercicios integradores (blindaje entrevista) — COMPLETADA (2026-07-29)
+- [x] Segundo entorno con namespace `ayudas-staging` (mismo stack, ConfigMap distinto) — 2026-07-29:
+  [k8s/staging/ayudas-staging.yaml](k8s/staging/ayudas-staging.yaml). Mismos nombres de objeto
+  (`postgres`, `backend`, `frontend`) en otro namespace; `JWT_EXPIRATION` de 1 h frente a 24 h y contraseña
+  de BD distinta. Ingress por host (`staging.ayudas.local`) conviviendo con el catch-all de dev
+- [x] Probes "de verdad": añadir `spring-boot-starter-actuator` y pasar a `httpGet /actuator/health` — 2026-07-29:
+  `startupProbe` + `readinessProbe` (incluye la BD: `readiness.include=readinessState,db`) + `livenessProbe`
+  (solo `livenessState`: si la BD cae, reiniciar el backend no arregla nada). Los dos endpoints son públicos
+  en `SecurityConfig` porque los lanza el kubelet, que no tiene JWT, y van con `show-details: never`
+- [x] Reescribir de memoria el Deployment+Service del backend y comparar — 2026-07-29: ejercicio recogido en la
+  guía (Parte 6.3) con la lista de lo que más se olvida
+- [x] Resiliencia con JWT stateless: borrar un Pod mientras se navega, sin perder sesión — 2026-07-29
+- [x] `resources.requests/limits` y diferencia OOMKilled (memoria) vs throttling (CPU) — 2026-07-29:
+  añadidos a los tres Deployments; la explicación queda en la guía y en el propio manifiesto
+- [x] Preparar respuestas orales de 30s a las preguntas típicas (lista en la guía, Parte 6) — 2026-07-29
+- [x] **Endurecer `k8s/20-postgres.yaml`** (hallazgo del Bloque 3, 2026-07-27): `strategy: Recreate` +
+  `accessModes: ["ReadWriteOncePod"]` — 2026-07-29. **Aprendizaje extra:** `spec` de un PVC es **inmutable**
+  una vez creado (`Forbidden: spec is immutable after creation`), así que cambiar el accessMode obligó a
+  borrar y recrear el PVC — y con él, el disco. En dev no importa (Flyway reconstruye), en producción es
+  justo la decisión que hay que tomar antes de crear el PVC, no después
+- [x] Anotar `kubernetes.io/change-cause` en los Deployments para que `rollout history` sea legible — 2026-07-29
 
 ### Material didáctico (divulgación de la Fase K8s) — COMPLETADA (2026-07-28)
 
@@ -134,7 +141,7 @@ Ingress/ConfigMap/Secret/Namespace. Entregable físico: carpeta `k8s/` versionad
 
 ---
 
-## Fase 1 — Tramitación — PENDIENTE (tras K8s)
+## Fase 1 — Tramitación — COMPLETADA (2026-07-29)
 
 > **Objetivo:** el personal instructor puede hacer avanzar los expedientes.
 > Fuente: enunciado §7.2 (verificado literal, 2026-07-21). Modelo de datos ya previsto: tablas
@@ -151,15 +158,37 @@ RESOLUCION        → concesión o denegación (rol RESPONSABLE)
 NOTIFICACION      → comunicación al interesado por su canal de aviso y en su idioma de notificación
 ```
 
-- [ ] Asignación de instructor a un expediente (rol `RESPONSABLE`) — cambia estado a `ASIGNADO`
-- [ ] Registro de trámites según el flujo, con `tipo_tramite`, resultado y observaciones
-- [ ] Cada trámite guarda **quién** lo hizo, **cuándo** y el **resultado** (enlaza con auditoría, §8)
-- [ ] Cambio de estado del expediente asociado a cada trámite
-- [ ] Regla de negocio: **un instructor solo puede tramitar expedientes asignados a él** (validado en backend)
-- [ ] Notificación al interesado en su `datos_contacto.idioma_notificacion`
-- [ ] Sección **Tramitación** visible en el detalle del expediente (histórico de trámites + instructor)
-- [ ] Endpoints REST (`/api/v1/expedientes/{id}/tramites`, asignación) documentados en Swagger
-- [ ] Pruebas: la regla "instructor no asignado no puede tramitar" (empezar por la prueba, luego el código)
+- [x] Asignación de instructor a un expediente (rol `RESPONSABLE`) — cambia estado a `ASIGNADO` — 2026-07-29:
+  `PUT /api/v1/expedientes/{id}/instructor`, transaccional (asigna + cambia estado + deja el trámite
+  `ASIGNACION`); valida que el destinatario sea un instructor **activo** (409 si no). `GET /api/v1/instructores`
+  alimenta el desplegable, con el mismo filtro de rol
+- [x] Registro de trámites según el flujo, con `tipo_tramite`, resultado y observaciones — 2026-07-29:
+  `POST /api/v1/expedientes/{id}/tramites`
+- [x] Cada trámite guarda **quién** lo hizo, **cuándo** y el **resultado** — 2026-07-29: autor del JWT y fecha
+  del reloj del servidor, nunca del cuerpo de la petición; `@Auditable(accion="TRAMITE")` deja además la traza
+  en `auditoria`
+- [x] Cambio de estado del expediente asociado a cada trámite — 2026-07-29: `REGISTRO`→REGISTRADO,
+  `REVISION`/`PROPUESTA`→EN_REVISION, `RESOLUCION`→RESUELTO (+ sella `fecha_resolucion`), `NOTIFICACION`→sin cambio
+- [x] Regla de negocio: **un instructor solo puede tramitar expedientes asignados a él** (validado en backend) —
+  2026-07-29: doble capa — `@PreAuthorize` filtra por rol, el servicio filtra por dato. Probada en el clúster:
+  `instructor1` (asignado) 201, `instructor2` (no asignado) 403 con el motivo concreto en es y en eu
+- [x] Sección **Tramitación** visible en el detalle del expediente (histórico de trámites + instructor) —
+  2026-07-29: 5.ª pestaña, línea de tiempo con quién/cuándo/resultado + formulario de registro y de asignación,
+  ambos condicionados al rol
+- [x] Endpoints REST documentados en Swagger — 2026-07-29: 4 endpoints con `@Operation`/`@ApiResponses`
+  (incluidos 403/404/409 y qué significa cada uno). Tabla en [docs/arquitectura.md](docs/arquitectura.md)
+- [x] Pruebas: la regla "instructor no asignado no puede tramitar" (empezar por la prueba, luego el código) —
+  2026-07-29: **backend 107** (era 52) y **frontend 26** (era 16)
+- [x] **Extra — bug de i18n cazado en el clúster (2026-07-29).** Las claves nuevas se añadieron a
+  `messages_es`/`messages_eu` pero no al bundle raíz `messages.properties`, que es el fallback cuando la
+  petición no manda `Accept-Language`. Síntoma: el usuario recibía `tramite.resolucion.rol` en vez del mensaje.
+  Ninguna prueba lo veía, porque las excepciones llevan la clave, no el texto. Corregido + `MessagesParidadTest`,
+  que falla si los tres bundles dejan de tener exactamente las mismas claves
+
+- [ ] Notificación al interesado en su `datos_contacto.idioma_notificacion` — **NO hecho, movido a Fase 3.**
+  En Fase 1 el trámite `NOTIFICACION` se **registra** y deja traza, pero no se genera ni se envía nada. La
+  emisión por canal (`EMAIL`/`SMS`/`POSTAL`) y en el idioma del interesado es literalmente el objetivo de la
+  Fase 3; hacerla aquí habría sido duplicar ese trabajo. Es la única casilla de la Fase 1 que queda abierta
 
 ---
 

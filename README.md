@@ -4,7 +4,8 @@
 
 Aplicación web interna para la gestión y tramitación de expedientes de ayudas de carácter social (arts. 351–362 y 373 del TRLGSS).
 
-> **Estado:** Fase 0 (MVP) completada. Foco actual: aprender **Docker + Kubernetes** desplegando la app en un clúster local — ver [guía paso a paso](docs/docker-k8s/kubernetes-aprendizaje.md).
+> **Estado:** Fase 0 (MVP) y **Fase K8s** completadas; **Fase 1 — Tramitación** completada (2026-07-29).
+> El despliegue en Kubernetes está en [`k8s/`](k8s/) con su [guía paso a paso](docs/docker-k8s/kubernetes-aprendizaje.md).
 > El repo sigue **Spec-Driven Development**: la fuente de verdad es [spec.md](spec.md) (memoria) + [plan.md](plan.md) (trabajo).
 
 ---
@@ -77,11 +78,11 @@ Aplicación: http://localhost:5173
 ## Pruebas
 
 ```bash
-# Backend — JUnit 5 + Mockito + @WebMvcTest + @JdbcTest con H2 (52 pruebas)
+# Backend — JUnit 5 + Mockito + @WebMvcTest + @JdbcTest con H2 (104 pruebas)
 cd backend
 mvn test
 
-# Frontend — Vitest + Testing Library (16 pruebas)
+# Frontend — Vitest + Testing Library (26 pruebas)
 cd frontend
 npm test -- --run
 ```
@@ -101,7 +102,7 @@ ayudas-gv/
 │       │   ├── config/            # SecurityConfig, OpenApiConfig
 │       │   ├── auth/              # JWT, login (Semana 2)
 │       │   ├── expedientes/       # Búsqueda y consulta por secciones (Semanas 4-5)
-│       │   ├── tramitacion/       # Trámites (Fase 1, pendiente)
+│       │   ├── tramitacion/       # Trámites y asignación de instructor (Fase 1)
 │       │   └── commons/           # GlobalExceptionHandler + auditoría AOP + correlation-id (Semana 6)
 │       └── resources/
 │           ├── application.yml         # Config base (usa variables de entorno)
@@ -142,8 +143,8 @@ ayudas-gv/
 | Fase | Objetivo | Estado |
 |------|----------|--------|
 | **Fase 0 — MVP** | Autenticación + búsqueda + consulta de expedientes por secciones | Completada (S1–S6) |
-| **Fase K8s** | Desplegar y operar la app en Kubernetes (learning track) | En curso |
-| Fase 1 — Tramitación | Registro de trámites y cambio de estado | Pendiente |
+| **Fase K8s** | Desplegar y operar la app en Kubernetes (learning track) | Completada (2026-07-29) |
+| **Fase 1 — Tramitación** | Registro de trámites, asignación de instructor y cambio de estado | Completada (2026-07-29) |
 | Fase 2 — Alta | Creación de nuevos expedientes y solicitudes | Pendiente |
 | Fase 3 — Resolución | Generación de documentos y notificaciones | Pendiente |
 | Fase 4 — Reglas de negocio | Validación de requisitos y cálculo de cuantías | Pendiente |
@@ -189,7 +190,8 @@ La aplicación funciona íntegramente en castellano y euskera:
 | Usuario | Contraseña | Rol |
 |---------|-----------|-----|
 | `admin` | `admin123` | ADMIN + RESPONSABLE |
-| `instructor1` | `admin123` | INSTRUCTOR |
+| `instructor1` | `admin123` | INSTRUCTOR (tiene expedientes asignados) |
+| `instructor2` | `admin123` | INSTRUCTOR (sin expedientes: sirve para probar el 403 de la regla) |
 | `consultor1` | `admin123` | CONSULTOR |
 
 ---

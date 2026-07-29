@@ -46,7 +46,12 @@ public class SecurityConfig {
         "/v3/api-docs/**",
         "/swagger-ui/**",
         "/swagger-ui.html",
-        "/v1/auth/login"   // el endpoint de login debe ser público — aquí es donde se obtiene el token
+        "/v1/auth/login",          // el endpoint de login debe ser público — aquí es donde se obtiene el token
+        // Probes de Kubernetes: las lanza el kubelet del nodo, que no tiene ni puede tener un JWT.
+        // Solo se abren los dos grupos de salud (liveness/readiness) y devuelven {"status":"UP"}
+        // sin detalles (management.endpoint.health.show-details=never), así que no filtran nada.
+        "/actuator/health",
+        "/actuator/health/**"
     };
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;

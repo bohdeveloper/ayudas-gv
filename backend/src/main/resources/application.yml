@@ -23,6 +23,37 @@ server:
   servlet:
     context-path: /api
 
+# Actuator — solo lo imprescindible para las probes de Kubernetes.
+# Con el context-path /api, las URLs efectivas son:
+#   /api/actuator/health/liveness   → ¿el proceso sigue vivo? (si falla, K8s reinicia el contenedor)
+#   /api/actuator/health/readiness  → ¿puede atender tráfico? (si falla, K8s lo saca del Service)
+# Se exponen SOLO esos dos grupos: nada de /env, /beans o /configprops, que filtrarían
+# configuración interna (invariante 9 de spec.md: nunca datos sensibles fuera).
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      probes:
+        enabled: true       # crea los grupos liveness/readiness
+      show-details: never   # el detalle (estado de la BD) no se expone públicamente
+      group:
+        # readiness = "¿puedo atender peticiones?" → sí incluye la BD: sin PostgreSQL
+        # el backend no puede responder nada útil, así que K8s debe sacarlo del Service.
+        readiness:
+          include: readinessState,db
+        # liveness = "¿sigo vivo?" → NUNCA incluye dependencias externas. Si la BD cae,
+        # reiniciar el backend no arregla nada; solo provocaría un bucle de reinicios.
+        liveness:
+          include: livenessState
+  health:
+    livenessstate:
+      enabled: true
+    readinessstate:
+      enabled: true
+
 springdoc:
   api-docs:
     path: /v3/api-docs

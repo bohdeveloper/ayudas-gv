@@ -1,11 +1,18 @@
 # Backend Spring Boot: Deployment (imagen local de minikube) + Service ClusterIP 'backend'.
 # envFrom inyecta el ConfigMap + el Secret como variables de entorno de una sola vez.
-# Probes TCP al 8080 con initialDelaySeconds generoso: Spring Boot + Flyway tardan en arrancar.
+#
+# Bloque 4 (ejercicio 6.2): las probes TCP originales solo comprobaban "el puerto 8080 está
+# abierto" — Tomcat abre el puerto antes de que la app esté lista, así que daban por bueno un
+# backend que todavía no podía responder. Ahora son httpGet contra Actuator:
+#   readiness → /api/actuator/health/readiness  (incluye la BD: sin postgres, fuera del Service)
+#   liveness  → /api/actuator/health/liveness   (solo el proceso: reiniciar no arregla una BD caída)
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: backend
   namespace: ayudas-dev
+  annotations:
+    kubernetes.io/change-cause: "Bloque 4: probes httpGet contra Actuator (antes eran TCP)"
 spec:
   replicas: 1
   selector:
@@ -18,21 +25,36 @@ spec:
     spec:
       containers:
         - name: backend
-          image: ayudas-gv-backend:1.0
+          image: ayudas-gv-backend:2.2
           imagePullPolicy: IfNotPresent      # usa la imagen local de minikube (no la busca en internet)
           ports:
             - containerPort: 8080
           envFrom:
             - configMapRef: { name: backend-config }
             - secretRef: { name: backend-secret }
+          # startupProbe: mientras esta no pase, K8s NO ejecuta liveness ni readiness.
+          # Es la forma correcta de dar margen a un arranque lento (Spring Boot + Flyway)
+          # sin tener que inflar el initialDelaySeconds de la liveness — que en régimen
+          # normal queremos agresivo. 30 intentos × 5 s = hasta 150 s para arrancar.
+          startupProbe:
+            httpGet: { path: /api/actuator/health/liveness, port: 8080 }
+            periodSeconds: 5
+            failureThreshold: 30
+          # readiness: ¿puede atender tráfico? Si falla, el Pod sale de los endpoints del
+          # Service (deja de recibir peticiones) pero NO se reinicia.
           readinessProbe:
-            tcpSocket: { port: 8080 }
-            initialDelaySeconds: 30           # Spring Boot + Flyway tardan en arrancar
+            httpGet: { path: /api/actuator/health/readiness, port: 8080 }
             periodSeconds: 10
+            failureThreshold: 3
+          # liveness: ¿sigue vivo el proceso? Si falla, K8s MATA y recrea el contenedor.
           livenessProbe:
-            tcpSocket: { port: 8080 }
-            initialDelaySeconds: 60
+            httpGet: { path: /api/actuator/health/liveness, port: 8080 }
             periodSeconds: 15
+            failureThreshold: 3
+          # Ejercicio 6.5 — requests = lo que el planificador reserva para elegir nodo;
+          # limits = el techo duro. Superar el limit de MEMORIA → el kernel mata el proceso
+          # (OOMKilled, el Pod se reinicia). Superar el de CPU → NO mata nada: el kernel
+          # simplemente frena al contenedor (throttling), la app va lenta pero sigue viva.
           resources:
             requests: { cpu: "250m", memory: "384Mi" }
             limits:   { cpu: "1",    memory: "768Mi" }

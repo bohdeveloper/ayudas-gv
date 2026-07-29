@@ -1,0 +1,250 @@
+# ============================================================================
+# Segundo entorno: namespace 'ayudas-staging' (Bloque 4, ejercicio 6.1)
+#
+# Es el MISMO stack que k8s/*.yaml, con los mismos nombres de objeto
+# (postgres, backend, frontend) pero en otro namespace. Ese es justamente el
+# ejercicio: demostrar que un Namespace es una frontera real, no una etiqueta.
+#
+# QUÉ CAMBIA respecto a ayudas-dev (y solo esto):
+#   1. namespace: ayudas-staging en todos los objetos
+#   2. ConfigMap  → JWT_EXPIRATION de 1 hora (en dev son 24 h) + APP_ENTORNO
+#   3. Secret     → contraseña de BD distinta (prueba de que son dos BD separadas)
+#   4. Ingress    → responde al host staging.ayudas.local (el de dev es catch-all)
+#
+# CÓMO SE COMPRUEBA QUE ESTÁN AISLADOS:
+#   kubectl -n ayudas-dev     exec deploy/backend -- getent hosts postgres
+#   kubectl -n ayudas-staging exec deploy/backend -- getent hosts postgres
+#   → dos IPs distintas. El mismo nombre 'postgres' resuelve a una BD diferente en
+#     cada namespace, porque el DNS interno de K8s es <servicio>.<namespace>.svc.cluster.local
+#     y dentro de un namespace el sufijo se sobreentiende.
+#
+# NOTA DE OFICIO: en un proyecto real este fichero NO se copia y pega. Se usaría
+# Kustomize (base + overlays) o Helm (un chart con values-dev/values-staging) para
+# que solo exista una definición y los entornos sean parches encima. Aquí está
+# duplicado a propósito: se ve entero de un vistazo y es lo que se aprende primero.
+# ============================================================================
+
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ayudas-staging
+---
+# ─── Configuración: lo único que de verdad distingue a los dos entornos ─────────
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: backend-config
+  namespace: ayudas-staging
+data:
+  DB_URL: jdbc:postgresql://postgres:5432/ayudas_gv
+  SERVER_PORT: "8080"
+  JWT_EXPIRATION: "3600000"    # 1 hora — en dev son 86400000 (24 h)
+  APP_ENTORNO: staging         # marca visible para no confundir entornos en una demo
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: backend-secret
+  namespace: ayudas-staging
+type: Opaque
+stringData:
+  DB_USER: ayudasgv
+  DB_PASSWORD: staging-distinta   # distinta a la de dev: si un Pod se conectara a la BD
+  JWT_SECRET: clave-secreta-solo-para-staging-no-usar-en-produccion
+---
+# ─── PostgreSQL ────────────────────────────────────────────────────────────────
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: postgres-pvc
+  namespace: ayudas-staging
+spec:
+  # Mismo nombre que el PVC de dev, pero es OTRO disco: los PVC son objetos
+  # de namespace, no globales. Ahí está la independencia de los datos.
+  accessModes: ["ReadWriteOncePod"]
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: ayudas-staging
+  annotations:
+    kubernetes.io/change-cause: "Bloque 4: alta del entorno staging"
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate       # mismo motivo que en dev: nunca dos postmasters sobre el mismo disco
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:15-alpine
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: ayudas_gv
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef: { name: backend-secret, key: DB_USER }
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef: { name: backend-secret, key: DB_PASSWORD }
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/postgresql/data
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "ayudasgv", "-d", "ayudas_gv"]
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests: { cpu: "100m", memory: "128Mi" }
+            limits:   { cpu: "500m", memory: "512Mi" }
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: postgres-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: ayudas-staging
+spec:
+  selector:
+    app: postgres
+  ports:
+    - port: 5432
+      targetPort: 5432
+---
+# ─── Backend ───────────────────────────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: ayudas-staging
+  annotations:
+    kubernetes.io/change-cause: "Bloque 4: alta del entorno staging"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          image: ayudas-gv-backend:2.2
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          envFrom:
+            - configMapRef: { name: backend-config }
+            - secretRef: { name: backend-secret }
+          startupProbe:
+            httpGet: { path: /api/actuator/health/liveness, port: 8080 }
+            periodSeconds: 5
+            failureThreshold: 30
+          readinessProbe:
+            httpGet: { path: /api/actuator/health/readiness, port: 8080 }
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            httpGet: { path: /api/actuator/health/liveness, port: 8080 }
+            periodSeconds: 15
+            failureThreshold: 3
+          resources:
+            requests: { cpu: "250m", memory: "384Mi" }
+            limits:   { cpu: "1",    memory: "768Mi" }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: ayudas-staging
+spec:
+  selector:
+    app: backend
+  ports:
+    - port: 8080
+      targetPort: 8080
+---
+# ─── Frontend ──────────────────────────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: ayudas-staging
+  annotations:
+    kubernetes.io/change-cause: "Bloque 4: alta del entorno staging"
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+        - name: frontend
+          image: ayudas-gv-frontend:2.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+          readinessProbe:
+            httpGet: { path: /, port: 80 }
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests: { cpu: "10m",  memory: "32Mi" }
+            limits:   { cpu: "200m", memory: "128Mi" }
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  namespace: ayudas-staging
+spec:
+  selector:
+    app: frontend
+  ports:
+    - port: 80
+      targetPort: 80
+---
+# ─── Ingress ───────────────────────────────────────────────────────────────────
+# El Ingress de dev no tiene 'host' (atiende cualquiera). Este sí: el controlador
+# ingress-nginx da prioridad a la regla con host concreto, así que ambos conviven.
+# Para probarlo hay que resolver el nombre a la IP de minikube:
+#   minikube ip                          → p.ej. 192.168.49.2
+#   añadir a C:\Windows\System32\drivers\etc\hosts:  192.168.49.2  staging.ayudas.local
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ayudas-ingress
+  namespace: ayudas-staging
+spec:
+  rules:
+    - host: staging.ayudas.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend
+                port: { number: 80 }

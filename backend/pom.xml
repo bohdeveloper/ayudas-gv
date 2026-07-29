@@ -98,6 +98,15 @@
             <artifactId>spring-boot-starter-aop</artifactId>
         </dependency>
 
+        <!-- Actuator — endpoints de salud para las probes de Kubernetes (Bloque 4, ejercicio 6.2).
+             Sustituye las probes TCP (que solo comprueban "el puerto está abierto") por
+             /actuator/health/liveness y /readiness, que sí saben si la app está viva y si
+             sus dependencias (BD) responden. -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+
         <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>

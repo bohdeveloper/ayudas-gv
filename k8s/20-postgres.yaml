@@ -1,13 +1,21 @@
 # PostgreSQL: PVC (persistencia) + Deployment (1 réplica) + Service ClusterIP 'postgres'.
 # El nombre del Service ('postgres') es el hostname que resuelve el backend por DNS.
 # Una sola réplica: en producción sería un StatefulSet (PVC ReadWriteOnce no se replica).
+#
+# ENDURECIDO en el Bloque 4 tras el incidente del 27/07 (ver plan.md, Bloque 3): al escalar
+# a 2 réplicas, ambos Pods montaron el MISMO disco y dos postmasters escribieron a la vez
+# sobre el mismo directorio de datos durante ~76 s. Las dos líneas de defensa están abajo:
+#   1. accessModes: ReadWriteOncePod  → el disco solo lo puede montar UN Pod (no un nodo)
+#   2. strategy: Recreate             → al actualizar, primero mata el viejo y luego crea el nuevo
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: postgres-pvc
   namespace: ayudas-dev
 spec:
-  accessModes: ["ReadWriteOnce"]
+  # ReadWriteOnce limita el montaje a UN NODO, no a un Pod: en un clúster de un solo nodo
+  # (minikube) eso no impide nada. ReadWriteOncePod sí: un único Pod en todo el clúster.
+  accessModes: ["ReadWriteOncePod"]
   resources:
     requests:
       storage: 1Gi
@@ -17,8 +25,17 @@ kind: Deployment
 metadata:
   name: postgres
   namespace: ayudas-dev
+  annotations:
+    # Aparece en 'kubectl rollout history' — sin esto, todas las revisiones salen con <none>
+    kubernetes.io/change-cause: "Bloque 4: strategy Recreate + PVC ReadWriteOncePod"
 spec:
   replicas: 1
+  # Recreate en vez del RollingUpdate por defecto: con RollingUpdate, al cambiar la imagen
+  # de postgres K8s levantaría el Pod nuevo ANTES de matar el viejo, y los dos querrían el
+  # mismo disco a la vez — exactamente el fallo del 27/07. Recreate acepta unos segundos de
+  # corte a cambio de garantizar que nunca hay dos postmasters sobre el mismo directorio.
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: postgres
@@ -49,6 +66,9 @@ spec:
               command: ["pg_isready", "-U", "ayudasgv", "-d", "ayudas_gv"]
             initialDelaySeconds: 5
             periodSeconds: 10
+          resources:
+            requests: { cpu: "100m", memory: "128Mi" }
+            limits:   { cpu: "500m", memory: "512Mi" }
       volumes:
         - name: data
           persistentVolumeClaim:

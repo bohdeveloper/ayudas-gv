@@ -5,6 +5,8 @@ kind: Deployment
 metadata:
   name: frontend
   namespace: ayudas-dev
+  annotations:
+    kubernetes.io/change-cause: "Bloque 4: resources requests/limits"
 spec:
   replicas: 1
   selector:
@@ -17,7 +19,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: ayudas-gv-frontend:1.0
+          image: ayudas-gv-frontend:2.0
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 80
@@ -25,6 +27,11 @@ spec:
             httpGet: { path: /, port: 80 }
             initialDelaySeconds: 5
             periodSeconds: 10
+          # Nginx sirviendo ficheros estáticos gasta muy poco: pedir de más aquí
+          # solo serviría para que el planificador no encontrara sitio.
+          resources:
+            requests: { cpu: "10m",  memory: "32Mi" }
+            limits:   { cpu: "200m", memory: "128Mi" }
 ---
 apiVersion: v1
 kind: Service

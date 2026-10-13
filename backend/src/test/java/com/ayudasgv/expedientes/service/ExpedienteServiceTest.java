@@ -4,7 +4,6 @@ import com.ayudasgv.commons.exception.RecursoNoEncontradoException;
 import com.ayudasgv.expedientes.dto.ExpedienteBusquedaCriteria;
 import com.ayudasgv.expedientes.dto.PageResponseDto;
 import com.ayudasgv.expedientes.dto.SeccionAyudaDto;
-import com.ayudasgv.expedientes.dto.SeccionContactoDto;
 import com.ayudasgv.expedientes.dto.SeccionGeneralesDto;
 import com.ayudasgv.expedientes.dto.SeccionInteresadosDto;
 import com.ayudasgv.expedientes.repository.ExpedienteRepository;

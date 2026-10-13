@@ -10,7 +10,6 @@ import com.ayudasgv.tramitacion.dto.NuevoTramiteRequest;
 import com.ayudasgv.tramitacion.dto.SeccionTramitacionDto;
 import com.ayudasgv.tramitacion.dto.TramiteDto;
 import com.ayudasgv.tramitacion.repository.TramiteRepository;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

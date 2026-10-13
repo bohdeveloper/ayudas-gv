@@ -44,6 +44,7 @@ dominando este stack; parte del valor del repo es didáctico.
 | Acceso a datos | `NamedParameterJdbcTemplate` — **SQL explícito, sin JPA/Hibernate** |
 | Base de datos | PostgreSQL 15 + Flyway (migraciones versionadas) |
 | API docs | Swagger UI (springdoc-openapi 2.7.0) |
+| IA (planificado, Fase IA) | Spring AI + Anthropic Claude + PGvector (RAG sobre normativa) — ver §3.11 |
 | Infra local | Docker + Docker Compose (postgres + backend + frontend) |
 | Orquestación | Kubernetes (minikube) — manifiestos en `k8s/`, segundo entorno en `k8s/staging/` |
 | Salud / probes | Spring Boot Actuator — `health/liveness` y `health/readiness` (públicos, sin detalle) |
@@ -138,6 +139,12 @@ Decisiones YA tomadas que no se reabren sin decisión explícita del usuario:
    nunca datos sensibles en logs.
 10. **Pruebas como entregable**, no como extra: objetivo orientativo ≥ 70 % en capa de servicios,
     priorizando reglas de negocio, validaciones y autorización.
+11. **IA con Spring AI (decidido 2026-10-13, Fase IA en plan.md).** Proveedor LLM: Anthropic Claude; vector
+    store: PGvector sobre el mismo PostgreSQL (esquema por Flyway, SQL explícito sigue siendo la norma: Spring AI
+    usa JDBC, no JPA). La v1 es **solo RAG sobre normativa pública**; el LLM no accede a datos de expedientes.
+    Cualquier acceso del LLM a datos de personas (tools/function calling) requiere decisión explícita, pasar por la
+    autorización por rol en backend y `/security-review`. La API key va por variable de entorno/Secret, nunca en
+    el repo; las respuestas siguen el idioma de la petición (`Accept-Language`) y citan fuentes.
 
 ---
 

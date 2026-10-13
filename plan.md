@@ -15,6 +15,7 @@
 | **Fase 0 — MVP** (S1–S6) | COMPLETADA (Hito M6, 2026-07-17) |
 | **Fase K8s — Docker + Kubernetes (learning track)** | COMPLETADA (2026-07-29, Bloques 0–4) |
 | **Fase 1 — Tramitación** | COMPLETADA (2026-07-29) |
+| **Fase IA — Spring AI (asistente RAG sobre normativa)** | PENDIENTE (planificada 2026-10-13; posición respecto a Fase 2 por decidir) |
 | Fase 2 — Alta y registro de solicitudes | PENDIENTE — **siguiente** |
 | Fase 3 — Resolución y notificaciones | PENDIENTE |
 | Fase 4 — Reglas de negocio y cálculo de cuantías | PENDIENTE |
@@ -138,6 +139,59 @@ Ingress/ConfigMap/Secret/Namespace. Entregable físico: carpeta `k8s/` versionad
   Parte 1 = 10 diagramas Mermaid, Parte 2 = 30 preguntas con respuesta modelo + chuleta. Contenido íntegro de
   ambos; solo se reescribió la cabecera. Enlaces relativos corregidos y referencias actualizadas en
   `README.md`, `spec.md`, `plan.md` e itinerario — sin enlaces rotos
+
+---
+
+## Fase IA — Spring AI: asistente RAG sobre la normativa — PENDIENTE (planificada 2026-10-13)
+
+> **Objetivo:** que un usuario interno pueda preguntar dudas sobre las 3 ayudas y obtener una respuesta
+> **fundamentada en la normativa (TRLGSS arts. 351–362 y 373) con las fuentes citadas**, en es/eu.
+> **Doble propósito:** aprender Spring AI sobre un caso real y dejar una función demostrable para
+> portfolio/CV ("Spring AI + RAG + PGvector + Anthropic Claude").
+> **Decisiones del usuario (2026-10-13):** proveedor Anthropic Claude · vector store PGvector ·
+> alcance v1 solo RAG sobre normativa (sin tools sobre expedientes) · secuencia: tras K8s, antes de Fase 1 — ambas ya cerradas el 2026-07-29, por lo que
+> queda por decidir si va antes o después de la Fase 2.
+> Registradas en [spec.md](spec.md) §3 (invariante 11) y §2.
+
+**Punto abierto a cerrar en el Bloque 0:** Anthropic **no ofrece modelo de embeddings**, así que el RAG
+necesita un `EmbeddingModel` aparte. Opciones: ONNX local multilingüe con `spring-ai-starter-model-transformers`
+(sin clave extra, datos en local; recomendado por defecto), Ollama (`nomic-embed-text`/`bge-m3`) o un
+proveedor externo. Validar calidad en euskera con unas preguntas de prueba antes de fijarlo.
+
+### Bloque 0 — Fundamentos y preparación
+- [ ] Hacer el curso de Anthropic Academy / leer la doc oficial de Spring AI (ChatClient, advisors, RAG) y anotar dudas
+- [ ] Fijar versión de Spring AI compatible con Spring Boot 3.5.x (BOM `spring-ai-bom`) y modelo de embeddings
+- [ ] Reunir la **fuente normativa** en texto (arts. 351–362 y 373 TRLGSS, es y eu si existe) en `docs/normativa/`
+- [ ] Gestión de la API key de Anthropic: variable de entorno `ANTHROPIC_API_KEY` (compose + futuro Secret), nunca en el repo
+
+### Bloque 1 — Chat básico con `ChatClient`
+- [ ] Dependencia `spring-ai-starter-model-anthropic` + configuración en `application.yml` (modelo, temperatura, max-tokens)
+- [ ] Servicio `asistente` (paquete propio, frontera limpia) con prompt de sistema: solo normativa, citar artículos, responder en el idioma pedido
+- [ ] `POST /api/v1/asistente/consultas` protegido (rol `CONSULTOR` o superior), validación de entrada y límite de longitud
+- [ ] Prueba con `ChatModel` simulado (sin llamar a la API real) y documentación en Swagger
+
+### Bloque 2 — RAG con PGvector
+- [ ] Cambiar la imagen de `postgres:15` a `pgvector/pgvector:pg15` en `docker-compose.yml`, `k8s/20-postgres.yaml` y `k8s/staging/ayudas-staging.yaml`
+- [ ] Migración Flyway (siguiente número libre tras V6): `CREATE EXTENSION vector` + tabla de embeddings (esquema gestionado por Flyway, no por `initialize-schema`)
+- [ ] Pipeline de ingesta: lector de `docs/normativa/` → `TokenTextSplitter` → `VectorStore.add` (idempotente, ejecutable por perfil/endpoint ADMIN)
+- [ ] `QuestionAnswerAdvisor` con `VectorStore` + `topK`/umbral de similitud; respuesta con **fuentes** (artículo/fragmento)
+- [ ] Comportamiento ante "no hay información en la normativa": respuesta honesta, sin inventar
+- [ ] Pruebas: ingesta + recuperación contra PGvector (Testcontainers o equivalente) y casos de preguntas es/eu
+
+### Bloque 3 — Integración, calidad y cierre
+- [ ] Panel de chat en el frontend (i18n es/eu, sistema de diseño existente, iconos SVG propios, estado de carga y errores)
+- [ ] Auditoría de cada consulta en `auditoria` (usuario, idioma, correlation-id; **sin** volcar datos personales en logs)
+- [ ] Límites de coste/abuso: rate limiting básico por usuario y tope de tokens
+- [ ] Evaluación sencilla: batería de ~15 preguntas con respuesta esperada y comprobación manual de citas
+- [ ] `/code-review` + `/security-review` (endpoint nuevo, API key, entrada de usuario hacia un LLM) y verificación end-to-end
+- [ ] Documentar en README (feature + stack) y `docs/arquitectura.md`; redactar texto breve para CV/LinkedIn con lo que hay de verdad
+
+**Hecho cuando:** desde la UI, un usuario autenticado pregunta p. ej. "¿qué grado de discapacidad exige la
+asignación económica?" y recibe una respuesta correcta con artículos citados, en el idioma elegido, con la
+consulta auditada; y puedes explicar de memoria el flujo ingesta → embeddings → búsqueda → prompt → respuesta.
+
+**Fuera de alcance v1:** function calling sobre expedientes, MCP server, memoria de conversación persistente.
+Candidatos para una v2 una vez cerrada la Fase 4 (reglas de negocio), cuando haya más lógica que exponer.
 
 ---
 

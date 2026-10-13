@@ -218,6 +218,10 @@ imágenes de Windows (si no, el Pod se queda en `ImagePullBackOff`).
 
 ### Deuda aceptada deliberadamente
 
+- **Spring Boot 3.5.x sin soporte OSS desde 2026-06-30** (revisado 2026-10-13; parche 3.5.16 aplicado). Migrar a
+  Boot 4 es un cambio mayor y se aborda como tarea propia; la Fase IA debe elegir una versión de Spring AI que
+  soporte Boot 3.5.
+
 - `JWT_SECRET` de ejemplo en `docker-compose.yml` y en los manifiestos de `k8s/` (proyecto formativo;
   en producción → Secret gestionado externamente, tipo Vault o Sealed Secrets).
 - `k8s/staging/` duplica los manifiestos de `k8s/` en vez de parchearlos. Deliberado por didáctica: en un

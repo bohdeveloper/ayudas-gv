@@ -15,12 +15,13 @@
 | **Fase 0 — MVP** (S1–S6) | COMPLETADA (Hito M6, 2026-07-17) |
 | **Fase K8s — Docker + Kubernetes (learning track)** | COMPLETADA (2026-07-29, Bloques 0–4) |
 | **Fase 1 — Tramitación** | COMPLETADA (2026-07-29) |
-| **Fase IA — Spring AI (asistente RAG sobre normativa)** | PENDIENTE (planificada 2026-10-13; posición respecto a Fase 2 por decidir) |
-| Fase 2 — Alta y registro de solicitudes | PENDIENTE — **siguiente** |
+| **Fase IA — Spring AI (asistente RAG sobre normativa)** | PENDIENTE — **siguiente** (decidido 2026-10-13: tras K8s y antes de Fase 1; Fase 1 ya cerrada, así que va antes de la Fase 2) |
+| Fase 2 — Alta y registro de solicitudes | PENDIENTE (tras Fase IA) |
 | Fase 3 — Resolución y notificaciones | PENDIENTE |
 | Fase 4 — Reglas de negocio y cálculo de cuantías | PENDIENTE |
 
-**Próxima sesión — Fase 2 (alta y registro de solicitudes).** Punto de entrada: formulario de alta con
+**Próxima sesión — Fase IA (Spring AI), Bloque 0; después la Fase 2 (alta y registro de solicitudes).**
+Punto de entrada de la Fase 2: formulario de alta con
 validación en cliente y servidor, reutilizando el sistema de diseño y los patrones de la sección Tramitación
 (formularios condicionados por rol, errores del backend ya traducidos). Antes de empezar, decidir con el
 usuario **qué roles pueden dar de alta** — es la única casilla de la Fase 2 sin respuesta.
@@ -149,8 +150,8 @@ Ingress/ConfigMap/Secret/Namespace. Entregable físico: carpeta `k8s/` versionad
 > **Doble propósito:** aprender Spring AI sobre un caso real y dejar una función demostrable para
 > portfolio/CV ("Spring AI + RAG + PGvector + Anthropic Claude").
 > **Decisiones del usuario (2026-10-13):** proveedor Anthropic Claude · vector store PGvector ·
-> alcance v1 solo RAG sobre normativa (sin tools sobre expedientes) · secuencia: tras K8s, antes de Fase 1 — ambas ya cerradas el 2026-07-29, por lo que
-> queda por decidir si va antes o después de la Fase 2.
+> alcance v1 solo RAG sobre normativa (sin tools sobre expedientes) · secuencia: tras K8s, antes de Fase 1 — ambas ya cerradas el 2026-07-29;
+> el usuario confirma el 2026-10-13 que la Fase IA va antes de la Fase 2.
 > Registradas en [spec.md](spec.md) §3 (invariante 11) y §2.
 
 **Punto abierto a cerrar en el Bloque 0:** Anthropic **no ofrece modelo de embeddings**, así que el RAG

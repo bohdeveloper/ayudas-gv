@@ -5,12 +5,12 @@ import com.ayudasgv.auth.dto.LoginResponse;
 import com.ayudasgv.auth.security.JwtProvider;
 import com.ayudasgv.auth.service.AuthService;
 import com.ayudasgv.commons.exception.GlobalExceptionHandler;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import tools.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.context.MessageSourceAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
@@ -64,6 +64,18 @@ class AuthControllerWebMvcTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.status").value(400))
                 .andExpect(jsonPath("$.details").isArray());
+    }
+
+    @Test
+    void login_conJsonMalFormado_devuelve400YNo500() throws Exception {
+        // Cuerpo ilegible = error del cliente. Antes caía en el handler genérico como 500.
+        mockMvc.perform(post("/v1/auth/login")
+                        .header("Accept-Language", "eu")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"username\": \"admin\", "))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.message").value("Eskaeraren gorputza ez da baliozko JSON bat"));
     }
 
     @Test

@@ -8,6 +8,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
@@ -118,6 +119,19 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleAccessDenied(AccessDeniedException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
                 .body(new ErrorResponse(403, "Forbidden", resolve("auth.access.denied")));
+    }
+
+    /**
+     * Cuerpo de la petición ilegible (JSON mal formado, tipos incompatibles, basura tras el objeto)
+     * → 400 Bad Request. Sin este handler caía en el fallback genérico como 500, culpando al servidor
+     * de un error del cliente. Con Jackson 3 (Spring Boot 4) es más frecuente: rechaza por defecto,
+     * por ejemplo, contenido extra después del objeto JSON. No se devuelve el detalle del parser.
+     */
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ErrorResponse> handleUnreadableBody(HttpMessageNotReadableException ex) {
+        log.warn("Cuerpo de la petición ilegible: {}", ex.getMostSpecificCause().getClass().getSimpleName());
+        return ResponseEntity.badRequest()
+                .body(new ErrorResponse(400, "Bad Request", resolve("error.request.malformed")));
     }
 
     /**

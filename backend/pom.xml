@@ -7,7 +7,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.16</version>
+        <version>4.1.1</version>
         <relativePath/>
     </parent>
 
@@ -19,16 +19,16 @@
 
     <properties>
         <java.version>21</java.version>
-        <jjwt.version>0.12.5</jjwt.version>
-        <springdoc.version>2.7.0</springdoc.version>
+        <jjwt.version>0.13.0</jjwt.version>
+        <springdoc.version>3.1.1</springdoc.version>
     </properties>
 
     <dependencies>
 
-        <!-- Web -->
+        <!-- Web (Spring MVC). En Boot 4 el starter se llama webmvc; el antiguo "web" queda deprecado -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <artifactId>spring-boot-starter-webmvc</artifactId>
         </dependency>
 
         <!-- Security -->
@@ -50,10 +50,11 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- Flyway — migraciones versionadas -->
+        <!-- Flyway — migraciones versionadas. En Boot 4 la autoconfiguración vive en su propio
+             módulo: sin este starter, flyway-core suelto ya no migra al arrancar -->
         <dependency>
-            <groupId>org.flywaydb</groupId>
-            <artifactId>flyway-core</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-flyway</artifactId>
         </dependency>
         <dependency>
             <groupId>org.flywaydb</groupId>
@@ -72,9 +73,12 @@
             <version>${jjwt.version}</version>
             <scope>runtime</scope>
         </dependency>
+        <!-- Serializador JSON de jjwt: Gson en vez de jjwt-jackson, que arrastraba Jackson 2 completo
+             junto al Jackson 3 de Boot 4 (dos pilas que parchear). Seguro aquí porque los claims son
+             solo textos y listas de textos (Gson leería los números como Double) -->
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-jackson</artifactId>
+            <artifactId>jjwt-gson</artifactId>
             <version>${jjwt.version}</version>
             <scope>runtime</scope>
         </dependency>
@@ -95,7 +99,7 @@
         <!-- AOP — para auditoría transversal -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-aop</artifactId>
+            <artifactId>spring-boot-starter-aspectj</artifactId>
         </dependency>
 
         <!-- Actuator — endpoints de salud para las probes de Kubernetes (Bloque 4, ejercicio 6.2).
@@ -120,9 +124,26 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- Boot 4 separa los test slices por tecnología: @WebMvcTest y @JdbcTest viven en
+             sus propios módulos (antes venían todos dentro de spring-boot-starter-test) -->
         <dependency>
-            <groupId>org.springframework.security</groupId>
-            <artifactId>spring-security-test</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webmvc-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jdbc-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-flyway-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security-test</artifactId>
             <scope>test</scope>
         </dependency>
 

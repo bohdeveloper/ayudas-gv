@@ -72,7 +72,7 @@ public class SecurityConfig {
      *   punto de referencia estándar en la cadena.
      */
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .csrf(AbstractHttpConfigurer::disable)
             .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -82,7 +82,7 @@ public class SecurityConfig {
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
             // Sin token o con token inválido → 401 (no 403).
-            // Spring Security 6 devuelve 403 para peticiones anónimas por defecto.
+            // Sin formLogin ni httpBasic, Spring Security (6 y 7) responde 403 a las peticiones anónimas.
             // exceptionHandling.authenticationEntryPoint intercepta esos casos y devuelve 401.
             .exceptionHandling(ex -> ex.authenticationEntryPoint(
                 (request, response, authException) ->
@@ -103,7 +103,7 @@ public class SecurityConfig {
      * el número de iteraciones se puede aumentar sin necesidad de re-hashear.
      */
     @Bean
-    public PasswordEncoder passwordEncoder() {
+    PasswordEncoder passwordEncoder() {
         // Strength 10 = 2^10 iteraciones de hashing. Balance seguridad/rendimiento (recomendado).
         return new BCryptPasswordEncoder(10);
     }

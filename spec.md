@@ -27,8 +27,10 @@ dominando este stack; parte del valor del repo es didáctico.
   | `PAGO_NAC` | Pago único por nacimiento o adopción (supuestos específicos) | Pago único | Arts. 351.b, 357–358 |
   | `PARTO_MULT` | Pago único por parto o adopción múltiples | Pago único | Arts. 351.c, 359–360 |
 
-- **Fase actual:** Fase 0 (MVP), **Fase K8s** y **Fase 1 (Tramitación)** completadas (2026-07-29).
-  Siguiente: Fase 2 — alta y registro de solicitudes (ver plan.md).
+- **Estado (2026-10-21):** Fase 0 (MVP), Fase K8s y Fase 1 (Tramitación) completadas; migración a Spring Boot 4
+  hecha. En curso: Etapa 4 (volver a montar el clúster con Boot 4). Siguiente: Etapa 5 (asistente Spring AI).
+  El plan es **una sola secuencia de Etapas** (ver plan.md): las fases del enunciado en su orden original y
+  cada tecnología nueva de una en una.
 - **Repo:** monorepo local `c:\aplic\ayudas_gv` (Git, rama principal `main`).
 
 ---
@@ -40,11 +42,11 @@ dominando este stack; parte del valor del repo es didáctico.
 | Capa | Tecnología |
 |------|-----------|
 | Frontend | React 18 + Vite + TypeScript + react-i18next + Zustand + axios |
-| Backend | Java 21 + Spring Boot 3.5.x + Spring Security + JWT (jjwt 0.12.5) |
+| Backend | Java 21 + Spring Boot 4.1.1 (Spring Framework 7, Jackson 3) + Spring Security 7 + JWT (jjwt 0.13.0) |
 | Acceso a datos | `NamedParameterJdbcTemplate` — **SQL explícito, sin JPA/Hibernate** |
 | Base de datos | PostgreSQL 15 + Flyway (migraciones versionadas) |
-| API docs | Swagger UI (springdoc-openapi 2.7.0) |
-| IA (planificado, Fase IA) | Spring AI + Anthropic Claude + PGvector (RAG sobre normativa) — ver §3.11 |
+| API docs | Swagger UI (springdoc-openapi 3.1.1) |
+| IA (planificado, Etapa 5) | Spring AI 2.0.x + Anthropic Claude + PGvector (RAG) + servidor MCP — ver §3.11 |
 | Infra local | Docker + Docker Compose (postgres + backend + frontend) |
 | Orquestación | Kubernetes (minikube) — manifiestos en `k8s/`, segundo entorno en `k8s/staging/` |
 | Salud / probes | Spring Boot Actuator — `health/liveness` y `health/readiness` (públicos, sin detalle) |
@@ -139,12 +141,20 @@ Decisiones YA tomadas que no se reabren sin decisión explícita del usuario:
    nunca datos sensibles en logs.
 10. **Pruebas como entregable**, no como extra: objetivo orientativo ≥ 70 % en capa de servicios,
     priorizando reglas de negocio, validaciones y autorización.
-11. **IA con Spring AI (decidido 2026-10-13, Fase IA en plan.md).** Proveedor LLM: Anthropic Claude; vector
+11. **IA con Spring AI (decidido 2026-10-13, Etapa 5 en plan.md).** Proveedor LLM: Anthropic Claude; vector
     store: PGvector sobre el mismo PostgreSQL (esquema por Flyway, SQL explícito sigue siendo la norma: Spring AI
-    usa JDBC, no JPA). La v1 es **solo RAG sobre normativa pública**; el LLM no accede a datos de expedientes.
+    usa JDBC, no JPA). El asistente (RAG y servidor MCP) trabaja **solo sobre normativa pública**; el LLM no accede a datos de expedientes.
     Cualquier acceso del LLM a datos de personas (tools/function calling) requiere decisión explícita, pasar por la
     autorización por rol en backend y `/security-review`. La API key va por variable de entorno/Secret, nunca en
     el repo; las respuestas siguen el idioma de la petición (`Accept-Language`) y citan fuentes.
+12. **Hoja de ruta tecnológica (decidido 2026-10-21, plan.md).** Ayudas GV es el laboratorio senior del
+    portfolio: Spring AI + MCP, arquitectura hexagonal, Kafka, WebFlux y OpenShift. Orden: una sola secuencia de
+    Etapas; **una tecnología nueva por etapa**, cerrada con pruebas y demo antes de abrir la siguiente; las fases
+    del enunciado conservan su orden y la hexagonal, Kafka y WebFlux materializan la evolución a microservicios
+    del enunciado §4 (Etapas 9–11), después de completar el dominio (Fases 2–4). Reglas: la hexagonal se
+    aplica a los **microservicios extraídos** (el monolito mantiene `controller → service → repository`); el
+    reactivo no reescribe los servicios JDBC y, si necesita BD, usa R2DBC `DatabaseClient` con SQL explícito;
+    los eventos Kafka salen por patrón outbox. Cada tecnología se engancha a un caso del dominio.
 
 ---
 
@@ -217,10 +227,6 @@ Las imágenes se construyen **dentro** del Docker del clúster: minikube tiene s
 imágenes de Windows (si no, el Pod se queda en `ImagePullBackOff`).
 
 ### Deuda aceptada deliberadamente
-
-- **Spring Boot 3.5.x sin soporte OSS desde 2026-06-30** (revisado 2026-10-13; parche 3.5.16 aplicado). Migrar a
-  Boot 4 es un cambio mayor y se aborda como tarea propia; la Fase IA debe elegir una versión de Spring AI que
-  soporte Boot 3.5.
 
 - `JWT_SECRET` de ejemplo en `docker-compose.yml` y en los manifiestos de `k8s/` (proyecto formativo;
   en producción → Secret gestionado externamente, tipo Vault o Sealed Secrets).

@@ -15,10 +15,10 @@ Aplicación web interna para la gestión y tramitación de expedientes de ayudas
 | Capa | Tecnología |
 |------|-----------|
 | Frontend | React 18 + Vite + TypeScript 6 + react-i18next + Zustand |
-| Backend | Java 21 + Spring Boot 3.5.15 + Spring Security + JWT |
+| Backend | Java 21 + Spring Boot 4.1.1 + Spring Security 7 + JWT |
 | Base de datos | PostgreSQL 15 + Flyway |
 | Infraestructura | Docker Compose (3 contenedores) |
-| API docs | Swagger UI (springdoc-openapi 2.7.0) |
+| API docs | Swagger UI (springdoc-openapi 3.1.1) |
 
 ---
 
@@ -95,7 +95,7 @@ npm test -- --run
 ayudas-gv/
 ├── backend/                       # Spring Boot — monolito modular
 │   ├── Dockerfile                 # Multi-stage: Maven build → JRE runtime
-│   ├── pom.xml                    # Spring Boot 3.5.15, Java 21
+│   ├── pom.xml                    # Spring Boot 4.1.1, Java 21
 │   └── src/main/
 │       ├── java/com/ayudasgv/
 │       │   ├── AyudasGvApplication.java
@@ -140,16 +140,27 @@ ayudas-gv/
 
 ## Fases del proyecto
 
-| Fase | Objetivo | Estado |
-|------|----------|--------|
-| **Fase 0 — MVP** | Autenticación + búsqueda + consulta de expedientes por secciones | Completada (S1–S6) |
-| **Fase K8s** | Desplegar y operar la app en Kubernetes (learning track) | Completada (2026-07-29) |
-| **Fase 1 — Tramitación** | Registro de trámites, asignación de instructor y cambio de estado | Completada (2026-07-29) |
-| Fase 2 — Alta | Creación de nuevos expedientes y solicitudes | Pendiente |
-| Fase 3 — Resolución | Generación de documentos y notificaciones | Pendiente |
-| Fase 4 — Reglas de negocio | Validación de requisitos y cálculo de cuantías | Pendiente |
+El proyecto avanza en una sola secuencia de etapas. Las fases funcionales siguen el orden del enunciado
+original y cada tecnología nueva entra de una en una, en la etapa donde resuelve un problema real del dominio
+(por eso es también el laboratorio del portfolio: todo lo que figura aquí se puede ver en el código).
 
-Detalle de cada fase y checklist en [plan.md](plan.md).
+| Etapa | Objetivo | Tecnología nueva | Estado |
+|-------|----------|------------------|--------|
+| 1 — Fase 0: MVP | Autenticación + búsqueda + consulta de expedientes por secciones | Spring Boot, JWT, SQL explícito, i18n | Completada |
+| 2 — Fase K8s | Desplegar y operar la app en Kubernetes | Kubernetes (minikube) | Completada |
+| 3 — Fase 1: Tramitación | Trámites, asignación de instructor y cambio de estado | — | Completada |
+| 4 — Plataforma | Migración a Spring Boot 4 y clúster al día | Spring Boot 4 | En curso |
+| 5 — Asistente de normativa | Respuestas con artículos citados, en es/eu, también como servidor MCP | Spring AI (RAG) + MCP | Siguiente |
+| 6 — Fase 2: Alta | Creación de nuevos expedientes y solicitudes | — | Pendiente |
+| 7 — Fase 3: Resolución | Documentos de resolución y notificaciones | — | Pendiente |
+| 8 — Fase 4: Reglas de negocio | Validación de requisitos y cálculo de cuantías | — | Pendiente |
+| 9 — Microservicios I | Extraer `ms-tramitacion` con puertos y adaptadores | Arquitectura hexagonal | Pendiente |
+| 10 — Microservicios II | Notificaciones asíncronas por eventos (outbox) | Kafka | Pendiente |
+| 11 — Microservicios III | API gateway reactivo | WebFlux (Spring Cloud Gateway) | Pendiente |
+| 12 — Despliegue final | Todo el sistema en OpenShift | OpenShift | Pendiente |
+
+Detalle de cada etapa y checklist en [plan.md](plan.md).
+
 
 ---
 

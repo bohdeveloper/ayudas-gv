@@ -2,279 +2,197 @@
 
 > Plan de trabajo vivo (Spec-Driven Development). Contexto y metodología en [spec.md](spec.md).
 > Reglas: nada se implementa sin su punto aquí · al terminar se marca `[x]` con fecha ·
-> las tareas grandes se desglosan en fases antes de empezar.
-> El detalle punto por punto de lo completado vive en el historial de git.
+> las tareas grandes se desglosan en bloques antes de empezar.
+> El detalle punto por punto de lo completado vive en el historial de git y en [docs/reportes/](docs/reportes/).
 > Marcadores de estado en texto (sin emojis): **COMPLETADA · EN CURSO · PENDIENTE**.
 
 ---
 
-## Estado actual (2026-07-29)
+## Cómo está organizado este plan (reordenado 2026-10-21)
 
-| Fase / hito | Estado |
-|-------------|--------|
-| **Fase 0 — MVP** (S1–S6) | COMPLETADA (Hito M6, 2026-07-17) |
-| **Fase K8s — Docker + Kubernetes (learning track)** | COMPLETADA (2026-07-29, Bloques 0–4) |
-| **Fase 1 — Tramitación** | COMPLETADA (2026-07-29) |
-| **Fase IA — Spring AI (asistente RAG sobre normativa)** | PENDIENTE — **siguiente** (decidido 2026-10-13: tras K8s y antes de Fase 1; Fase 1 ya cerrada, así que va antes de la Fase 2) |
-| Fase 2 — Alta y registro de solicitudes | PENDIENTE (tras Fase IA) |
-| Fase 3 — Resolución y notificaciones | PENDIENTE |
-| Fase 4 — Reglas de negocio y cálculo de cuantías | PENDIENTE |
+Hay **una sola secuencia de Etapas**, que es el orden real de ejecución. No hay fases paralelas.
 
-**Próxima sesión — Fase IA (Spring AI), Bloque 0; después la Fase 2 (alta y registro de solicitudes).**
-Punto de entrada de la Fase 2: formulario de alta con
-validación en cliente y servidor, reutilizando el sistema de diseño y los patrones de la sección Tramitación
-(formularios condicionados por rol, errores del backend ya traducidos). Antes de empezar, decidir con el
-usuario **qué roles pueden dar de alta** — es la única casilla de la Fase 2 sin respuesta.
+- Las **fases del enunciado** (Fase 0–4 y la evolución a microservicios) conservan su nombre y su orden
+  original: son la columna vertebral académica del proyecto.
+- Las **tecnologías nuevas** de la hoja de ruta del portfolio (Spring AI, MCP, hexagonal, Kafka, WebFlux,
+  OpenShift) no son fases aparte: entran **de una en una**, en la etapa donde resuelven un problema del
+  dominio. Regla anti-colapso: **ninguna etapa introduce más de una tecnología nueva** y cada una se cierra
+  (pruebas en verde + demo) antes de abrir la siguiente.
+- Reparto de la ruta de formación entre proyectos: **ayudas_gv** = stack senior · **REXIA** = sector público ·
+  **BAKO** = agentes.
 
-- **Estado del clúster (2026-07-29):** minikube con `ayudas-dev` desplegado a partir de las imágenes
-  `ayudas-gv-backend:2.2` / `ayudas-gv-frontend:2.0`, probes de Actuator y el segundo entorno
-  `ayudas-staging` en [k8s/staging/](k8s/staging/). Se levanta con `minikube start` + `kubectl apply -f k8s/`.
-- **Herramental:** Docker Desktop + Compose, minikube v1.38.1 / K8s v1.35.1, Java 21, Maven 3.9, Node.
-- Calendario de lo que queda: [docs/reportes/itinerario.md](docs/reportes/itinerario.md).
+## Estado actual (2026-10-21)
 
-> **Decisión de secuencia (usuario, 2026-07-21):** primero dominar Docker + Kubernetes sobre este
-> proyecto; la Fase 1 (Tramitación) después. Cumplido: ambas cerradas el 2026-07-29.
+| Etapa | Contenido | Tecnología nueva | Estado |
+|-------|-----------|------------------|--------|
+| 1 | Fase 0 — MVP (S1–S6) | Spring Boot, JWT, SQL explícito, i18n | COMPLETADA (2026-07-17) |
+| 2 | Fase K8s — Docker + Kubernetes | Kubernetes (minikube) | COMPLETADA (2026-07-29) |
+| 3 | Fase 1 — Tramitación | — | COMPLETADA (2026-07-29) |
+| **4** | **Puesta al día de la plataforma** | Spring Boot 4 | **EN CURSO** — Boot 4 hecho; falta el clúster |
+| 5 | Asistente de normativa | Spring AI (RAG) + servidor MCP | PENDIENTE — **siguiente** |
+| 6 | Fase 2 — Alta y registro de solicitudes | — (consolidación) | PENDIENTE |
+| 7 | Fase 3 — Resolución y notificaciones | — | PENDIENTE |
+| 8 | Fase 4 — Reglas de negocio y cuantías | — | PENDIENTE |
+| 9 | Microservicios I — `ms-tramitacion` | Arquitectura hexagonal | PENDIENTE |
+| 10 | Microservicios II — notificaciones asíncronas | Kafka | PENDIENTE |
+| 11 | Microservicios III — `gateway` | WebFlux (Spring Cloud Gateway) | PENDIENTE |
+| 12 | Despliegue final | OpenShift | PENDIENTE |
 
----
+**Por qué este orden** (coherencia académica):
 
-## Fase K8s — Docker + Kubernetes (learning track) — COMPLETADA (2026-07-29)
+- **4 antes que nada:** Spring AI 2.x se compila contra Spring Boot 4.1. Hacer la IA sobre Boot 3.5 obligaba
+  a migrar dos veces. Y el clúster tiene que volver a existir antes de añadir piezas nuevas.
+- **5 justo tras la plataforma:** decisión del usuario (2026-10-13, "tras K8s"). Además encaja académicamente:
+  el asistente obliga a estudiar los arts. 351–362 y 373 del TRLGSS, que son exactamente las reglas que la
+  etapa 8 implementa. Trabaja solo sobre normativa pública, así que no depende de las fases 2–4.
+- **6–8 en el orden del enunciado,** sin tecnología nueva: completan el dominio. Sin alta, resolución y reglas
+  no hay nada que valga la pena repartir en microservicios.
+- **9–11 = la "evolución a microservicios" del enunciado §4,** ahora con hexagonal, Kafka y WebFlux. Cada una
+  rehace algo que ya funciona en el monolito, lo que permite comparar antes/después (lo más valioso para
+  explicarlo en una entrevista).
+- **12 al final:** OpenShift solo tiene sentido cuando hay varios servicios que desplegar.
 
-> **Objetivo:** llevar Ayudas GV de `docker compose` a un clúster de Kubernetes local (minikube) y
-> dominar las operaciones de orquestación (escalar, autocurar, actualizar sin caída), como preparación
-> para un nuevo proyecto profesional con este stack.
-> **Método:** guía didáctica con teoría mínima + práctica + ejercicios en
-> [docs/kubernetes-aprendizaje.md](docs/docker-k8s/kubernetes-aprendizaje.md). Este apartado es el checklist; el
-> "cómo" y el "por qué" están en la guía.
+**Próxima sesión — Etapa 4, Bloque 4.2:** instalar `minikube` + `kubectl` en este equipo (no están; el clúster
+de julio vivía en otra instalación) y desplegar la imagen con Spring Boot 4.
 
-### Bloque 0 — Repaso de Docker (consolidación) — COMPLETADA (2026-07-22)
-- [x] Levantar el stack con `docker compose up --build` y verificar los 3 contenedores (ej. 1.1–1.4 de la guía) — 2026-07-22: 3 contenedores Up (postgres healthy), Flyway V1–V5 aplicadas, login `admin` OK vía Nginx
-- [x] Explicar por escrito el multi-stage build de `backend/Dockerfile` y el de `frontend/Dockerfile` — 2026-07-22: [docs/docker-guia.md](docs/docker-k8s/docker-guia.md) §3.1–3.2
-- [x] Interiorizar la red por nombre de servicio (`postgres`, `backend`) — base del DNS de K8s — 2026-07-22: [docs/docker-guia.md](docs/docker-k8s/docker-guia.md) §4 + demostrado en vivo (Flyway→`postgres:5432`, Nginx→`backend:8080`)
-
-### Bloque 1 — Clúster local (minikube)
-- [x] **Prep (2026-07-23):** `.dockerignore` en `backend/` y `frontend/` para reducir el contexto de build
-  antes de construir dentro de minikube — verificado con build real (contexto 102,83 kB / 31,05 kB)
-- [x] Instalar `minikube` + `kubectl` (Windows/winget) y `minikube start --driver=docker` — 2026-07-23: minikube v1.38.1, K8s v1.35.1 (driver docker, 2 CPU / 8100 MB)
-- [x] `kubectl get nodes` → 1 nodo Ready — 2026-07-23: nodo `minikube` Ready (control-plane); explorado con `cluster-info` y `get pods -A` (7 Pods de `kube-system` Running)
-- [x] Construir `ayudas-gv-backend:1.0` y `ayudas-gv-frontend:1.0` **dentro** del Docker de minikube — 2026-07-23: vía `docker-env`; backend 245 MB, frontend 62.7 MB
-- [x] Entender por qué sin ese paso el Pod queda en `ImagePullBackOff` — 2026-07-23: dos demonios Docker separados; el nodo busca la imagen en su propio Docker, no en el de Windows
-
-### Bloque 2 — Desplegar la app (crear `k8s/`) — COMPLETADA (2026-07-24)
-- [x] `k8s/00-namespace.yaml` → namespace `ayudas-dev` y fijarlo como contexto por defecto — 2026-07-24
-- [x] `k8s/10-backend-config.yaml` → ConfigMap (no sensible) + Secret (credenciales) desde `docker-compose.yml` — 2026-07-24
-- [x] `k8s/20-postgres.yaml` → Deployment + PVC (persistencia) + Service ClusterIP `postgres` — 2026-07-24
-- [x] `k8s/30-backend.yaml` → Deployment (envFrom Config+Secret, probes 8080) + Service `backend` — 2026-07-24
-- [x] `k8s/40-frontend.yaml` → Deployment (Nginx:80) + Service `frontend` — 2026-07-24
-- [x] `k8s/50-ingress.yaml` → Ingress (variante A: todo `/`→frontend, cuyo Nginx proxea `/api`→`backend:8080`) con addon ingress habilitado — 2026-07-24
-- [x] Los 3 Pods en `Running`; login `admin/admin123` funcionando de extremo a extremo dentro del clúster — 2026-07-24: HTTP 200 + JWT vía port-forward al frontend y vía Ingress
-- [x] Demostrar el DNS interno (`getent hosts postgres` desde el Pod del backend) — 2026-07-24: `postgres` → 10.111.20.147 (ClusterIP del Service)
-- [x] Diagnosticar un fallo provocado (Secret con contraseña mal) con `describe` + `logs` — 2026-07-24: `FATAL: password authentication failed for user "ayudasgv"`; `describe` mostró Readiness probe failed + BackOff; arreglado restaurando el Secret
-
-### Bloque 3 — Operar (la esencia de orquestar) — COMPLETADA (2026-07-27)
-- [x] Escalar el backend a 3 réplicas y comprobar los 3 endpoints del Service — 2026-07-27: `kubectl scale` → 3 endpoints `true` en el EndpointSlice; balanceo real demostrado (6 logins repartidos 3/1/2 entre los Pods, vía logs `Login exitoso`)
-- [x] Self-healing: matar un Pod y ver cómo el Deployment lo recrea (sin afectar al frontend) — 2026-07-27: Pod nuevo en 2s, recuperación completa en 77s, 4 logins HTTP 200 durante la ventana; el Pod moribundo pasó a `ready=false` en los endpoints antes de morir y el que arrancaba recibió 0 peticiones; frontend y postgres intactos
-- [x] Rolling update `:1.0`→`:1.1` con `kubectl set image` y `rollout status`; luego `rollout undo` — 2026-07-27: imagen `:1.1` construida con `minikube image build` (derivada de `:1.0` + marca `APP_VERSION`); ReplicaSet nuevo `5b48dd7c5c`, surge de 1 Pod (maxSurge 25%→1, maxUnavailable 25%→0), cero caída; `undo` reinfló el RS viejo `fd8f6dd8b` y añadió la revisión 5
-- [x] Razonar por qué postgres (PVC ReadWriteOnce) no se replica como el backend → StatefulSet — 2026-07-27: probado en vivo escalando a 2 réplicas. **RWO limita por nodo, no por Pod**: en un solo nodo ambos Pods montaron el PVC; los namespaces de PID hicieron que el 2.º postmaster (también PID 1) tomara el `postmaster.pid` ajeno por un lock huérfano suyo, lo borrara y arrancara → dos postmasters ~76s sobre el mismo directorio. Al bajar a 1 réplica, el original hizo `immediate shutdown because data directory lock file is invalid` y reinició. BD íntegra (Flyway V1–V5 `success`, datos OK). Conclusiones: `ReadWriteOncePod` sí lo impediría; el StatefulSet resuelve identidad y disco por Pod (`volumeClaimTemplates`) pero **no** da replicación de Postgres (eso es un operador tipo CloudNativePG o BD gestionada)
-
-### Bloque 4 — Ejercicios integradores (blindaje entrevista) — COMPLETADA (2026-07-29)
-- [x] Segundo entorno con namespace `ayudas-staging` (mismo stack, ConfigMap distinto) — 2026-07-29:
-  [k8s/staging/ayudas-staging.yaml](k8s/staging/ayudas-staging.yaml). Mismos nombres de objeto
-  (`postgres`, `backend`, `frontend`) en otro namespace; `JWT_EXPIRATION` de 1 h frente a 24 h y contraseña
-  de BD distinta. Ingress por host (`staging.ayudas.local`) conviviendo con el catch-all de dev
-- [x] Probes "de verdad": añadir `spring-boot-starter-actuator` y pasar a `httpGet /actuator/health` — 2026-07-29:
-  `startupProbe` + `readinessProbe` (incluye la BD: `readiness.include=readinessState,db`) + `livenessProbe`
-  (solo `livenessState`: si la BD cae, reiniciar el backend no arregla nada). Los dos endpoints son públicos
-  en `SecurityConfig` porque los lanza el kubelet, que no tiene JWT, y van con `show-details: never`
-- [x] Reescribir de memoria el Deployment+Service del backend y comparar — 2026-07-29: ejercicio recogido en la
-  guía (Parte 6.3) con la lista de lo que más se olvida
-- [x] Resiliencia con JWT stateless: borrar un Pod mientras se navega, sin perder sesión — 2026-07-29
-- [x] `resources.requests/limits` y diferencia OOMKilled (memoria) vs throttling (CPU) — 2026-07-29:
-  añadidos a los tres Deployments; la explicación queda en la guía y en el propio manifiesto
-- [x] Preparar respuestas orales de 30s a las preguntas típicas (lista en la guía, Parte 6) — 2026-07-29
-- [x] **Endurecer `k8s/20-postgres.yaml`** (hallazgo del Bloque 3, 2026-07-27): `strategy: Recreate` +
-  `accessModes: ["ReadWriteOncePod"]` — 2026-07-29. **Aprendizaje extra:** `spec` de un PVC es **inmutable**
-  una vez creado (`Forbidden: spec is immutable after creation`), así que cambiar el accessMode obligó a
-  borrar y recrear el PVC — y con él, el disco. En dev no importa (Flyway reconstruye), en producción es
-  justo la decisión que hay que tomar antes de crear el PVC, no después
-- [x] Anotar `kubernetes.io/change-cause` en los Deployments para que `rollout history` sea legible — 2026-07-29
-
-### Material didáctico (divulgación de la Fase K8s) — COMPLETADA (2026-07-28)
-
-- [x] Reescribir [docs/kubernetes-aprendizaje.md](docs/docker-k8s/kubernetes-aprendizaje.md) en lenguaje llano: mantener
-  el vocabulario técnico (Pod, Namespace, Service...) pero explicar cada concepto con una **analogía cotidiana**
-  y prosa sencilla. No tocar el Apéndice B (manifiestos de referencia) — 2026-07-28: **25 analogías** en
-  recuadros `> **Imagínalo así.**` (Partes 0–5 y 7); corregido además el ejercicio 5.4, que daba por hecho un
-  resultado que el Bloque 3 demostró falso
-- [x] Crear [docs/kubernetes-desde-0.md](docs/docker-k8s/kubernetes-desde-0.md): resumen de los Bloques 1–4 contado desde
-  cero, sin dar por sabido nada, con las mismas analogías y con lo que realmente pasó en cada sesión (incluido
-  el incidente de postgres del 27/07). Público: alguien que no ha tocado Kubernetes nunca — 2026-07-28:
-  343 líneas, 13 analogías, cierra con las 6 preguntas de entrevista respondidas en 30 segundos
-
-**Hecho cuando:** el usuario puede, de memoria, desplegar el stack en minikube, escalarlo, matar un Pod
-y verlo recuperarse, y hacer un rolling update con rollback; y explica con soltura Pod/Deployment/Service/
-Ingress/ConfigMap/Secret/Namespace. Entregable físico: carpeta `k8s/` versionada + ejercicios marcados
-+ los dos documentos divulgativos.
+- **Herramental verificado (2026-10-21):** Docker Desktop, Java 21 (`C:\Program Files\Java\jdk-21.0.9`),
+  Maven 3.9, Node. **Ojo:** la variable de sistema `JAVA_HOME` apunta a `C:\eclipse\` y Maven falla desde la
+  terminal hasta corregirla. **Faltan** `minikube` y `kubectl`.
+- [docs/reportes/itinerario.md](docs/reportes/itinerario.md) es histórico hasta el 29/07; sus fechas de agosto ya
+  no valen. Se rehace al empezar la Etapa 5 con este orden.
 
 ---
 
-## Higiene del repositorio (transversal) — COMPLETADA (2026-07-28)
+## Etapa 4 — Puesta al día de la plataforma — EN CURSO
 
-- [x] **Cortar el bucle del snapshot del grafo** — 2026-07-28: `artifact.json` guardaba el hash de HEAD, así
-  que cada commit disparaba un reindexado que volvía a ensuciar los dos ficheros: la cola de git nunca podía
-  quedar vacía. Además pesaban 6,5 MB de los 10,58 MB del repo (8 copias de ~880 kB de binario sin diff).
-  `git rm --cached` + `.gitignore` con el motivo documentado. Se conservan `graph.html` y `.gitattributes`;
-  el grafo sigue en local y el watcher lo mantiene. Decisión razonada en `spec.md` §6
-- [x] **Política "cola de git limpia"** en `CLAUDE.md` — 2026-07-28: al cerrar sesión, cada fichero pendiente
-  se commitea, se ignora (documentando el motivo) o se borra. Ninguno se queda indefinidamente
-- [x] **Hook `Stop` que la vigila** — 2026-07-28: `.claude/hooks/git-cola-limpia.sh` (+ `.claude/settings.json`).
-  Avisa solo de los **rezagados** (sin tocar en 45 min) para no generar ruido con el trabajo en curso; los
-  borrados sin commit se reportan siempre. Probado en crudo: JSON válido y filtro por antigüedad correcto
-- [x] **Reorganizar `docs/`** — 2026-07-28: la carpeta acumulaba 9 documentos sueltos en la raíz más dos
-  `.excalidraw` mezclados. Ahora: [docs/docker-k8s/](docs/docker-k8s/) (los 4 documentos de la Fase K8s),
-  [docs/diagramas/](docs/diagramas/) (los `.excalidraw`) y un índice [docs/README.md](docs/README.md) con
-  tabla por bloque y "por dónde empezar". Los documentos del sistema (`arquitectura`, `modelo-datos`,
-  `tecnologias`, `fase0-planificacion`) se quedan en la raíz de `docs/`
-- [x] **Fusionar el material de la reunión** — 2026-07-28: `docker-k8s-diagramas.md` (230 líneas) +
-  `entrevista-docker-k8s-preguntas.md` (212) → [docs/docker-k8s/entrevista-docker-k8s.md](docs/docker-k8s/entrevista-docker-k8s.md)
-  (453). Mismo día de origen (24/07), mismo propósito y uno ya enlazaba al otro como "modelo visual de apoyo".
-  Parte 1 = 10 diagramas Mermaid, Parte 2 = 30 preguntas con respuesta modelo + chuleta. Contenido íntegro de
-  ambos; solo se reescribió la cabecera. Enlaces relativos corregidos y referencias actualizadas en
-  `README.md`, `spec.md`, `plan.md` e itinerario — sin enlaces rotos
+> **Objetivo:** dejar la base técnica al día antes de añadir tecnología nueva: Spring Boot con soporte y el
+> clúster de Kubernetes funcionando otra vez en este equipo con esa versión.
+
+### Bloque 4.1 — Migración a Spring Boot 4 — COMPLETADA (2026-10-21)
+- [x] Spring Boot 3.5.16 → **4.1.1** (misma versión con la que se compila Spring AI 2.0.1), springdoc 2.7.0 →
+  3.1.1, jjwt 0.12.5 → 0.13.0 — 2026-10-21
+- [x] Starters renombrados o divididos en Boot 4: `web` → `webmvc`, `aop` → `aspectj`, `flyway-core` suelto →
+  `spring-boot-starter-flyway` (sin él Flyway ya no migra al arrancar). Los *test slices* pasan a módulos
+  propios (`webmvc-test`, `jdbc-test`, `flyway-test`, `security-test`) y cambian de paquete — 2026-10-21
+- [x] Jackson 3: en las pruebas, `ObjectMapper` pasa a `tools.jackson.databind` (las anotaciones siguen en
+  `com.fasterxml.jackson.annotation`) — 2026-10-21
+- [x] Limpieza de avisos del IDE: `@MockBean` → `@MockitoBean`, imports sin uso, `@Bean` sin `public` — 2026-10-21
+- [x] **Backend 107 pruebas en verde** y arranque real en Docker Compose contra PostgreSQL: Flyway hasta V6,
+  probes de Actuator 200, Swagger 200, 401 sin token, login + búsqueda vía Nginx, errores en euskera — 2026-10-21
+
+### Bloque 4.2 — Kubernetes otra vez en marcha (el tramo de K8s que queda) — PENDIENTE
+> La Fase K8s se cerró entera el 2026-07-29 (Bloques 0–4, ver Histórico). Lo que queda no es K8s
+> sin terminar, sino **reconstruir el clúster en este equipo** y desplegar en él la versión nueva. Sirve de
+> repaso de memoria de toda la Fase K8s.
+- [ ] Instalar `minikube` + `kubectl` (`winget install Kubernetes.minikube Kubernetes.kubectl`) y
+  `minikube start --driver=docker`; `addons enable ingress`
+- [ ] Construir `ayudas-gv-backend:3.0` (Boot 4) y `ayudas-gv-frontend:3.0` dentro del Docker de minikube
+- [ ] `kubectl apply -f k8s/` → `ayudas-dev` con los 3 Pods `Running` y las probes de Actuator en verde
+- [ ] Ejercicio de repaso: desplegar primero `:2.2`/`:2.0` y hacer **rolling update a `:3.0`** con `change-cause`
+  (Boot 3 → Boot 4 sin caída), comprobar `rollout history` y practicar `rollout undo`
+- [ ] Desplegar `ayudas-staging` ([k8s/staging/](k8s/staging/)) y verificar el aislamiento entre los dos entornos
+- [ ] Login + búsqueda + tramitación de extremo a extremo por el Ingress, en es y eu
+- [ ] Actualizar las etiquetas de imagen en `k8s/` y la tabla de herramental de este plan
+
+**Hecho cuando:** el stack con Spring Boot 4 corre en minikube (dev y staging) y la actualización desde la
+versión anterior se ha hecho con rolling update, sin caída.
 
 ---
 
-## Fase IA — Spring AI: asistente RAG sobre la normativa — PENDIENTE (planificada 2026-10-13)
+## Etapa 5 — Asistente de normativa con Spring AI (RAG + MCP) — PENDIENTE (siguiente)
 
-> **Objetivo:** que un usuario interno pueda preguntar dudas sobre las 3 ayudas y obtener una respuesta
-> **fundamentada en la normativa (TRLGSS arts. 351–362 y 373) con las fuentes citadas**, en es/eu.
-> **Doble propósito:** aprender Spring AI sobre un caso real y dejar una función demostrable para
-> portfolio/CV ("Spring AI + RAG + PGvector + Anthropic Claude").
-> **Decisiones del usuario (2026-10-13):** proveedor Anthropic Claude · vector store PGvector ·
-> alcance v1 solo RAG sobre normativa (sin tools sobre expedientes) · secuencia: tras K8s, antes de Fase 1 — ambas ya cerradas el 2026-07-29;
-> el usuario confirma el 2026-10-13 que la Fase IA va antes de la Fase 2.
-> Registradas en [spec.md](spec.md) §3 (invariante 11) y §2.
+> **Objetivo:** que un usuario interno pregunte dudas sobre las 3 ayudas y reciba una respuesta
+> **fundamentada en la normativa (TRLGSS arts. 351–362 y 373) con las fuentes citadas**, en es/eu; y exponer
+> ese mismo asistente como **servidor MCP** para agentes de IA.
+> **Decisiones del usuario (2026-10-13):** LLM Anthropic Claude · vector store PGvector · alcance solo
+> normativa pública (sin acceso del LLM a expedientes). Registradas en [spec.md](spec.md) §3, invariante 11.
+> **Versión:** Spring AI 2.0.1 (BOM `spring-ai-bom`), alineada con Spring Boot 4.1.1.
 
-**Punto abierto a cerrar en el Bloque 0:** Anthropic **no ofrece modelo de embeddings**, así que el RAG
+**Punto abierto a cerrar en el Bloque 5.0:** Anthropic **no ofrece modelo de embeddings**, así que el RAG
 necesita un `EmbeddingModel` aparte. Opciones: ONNX local multilingüe con `spring-ai-starter-model-transformers`
-(sin clave extra, datos en local; recomendado por defecto), Ollama (`nomic-embed-text`/`bge-m3`) o un
-proveedor externo. Validar calidad en euskera con unas preguntas de prueba antes de fijarlo.
+(sin clave extra y los datos no salen del equipo; recomendado por defecto), Ollama o un proveedor externo.
+Validar la calidad en euskera con unas preguntas de prueba antes de fijarlo.
 
-### Bloque 0 — Fundamentos y preparación
-- [ ] Hacer el curso de Anthropic Academy / leer la doc oficial de Spring AI (ChatClient, advisors, RAG) y anotar dudas
-- [ ] Fijar versión de Spring AI compatible con Spring Boot 3.5.x (BOM `spring-ai-bom`) y modelo de embeddings
+### Bloque 5.0 — Fundamentos y preparación
+- [ ] Leer la documentación oficial de Spring AI (ChatClient, advisors, RAG, MCP) y anotar dudas
+- [ ] Elegir el modelo de embeddings (punto abierto de arriba)
 - [ ] Reunir la **fuente normativa** en texto (arts. 351–362 y 373 TRLGSS, es y eu si existe) en `docs/normativa/`
-- [ ] Gestión de la API key de Anthropic: variable de entorno `ANTHROPIC_API_KEY` (compose + futuro Secret), nunca en el repo
+- [ ] API key de Anthropic: variable `ANTHROPIC_API_KEY` (Compose + Secret en K8s), nunca en el repo
 
-### Bloque 1 — Chat básico con `ChatClient`
-- [ ] Dependencia `spring-ai-starter-model-anthropic` + configuración en `application.yml` (modelo, temperatura, max-tokens)
-- [ ] Servicio `asistente` (paquete propio, frontera limpia) con prompt de sistema: solo normativa, citar artículos, responder en el idioma pedido
-- [ ] `POST /api/v1/asistente/consultas` protegido (rol `CONSULTOR` o superior), validación de entrada y límite de longitud
+### Bloque 5.1 — Chat básico con `ChatClient`
+- [ ] `spring-ai-starter-model-anthropic` + configuración en `application.yml` (modelo, temperatura, max-tokens)
+- [ ] Módulo `asistente` (paquete propio, frontera limpia) con prompt de sistema: solo normativa, citar
+  artículos, responder en el idioma de la petición
+- [ ] `POST /api/v1/asistente/consultas` protegido (rol `CONSULTOR` o superior), validación y límite de longitud
 - [ ] Prueba con `ChatModel` simulado (sin llamar a la API real) y documentación en Swagger
 
-### Bloque 2 — RAG con PGvector
-- [ ] Cambiar la imagen de `postgres:15` a `pgvector/pgvector:pg15` en `docker-compose.yml`, `k8s/20-postgres.yaml` y `k8s/staging/ayudas-staging.yaml`
-- [ ] Migración Flyway (siguiente número libre tras V6): `CREATE EXTENSION vector` + tabla de embeddings (esquema gestionado por Flyway, no por `initialize-schema`)
-- [ ] Pipeline de ingesta: lector de `docs/normativa/` → `TokenTextSplitter` → `VectorStore.add` (idempotente, ejecutable por perfil/endpoint ADMIN)
-- [ ] `QuestionAnswerAdvisor` con `VectorStore` + `topK`/umbral de similitud; respuesta con **fuentes** (artículo/fragmento)
-- [ ] Comportamiento ante "no hay información en la normativa": respuesta honesta, sin inventar
-- [ ] Pruebas: ingesta + recuperación contra PGvector (Testcontainers o equivalente) y casos de preguntas es/eu
+### Bloque 5.2 — RAG con PGvector
+- [ ] Imagen `postgres:15` → `pgvector/pgvector:pg15` en `docker-compose.yml`, `k8s/20-postgres.yaml` y
+  `k8s/staging/ayudas-staging.yaml`
+- [ ] Migración Flyway V7: `CREATE EXTENSION vector` + tabla de embeddings (esquema por Flyway, no por
+  `initialize-schema`)
+- [ ] Ingesta: lector de `docs/normativa/` → `TokenTextSplitter` → `VectorStore.add` (idempotente, lanzada por ADMIN)
+- [ ] `QuestionAnswerAdvisor` con `topK` y umbral de similitud; respuesta con **fuentes** (artículo y fragmento)
+- [ ] Si la normativa no contiene la respuesta, decirlo con honestidad, sin inventar
+- [ ] Pruebas: ingesta y recuperación contra PGvector (Testcontainers) y preguntas de prueba en es/eu
 
-### Bloque 3 — Integración, calidad y cierre
-- [ ] Panel de chat en el frontend (i18n es/eu, sistema de diseño existente, iconos SVG propios, estado de carga y errores)
-- [ ] Auditoría de cada consulta en `auditoria` (usuario, idioma, correlation-id; **sin** volcar datos personales en logs)
-- [ ] Límites de coste/abuso: rate limiting básico por usuario y tope de tokens
-- [ ] Evaluación sencilla: batería de ~15 preguntas con respuesta esperada y comprobación manual de citas
-- [ ] `/code-review` + `/security-review` (endpoint nuevo, API key, entrada de usuario hacia un LLM) y verificación end-to-end
-- [ ] Documentar en README (feature + stack) y `docs/arquitectura.md`; redactar texto breve para CV/LinkedIn con lo que hay de verdad
+### Bloque 5.3 — Integración en la app
+- [ ] Panel de chat en el frontend (i18n es/eu, sistema de diseño existente, iconos SVG propios, carga y errores)
+- [ ] Auditoría de cada consulta en `auditoria` (usuario, idioma, correlation-id; **sin** datos personales en logs)
+- [ ] Límites de coste y abuso: rate limiting por usuario y tope de tokens
+- [ ] Evaluación: batería de ~15 preguntas con respuesta esperada y revisión manual de las citas
 
-**Hecho cuando:** desde la UI, un usuario autenticado pregunta p. ej. "¿qué grado de discapacidad exige la
-asignación económica?" y recibe una respuesta correcta con artículos citados, en el idioma elegido, con la
-consulta auditada; y puedes explicar de memoria el flujo ingesta → embeddings → búsqueda → prompt → respuesta.
+### Bloque 5.4 — Servidor MCP
+- [ ] `spring-ai-starter-mcp-server-webmvc` con una tool `consultar_normativa` (mismos datos públicos que el RAG)
+- [ ] Autenticación del endpoint MCP con el JWT existente; auditoría de cada invocación
+- [ ] Demo: Claude Code o Claude Desktop conectado al MCP de Ayudas GV, respondiendo con citas
+- [ ] Tools sobre expedientes: fuera de alcance; solo con decisión explícita (invariante 11) y `/security-review`
 
-**Fuera de alcance v1:** function calling sobre expedientes, MCP server, memoria de conversación persistente.
-Candidatos para una v2 una vez cerrada la Fase 4 (reglas de negocio), cuando haya más lógica que exponer.
+### Cierre de la etapa
+- [ ] `/code-review` + `/security-review` (endpoint nuevo, API key, entrada de usuario hacia un LLM), verificación
+  end-to-end en Compose y en minikube
+- [ ] README, `docs/arquitectura.md` y un texto breve para CV/LinkedIn que describa solo lo que existe
 
----
-
-## Fase 1 — Tramitación — COMPLETADA (2026-07-29)
-
-> **Objetivo:** el personal instructor puede hacer avanzar los expedientes.
-> Fuente: enunciado §7.2 (verificado literal, 2026-07-21). Modelo de datos ya previsto: tablas
-> `tramite` y `tipo_tramite` en [docs/modelo-datos.md](docs/modelo-datos.md).
-
-Modelo básico de tramitación (cada trámite cambia el estado del expediente y deja traza en `auditoria`):
-
-```
-REGISTRO/Entrada  → expediente registrado
-ASIGNACION        → se asigna instructor
-REVISION/Subsanación → comprobación de requisitos; si falta algo, se requiere subsanación
-PROPUESTA         → propuesta de resolución (favorable | desfavorable)
-RESOLUCION        → concesión o denegación (rol RESPONSABLE)
-NOTIFICACION      → comunicación al interesado por su canal de aviso y en su idioma de notificación
-```
-
-- [x] Asignación de instructor a un expediente (rol `RESPONSABLE`) — cambia estado a `ASIGNADO` — 2026-07-29:
-  `PUT /api/v1/expedientes/{id}/instructor`, transaccional (asigna + cambia estado + deja el trámite
-  `ASIGNACION`); valida que el destinatario sea un instructor **activo** (409 si no). `GET /api/v1/instructores`
-  alimenta el desplegable, con el mismo filtro de rol
-- [x] Registro de trámites según el flujo, con `tipo_tramite`, resultado y observaciones — 2026-07-29:
-  `POST /api/v1/expedientes/{id}/tramites`
-- [x] Cada trámite guarda **quién** lo hizo, **cuándo** y el **resultado** — 2026-07-29: autor del JWT y fecha
-  del reloj del servidor, nunca del cuerpo de la petición; `@Auditable(accion="TRAMITE")` deja además la traza
-  en `auditoria`
-- [x] Cambio de estado del expediente asociado a cada trámite — 2026-07-29: `REGISTRO`→REGISTRADO,
-  `REVISION`/`PROPUESTA`→EN_REVISION, `RESOLUCION`→RESUELTO (+ sella `fecha_resolucion`), `NOTIFICACION`→sin cambio
-- [x] Regla de negocio: **un instructor solo puede tramitar expedientes asignados a él** (validado en backend) —
-  2026-07-29: doble capa — `@PreAuthorize` filtra por rol, el servicio filtra por dato. Probada en el clúster:
-  `instructor1` (asignado) 201, `instructor2` (no asignado) 403 con el motivo concreto en es y en eu
-- [x] Sección **Tramitación** visible en el detalle del expediente (histórico de trámites + instructor) —
-  2026-07-29: 5.ª pestaña, línea de tiempo con quién/cuándo/resultado + formulario de registro y de asignación,
-  ambos condicionados al rol
-- [x] Endpoints REST documentados en Swagger — 2026-07-29: 4 endpoints con `@Operation`/`@ApiResponses`
-  (incluidos 403/404/409 y qué significa cada uno). Tabla en [docs/arquitectura.md](docs/arquitectura.md)
-- [x] Pruebas: la regla "instructor no asignado no puede tramitar" (empezar por la prueba, luego el código) —
-  2026-07-29: **backend 107** (era 52) y **frontend 26** (era 16)
-- [x] **Extra — bug de i18n cazado en el clúster (2026-07-29).** Las claves nuevas se añadieron a
-  `messages_es`/`messages_eu` pero no al bundle raíz `messages.properties`, que es el fallback cuando la
-  petición no manda `Accept-Language`. Síntoma: el usuario recibía `tramite.resolucion.rol` en vez del mensaje.
-  Ninguna prueba lo veía, porque las excepciones llevan la clave, no el texto. Corregido + `MessagesParidadTest`,
-  que falla si los tres bundles dejan de tener exactamente las mismas claves
-
-- [ ] Notificación al interesado en su `datos_contacto.idioma_notificacion` — **NO hecho, movido a Fase 3.**
-  En Fase 1 el trámite `NOTIFICACION` se **registra** y deja traza, pero no se genera ni se envía nada. La
-  emisión por canal (`EMAIL`/`SMS`/`POSTAL`) y en el idioma del interesado es literalmente el objetivo de la
-  Fase 3; hacerla aquí habría sido duplicar ese trabajo. Es la única casilla de la Fase 1 que queda abierta
+**Hecho cuando:** desde la UI, un usuario pregunta p. ej. "¿qué grado de discapacidad exige la asignación
+económica?" y recibe una respuesta correcta con los artículos citados, en el idioma elegido y con la consulta
+auditada; la misma pregunta funciona desde un cliente MCP; y el usuario explica de memoria el flujo
+ingesta → embeddings → búsqueda → prompt → respuesta.
 
 ---
 
-## Fase 2 — Alta y registro de solicitudes — PENDIENTE
+## Etapa 6 — Fase 2: Alta y registro de solicitudes — PENDIENTE
 
 > **Objetivo:** crear nuevos expedientes y solicitudes desde la aplicación. Fuente: enunciado §7 (Fase 2).
+> Sin tecnología nueva a propósito: etapa de consolidación sobre los patrones ya probados en la Fase 1
+> (formularios condicionados por rol, errores del backend ya traducidos).
 
+- [ ] **Decidir con el usuario qué roles pueden dar de alta** (única pregunta abierta; hacerlo antes de empezar)
 - [ ] Formulario de alta de expediente con validaciones (cliente + servidor)
 - [ ] Gestión de interesados: `SOLICITANTE`, `REPRESENTANTE` (opcional), `CAUSANTE`(s)
 - [ ] Datos de contacto y aviso (canal, idioma de notificación)
 - [ ] Formulario específico por tipo de ayuda: `ASIG_DISCAP` / `PAGO_NAC` / `PARTO_MULT`
 - [ ] Persistencia con SQL parametrizado en los repositorios correspondientes
-- [ ] Autorización: qué roles pueden dar de alta (a definir con el usuario)
+- [ ] Autorización en backend según la decisión del primer punto
 
 ---
 
-## Fase 3 — Resolución y notificaciones — PENDIENTE
+## Etapa 7 — Fase 3: Resolución y notificaciones — PENDIENTE
 
 > **Objetivo:** generación de documentos y comunicación al interesado. Fuente: enunciado §7 (Fase 3).
+> Recoge la casilla que quedó abierta en la Fase 1 (emitir la notificación, no solo registrarla).
+> Se hace **síncrona y dentro del monolito**; la Etapa 10 la convierte en asíncrona con Kafka.
 
 - [ ] Generación de documentos de resolución (favorable / desfavorable)
-- [ ] Notificaciones por el canal configurado: `EMAIL` / `SMS` / `POSTAL`
+- [ ] Notificaciones por el canal configurado: `EMAIL` / `SMS` / `POSTAL` (integraciones reales simuladas en local)
 - [ ] Idioma del documento según `datos_contacto.idioma_notificacion` (independiente de la interfaz)
 - [ ] Traza en `auditoria` de la emisión de resolución y de la notificación
 
 ---
 
-## Fase 4 — Reglas de negocio y cálculo de cuantías — PENDIENTE
+## Etapa 8 — Fase 4: Reglas de negocio y cálculo de cuantías — PENDIENTE
 
 > **Objetivo:** validación automática de requisitos y cálculo orientativo de prestaciones.
-> Fuente: enunciado §7 (Fase 4) + Anexo A (resumen funcional de las tres ayudas).
+> Fuente: enunciado §7 (Fase 4) + Anexo A. La normativa reunida en la Etapa 5 es la referencia.
 
 | Ayuda | Regla de validación / cálculo |
 |-------|-------------------------------|
@@ -289,37 +207,151 @@ NOTIFICACION      → comunicación al interesado por su canal de aviso y en su 
 
 ---
 
-## Evolución arquitectónica (transversal, a partir de Fase 1)
+## Etapas 9–11 — Evolución a microservicios (enunciado §4)
 
-> El enunciado §4 prevé pasar de monolito modular a microservicios. Se materializa progresivamente y se
-> apoya en la Fase K8s (cada microservicio = Deployment + Service en el clúster). No es una fase aparte:
-> se acomete al extraer cada bounded context.
+> El enunciado prevé pasar de monolito modular a microservicios. Se hace en tres etapas, cada una con
+> **una** tecnología nueva, y cada servicio se despliega como Deployment + Service en `k8s/`.
+> Reglas fijadas en [spec.md](spec.md) §3, invariante 12. Cada etapa se desglosa en bloques al empezarla.
 
-- [ ] Extraer `ms-tramitacion` como primer microservicio (coincide con Fase 1)
-- [ ] Introducir `gateway` (enrutado + propagación de token) delante de los servicios
-- [ ] Extraer `ms-autenticacion` y `ms-expedientes` cuando aporte valor
-- [ ] Desplegar cada servicio con su Deployment/Service en `k8s/` (reutilizando lo aprendido)
+### Etapa 9 — Microservicios I: `ms-tramitacion` con arquitectura hexagonal — PENDIENTE
+- [ ] Extraer `ms-tramitacion` (Maven multi-módulo o repo propio, a decidir) con capas `domain` / `application`
+  (puertos de entrada y salida) / `infrastructure` (adaptadores REST y JDBC)
+- [ ] El adaptador de persistencia sigue siendo `NamedParameterJdbcTemplate` con SQL explícito (invariante 1)
+- [ ] Dominio sin dependencias de Spring; reglas (instructor asignado, reglas de la Etapa 8) probadas sin contexto
+- [ ] Prueba de arquitectura con ArchUnit que impida que `domain` dependa de `infrastructure`
+- [ ] Deployment + Service propios en `k8s/`
+
+### Etapa 10 — Microservicios II: notificaciones asíncronas con Kafka — PENDIENTE
+- [ ] Kafka en Compose (modo KRaft, sin ZooKeeper) y en K8s con el operador Strimzi
+- [ ] `ms-tramitacion` publica `TramiteRegistrado` / `ExpedienteResuelto` con **patrón outbox** (tabla por Flyway
+  + SQL explícito)
+- [ ] `ms-notificaciones` consume y notifica en `idioma_notificacion`, sustituyendo el envío síncrono de la Etapa 7
+- [ ] Idempotencia del consumidor, reintentos y dead-letter topic; pruebas con Testcontainers
+
+### Etapa 11 — Microservicios III: `gateway` reactivo con WebFlux — PENDIENTE
+- [ ] `gateway` con Spring Cloud Gateway (WebFlux, versión de Spring Cloud compatible con Boot 4.1): enrutado
+  `/api/v1/**`, validación del JWT y propagación del correlation-id
+- [ ] Llamadas entre servicios con `WebClient`; timeouts y circuit breaker (Resilience4j)
+- [ ] Los servicios JDBC existentes **no** se reescriben en reactivo; si un servicio reactivo necesita BD, R2DBC
+  `DatabaseClient` con SQL explícito (invariante 1)
+- [ ] Pruebas con `WebTestClient` y `StepVerifier`
+- [ ] Extraer `ms-autenticacion` / `ms-expedientes` solo si aporta valor (decidir aquí)
 
 ---
 
-## Entregables por fase
+## Etapa 12 — Despliegue final en OpenShift — PENDIENTE
 
-Cada fase (funcional) cierra con:
-1. Código en rama Git con PR revisado (`/code-review` sobre el diff).
+> **Objetivo:** llevar el sistema completo (servicios + Kafka + PostgreSQL) a OpenShift y saber explicar en qué
+> se diferencia de Kubernetes "a pelo".
+
+- [ ] Entorno: OpenShift Local (CRC) o Developer Sandbox de Red Hat (gratis)
+- [ ] Imágenes compatibles con la SCC `restricted` (UID arbitrario, no root): `nginx-unprivileged` en 8080 para el
+  frontend y permisos de grupo 0 en los servicios Java
+- [ ] `Route` en lugar de `Ingress`; Kustomize con overlays `minikube` / `openshift` sobre la base de `k8s/`
+- [ ] Comparar por escrito K8s vs OpenShift (Routes, SCC, Projects, ImageStreams, consola) para la entrevista
+
+**Hecho cuando** (de toda la ruta): cada etapa tiene su demo y una línea de CV que se pueda defender con el
+código delante.
+
+---
+
+## Entregables por etapa
+
+Cada etapa funcional o tecnológica cierra con:
+1. Código en rama Git con PR revisado (`/code-review` sobre el diff; `/security-review` si toca auth/datos).
 2. Migraciones Flyway aplicadas y versionadas.
 3. Swagger UI operativo y probado.
 4. Suite de pruebas en verde.
-5. Demo funcional de lo entregado.
-
-La Fase K8s cierra con: carpeta `k8s/` versionada, ejercicios de la guía marcados y demo en vivo
-(desplegar, escalar, matar un Pod, rolling update).
+5. Despliegue verificado en Compose y en minikube.
+6. Demo funcional de lo entregado y reporte en `docs/reportes/`.
 
 ---
 
-## Histórico de fases completadas
+## Histórico de etapas completadas
 
 <details>
-<summary><b>Fase 0 — MVP (S1–S6) — COMPLETADA (Hito M6, 2026-07-17)</b></summary>
+<summary><b>Etapa 3 — Fase 1: Tramitación — COMPLETADA (2026-07-29)</b></summary>
+
+> **Objetivo cumplido:** el personal instructor puede hacer avanzar los expedientes.
+> Fuente: enunciado §7.2. Tablas `tramite` y `tipo_tramite` en [docs/modelo-datos.md](docs/modelo-datos.md).
+
+```
+REGISTRO/Entrada  → expediente registrado
+ASIGNACION        → se asigna instructor
+REVISION/Subsanación → comprobación de requisitos; si falta algo, se requiere subsanación
+PROPUESTA         → propuesta de resolución (favorable | desfavorable)
+RESOLUCION        → concesión o denegación (rol RESPONSABLE)
+NOTIFICACION      → comunicación al interesado por su canal de aviso y en su idioma de notificación
+```
+
+- [x] Asignación de instructor (rol `RESPONSABLE`) — `PUT /api/v1/expedientes/{id}/instructor`, transaccional
+  (asigna + cambia estado + trámite `ASIGNACION`); valida instructor **activo** (409 si no). `GET /api/v1/instructores`
+- [x] Registro de trámites — `POST /api/v1/expedientes/{id}/tramites`
+- [x] Cada trámite guarda quién, cuándo y resultado — autor del JWT y reloj del servidor; `@Auditable(accion="TRAMITE")`
+- [x] Cambio de estado por trámite — `REGISTRO`→REGISTRADO, `REVISION`/`PROPUESTA`→EN_REVISION,
+  `RESOLUCION`→RESUELTO (+ `fecha_resolucion`), `NOTIFICACION`→sin cambio
+- [x] Regla: **un instructor solo tramita lo asignado** — doble capa (`@PreAuthorize` por rol + servicio por dato);
+  probada en el clúster: asignado 201, no asignado 403 con motivo en es/eu
+- [x] Sección **Tramitación** en el detalle — 5.ª pestaña con línea de tiempo y formularios por rol
+- [x] 4 endpoints documentados en Swagger (403/404/409 explicados); tabla en [docs/arquitectura.md](docs/arquitectura.md)
+- [x] Pruebas: backend 107 (era 52), frontend 26 (era 16)
+- [x] Extra: bug de i18n del bundle raíz `messages.properties` cazado en el clúster; corregido + `MessagesParidadTest`
+- La emisión real de la notificación pasó a la Etapa 7 (Fase 3): en la Fase 1 el trámite `NOTIFICACION` se
+  registra, pero no se envía nada.
+
+</details>
+
+<details>
+<summary><b>Higiene del repositorio — COMPLETADA (2026-07-28)</b></summary>
+
+- [x] Snapshot del grafo (`graph.db.zst`, `artifact.json`) fuera de git: cada commit lo re-ensuciaba; 6,5 MB de 10,58 MB
+- [x] Política "cola de git limpia" en `CLAUDE.md` + hook `Stop` (`.claude/hooks/git-cola-limpia.sh`)
+- [x] `docs/` reorganizado: [docs/docker-k8s/](docs/docker-k8s/), [docs/diagramas/](docs/diagramas/) e índice [docs/README.md](docs/README.md)
+- [x] Material de la reunión fusionado en [docs/docker-k8s/entrevista-docker-k8s.md](docs/docker-k8s/entrevista-docker-k8s.md)
+
+</details>
+
+<details>
+<summary><b>Etapa 2 — Fase K8s: Docker + Kubernetes — COMPLETADA (2026-07-29)</b></summary>
+
+> **Objetivo cumplido:** llevar Ayudas GV de `docker compose` a minikube y dominar escalar, autocurar y actualizar
+> sin caída. Guía: [docs/docker-k8s/kubernetes-aprendizaje.md](docs/docker-k8s/kubernetes-aprendizaje.md).
+> Entregables: carpeta [k8s/](k8s/), ejercicios marcados y los documentos divulgativos.
+
+**Bloque 0 — Repaso de Docker (2026-07-22)**
+- [x] Stack con `docker compose up --build`: 3 contenedores, Flyway V1–V5, login vía Nginx
+- [x] Multi-stage builds explicados en [docs/docker-k8s/docker-guia.md](docs/docker-k8s/docker-guia.md) §3
+- [x] Red por nombre de servicio (base del DNS de K8s), demostrada en vivo
+
+**Bloque 1 — Clúster local (2026-07-23)**
+- [x] `.dockerignore` en backend y frontend
+- [x] minikube v1.38.1 / K8s v1.35.1 (driver docker); nodo Ready
+- [x] Imágenes construidas dentro del Docker de minikube; entendido el `ImagePullBackOff`
+
+**Bloque 2 — Desplegar la app (2026-07-24)**
+- [x] `k8s/00`–`50`: namespace `ayudas-dev`, ConfigMap + Secret, postgres (PVC), backend, frontend, Ingress
+- [x] 3 Pods Running, login de extremo a extremo; DNS interno demostrado; fallo de Secret diagnosticado
+
+**Bloque 3 — Operar (2026-07-27)**
+- [x] Escalado a 3 réplicas con balanceo real; self-healing sin afectar al frontend
+- [x] Rolling update `:1.0`→`:1.1` sin caída y `rollout undo`
+- [x] Postgres con 2 réplicas sobre un PVC RWO: dos postmasters sobre el mismo directorio → conclusión:
+  `ReadWriteOncePod`, StatefulSet no da replicación (operador tipo CloudNativePG)
+
+**Bloque 4 — Ejercicios integradores (2026-07-29)**
+- [x] Segundo entorno `ayudas-staging` ([k8s/staging/](k8s/staging/))
+- [x] Probes de Actuator (startup / readiness con BD / liveness sin BD)
+- [x] Resiliencia JWT stateless con un Pod borrado; `resources.requests/limits`
+- [x] Postgres endurecido (`Recreate` + `ReadWriteOncePod`; el `spec` del PVC es inmutable)
+- [x] `change-cause` en los Deployments; respuestas orales preparadas
+
+**Material didáctico (2026-07-28)**
+- [x] Guía reescrita con 25 analogías y [docs/docker-k8s/kubernetes-desde-0.md](docs/docker-k8s/kubernetes-desde-0.md)
+
+</details>
+
+<details>
+<summary><b>Etapa 1 — Fase 0: MVP (S1–S6) — COMPLETADA (Hito M6, 2026-07-17)</b></summary>
 
 **Objetivo cumplido:** una persona autenticada puede buscar y consultar expedientes organizados por
 secciones, en castellano y euskera. Construido como monolito modular con fronteras limpias.

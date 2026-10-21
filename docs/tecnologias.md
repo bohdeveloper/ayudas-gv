@@ -281,7 +281,7 @@ Petición entrante
 
 - **Login** (`POST /api/v1/auth/login`): `AuthService` valida `username`/`password` contra `usuario` (BCrypt, strength 10) y, si son correctas, `JwtProvider` emite un JWT firmado **HS256** con claims `roles` e `idioma`, válido 24h (`app.jwt.expiration-ms`).
 - **Sin sesión de servidor**: `SessionCreationPolicy.STATELESS` — no hay `HttpSession` ni cookies; cada petición se autentica solo con el JWT que envía el cliente.
-- **401 vs 403**: Spring Security 6 devuelve 403 a peticiones anónimas por defecto; se sobreescribe con un `authenticationEntryPoint` para que sea siempre 401 sin token válido.
+- **401 vs 403**: Spring Security (6 y 7, sin `formLogin` ni `httpBasic`) devuelve 403 a peticiones anónimas por defecto; se sobreescribe con un `authenticationEntryPoint` para que sea siempre 401 sin token válido.
 - **Frontend**: `axiosClient.ts` añade el `Authorization: Bearer` en cada petición (interceptor) y, ante un 401, limpia el `authStore` (Zustand) y redirige a `/login` (implementado en Semana 3).
 
 ### Cómo Spring Boot lee la configuración

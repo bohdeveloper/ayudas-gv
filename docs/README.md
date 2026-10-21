@@ -41,7 +41,7 @@ Los diagramas **Mermaid** (versionables y renderizables en GitHub/GitLab) están
 
 ## Reportes — [reportes/](reportes/)
 
-- [itinerario.md](reportes/itinerario.md) — calendario de las fases restantes y fin proyectado
+- [itinerario.md](reportes/itinerario.md) — calendario histórico hasta el 29/07 (fechas de agosto ya no válidas; se rehace con el orden de Etapas de plan.md)
 - `semanaN/` — reporte diario de cada sesión (`AAAA-MM-DD-diadelasemana.md`)
 - `semanas/` — reporte semanal en HTML, generado los viernes
 

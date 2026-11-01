@@ -4,6 +4,8 @@
 > Memoria del proyecto: qué es, cómo está construido, decisiones y metodología.
 > El trabajo pendiente vive en [plan.md](plan.md) (que incluye el histórico resumido de lo completado).
 > Regla: toda decisión nueva de producto/arquitectura se registra aquí en la misma sesión.
+>
+> **Proyecto en pausa desde el 2026-11-01** (hasta ~febrero de 2027). Checklist para retomarlo en [plan.md](plan.md).
 
 ---
 

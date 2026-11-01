@@ -4,7 +4,16 @@
 
 Aplicación web interna para la gestión y tramitación de expedientes de ayudas de carácter social (arts. 351–362 y 373 del TRLGSS).
 
-> **Estado:** Fase 0 (MVP) y **Fase K8s** completadas; **Fase 1 — Tramitación** completada (2026-07-29).
+> **PROYECTO EN PAUSA desde el 2026-11-01** (previsto retomar a partir de febrero de 2027).
+> - **Dónde se quedó:** Etapa 4 a medias. Migración a Spring Boot 4.1.1 hecha y en verde (107 pruebas backend);
+>   falta el Bloque 4.2 (reconstruir el clúster de minikube en este equipo).
+> - **Qué falta:** Bloque 4.2 → Etapa 5 (asistente de normativa con Spring AI + MCP) → Etapas 6–12. Ver [plan.md](plan.md).
+> - **Cómo arrancarlo:** abrir Docker Desktop y `docker compose up --build` (frontend en `:3000`). Antes de usar Maven
+>   desde la terminal, corregir `JAVA_HOME` (apunta a `C:\eclipse\`; debe ser `C:\Program Files\Java\jdk-21.0.9`).
+> - Nada desplegado en la nube: no hay servicios ni cobros asociados a este proyecto.
+>
+> **Estado:** Fase 0 (MVP) y **Fase K8s** completadas; **Fase 1 — Tramitación** completada (2026-07-29);
+> **Spring Boot 4.1.1** (2026-10-21).
 > El despliegue en Kubernetes está en [`k8s/`](k8s/) con su [guía paso a paso](docs/docker-k8s/kubernetes-aprendizaje.md).
 > El repo sigue **Spec-Driven Development**: la fuente de verdad es [spec.md](spec.md) (memoria) + [plan.md](plan.md) (trabajo).
 

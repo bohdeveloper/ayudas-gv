@@ -8,6 +8,22 @@
 
 ---
 
+## EN PAUSA (2026-11-01)
+
+El proyecto queda **parado temporalmente** desde el 2026-11-01: el autor empieza unas prácticas a jornada
+completa hasta principios de febrero de 2027 y cancela la suscripción de Claude durante ese tiempo.
+Nada se ha borrado ni hay nada desplegado (ni nube ni cobros); el clúster de minikube no existe en este equipo.
+
+**Para retomar (checklist):**
+- [ ] `git pull` y leer este plan + [spec.md](spec.md) §3 y §6
+- [ ] Corregir `JAVA_HOME` → `C:\Program Files\Java\jdk-21.0.9` y comprobar `mvn -v`
+- [ ] Docker Desktop + `docker compose up --build`; pasar `mvn test` (107) y `npm test` en `frontend/`
+- [ ] Revisar si hay versiones nuevas de Spring Boot 4.x / Spring AI 2.x antes de abrir la Etapa 5
+- [ ] Reindexar el grafo (`codebase-memory-mcp`) y rehacer [docs/reportes/itinerario.md](docs/reportes/itinerario.md)
+- [ ] Seguir por **Etapa 4 — Bloque 4.2**
+
+---
+
 ## Cómo está organizado este plan (reordenado 2026-10-21)
 
 Hay **una sola secuencia de Etapas**, que es el orden real de ejecución. No hay fases paralelas.
@@ -28,7 +44,7 @@ Hay **una sola secuencia de Etapas**, que es el orden real de ejecución. No hay
 | 1 | Fase 0 — MVP (S1–S6) | Spring Boot, JWT, SQL explícito, i18n | COMPLETADA (2026-07-17) |
 | 2 | Fase K8s — Docker + Kubernetes | Kubernetes (minikube) | COMPLETADA (2026-07-29) |
 | 3 | Fase 1 — Tramitación | — | COMPLETADA (2026-07-29) |
-| **4** | **Puesta al día de la plataforma** | Spring Boot 4 | **EN CURSO** — Boot 4 hecho; falta el clúster |
+| **4** | **Puesta al día de la plataforma** | Spring Boot 4 | **EN CURSO (en pausa desde 2026-11-01)** — Boot 4 hecho; falta el clúster |
 | 5 | Asistente de normativa | Spring AI (RAG) + servidor MCP | PENDIENTE — **siguiente** |
 | 6 | Fase 2 — Alta y registro de solicitudes | — (consolidación) | PENDIENTE |
 | 7 | Fase 3 — Resolución y notificaciones | — | PENDIENTE |
